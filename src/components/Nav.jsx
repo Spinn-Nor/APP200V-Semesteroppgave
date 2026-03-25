@@ -9,7 +9,6 @@ function Nav() {
   // List of links
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/rooms", label: "Rooms" },
     { to: "/locations", label: "Locations" },
     { to: "/spa", label: "Spa" },
     { to: "/conference", label: "Conference Rooms" },
