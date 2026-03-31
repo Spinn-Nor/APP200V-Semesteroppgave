@@ -11,6 +11,7 @@ function Home() {
   useEffect(() => {
     testFirebaseConnection();
   }, []);
+  
   return (
     <main className="home">
 
