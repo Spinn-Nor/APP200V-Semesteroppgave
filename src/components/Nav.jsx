@@ -10,10 +10,9 @@ function Nav() {
   const navLinks = [
     { to: "/", label: "Home" },
     { to: "/locations", label: "Locations" },
-    { to: "/spa", label: "Spa" },
-    { to: "/conference", label: "Conference Rooms" },
-    { to: "/business", label: "Business" },
-    { to: "/about", label: "About" },
+    { to: "/hotels", label: "Hotels" },
+    { to: "/wellness", label: "Wellness" },
+    { to: "/events", label: "Events" },
   ];
 
   return (
