@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+.claude
 src/firebase
 
 # Editor directories and files
@@ -23,3 +24,4 @@ src/firebase
 *.njsproj
 *.sln
 *.sw?
+.gitignore
