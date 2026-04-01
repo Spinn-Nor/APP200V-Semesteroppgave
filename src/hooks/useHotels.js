@@ -16,7 +16,7 @@ export function useHotels() {
 
                 if (data) {
                     // Converting from object to array
-                    const hotelsArray = Objects.keys(data).map(key => ({
+                    const hotelsArray = Object.keys(data).map(key => ({
                         id: key,
                         ...data[key]
                     }));
