@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom'
 
-function HotelCard() {
+function HotelCard(hotel) {
   return (
     <div className="hotel-card">
         <img src={hotel.imageUrl} alt={hotel.name} className="hotel-image" />

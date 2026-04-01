@@ -3,7 +3,7 @@ import HotelCard from '../components/HotelCard';
 
 function Hotels() {
     const [hotels, setHotels] = useState([]);
-    const [ftileredHotels, setFilteredHotels] = useState([]);
+    const [filteredHotels, setFilteredHotels] = useState([]);
     const [selectedCity, setSelectedCity] = useState('Alle');
 
     useEffect(() => {
@@ -53,8 +53,53 @@ function Hotels() {
 
 
   return (
-    <div>Hotels</div>
-  )
+    <div className="hotels">
+       <div className="container">
+         <div className="hotels-header">
+            <h1>Our Hotels</h1>
+            <p>Choose a hotel and find the perfect room for you</p>
+        </div>
+
+        {/* Filter */}
+        <div className="filter-bar">
+
+            <button
+                className={`filter-btn ${selectedCity === 'Alle' ? 'active' : ''}`}
+                onClick={() => handleFilter('Alle')}>
+                Alle
+            </button>
+
+            <button 
+                className={`filter-btn ${selectedCity === 'Oslo' ? 'active' : ''}`}
+                onClick={() => handleFilter('Oslo')}
+                >
+                Oslo
+            </button>
+
+            <button 
+                className={`filter-btn ${selectedCity === 'Bergen' ? 'active' : ''}`}
+                onClick={() => handleFilter('Bergen')}
+                >   
+                Bergen
+            </button>
+
+            <button 
+                className={`filter-btn ${selectedCity === 'Trondheim' ? 'active' : ''}`}
+                onClick={() => handleFilter('Trondheim')}
+                >
+                Trondheim
+            </button>
+        </div>
+
+        {/* Hotel Grid */}
+        <div className="hotels-grid">
+            {filteredHotels.map(hotel => (
+                <HotelCard key={hotel.id} hotel={hotel} />
+            ))}
+        </div>
+       </div>
+    </div>
+  );
 }
 
-export default Hotels
+export default Hotels;
