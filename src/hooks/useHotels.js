@@ -21,6 +21,7 @@ export function useHotels() {
                         ...data[key]
                     }));
                     setHotels(hotelsArray);
+                    console.log(hotelsArray);
                 } else {
                     setHotels([]);
                 }

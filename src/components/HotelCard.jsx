@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom'
 
-function HotelCard(hotel) {
+function HotelCard({hotel}) {
   return (
     <div className="hotel-card">
         <img src={hotel.imageUrl} alt={hotel.name} className="hotel-image" />
@@ -11,7 +11,6 @@ function HotelCard(hotel) {
 
             <div className="hotel-details">
                 <span>{hotel.rating} ★</span>
-                <span>{hotel.roomCount} rom</span>
             </div>
 
             <p className="hotel-description">{hotel.description}</p>
