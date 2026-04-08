@@ -17,7 +17,7 @@ function HotelDetail() {
                 const snapshot = await get(hotelRef);
 
                 if (snapshot.exists()) {
-                    setHotel(snapshot.value());
+                    setHotel(snapshot.val());
                 } else {
                     console.log("Hotel not found");
                 }
@@ -28,15 +28,16 @@ function HotelDetail() {
             }
         };
 
-        fetchHotels();
+        fetchHotel();
     }, [id]);
 
     if (loading) return <h2>Loading hotel...</h2>;
     if (!hotel) return <h2>Hotel not found</h2>;
 
   return (
-    <div className="hotel-detail">
-        <div className="container">
+    <div className="container">
+        <div className="hotel-detail">
+
             <div className="hotel-detail-header">
                 <img 
                     src={hotel.imageUrl || "https://picsum.photos/id/1015/1200/600"} 
@@ -49,7 +50,6 @@ function HotelDetail() {
                 <p className="hotel-city">{hotel.city} • {hotel.address}</p>
                 <p className="rating">⭐ {hotel.rating} ({hotel.reviewCount || 0} reviews)</p>
             </div>
-        </div>
 
         <div className="hotel-detail-content">
             <p className="hotel-description">{hotel.description}</p>
@@ -61,11 +61,12 @@ function HotelDetail() {
 
             <h2>Available rooms</h2>
                 <div className="rooms-list">
-                    {hotel.rooms && Object.entries(hotel.rooms).map(([KeyboardEvent, room]) => (
+                    {hotel.rooms && Object.entries(hotel.rooms).map(([key, room]) => (
                         <RoomCard key={key} room={room} />
                     ))}
                 </div>
         </div>
+    </div>
     </div>
   )
 }
