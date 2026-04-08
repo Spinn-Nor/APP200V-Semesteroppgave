@@ -2,6 +2,7 @@ import {useParams, Link} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import {db} from '../firebase/config'
 import {ref, get} from 'firebase/database';
+import RoomCard from '../components/RoomCard';
 
 
 function HotelDetail() {
@@ -59,7 +60,11 @@ function HotelDetail() {
             </div>
 
             <h2>Available rooms</h2>
-
+                <div className="rooms-list">
+                    {hotel.rooms && Object.entries(hotel.rooms).map(([KeyboardEvent, room]) => (
+                        <RoomCard key={key} room={room} />
+                    ))}
+                </div>
         </div>
     </div>
   )
