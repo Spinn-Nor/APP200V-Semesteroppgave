@@ -14,7 +14,12 @@ function Home() {
   
   useEffect(() => {
     testFirebaseConnection();
-  }, []); // denne blokka . 
+
+  }, []);  
+
+
+  
+
   return (
     <main className="home"> 
       {/* Hero */}

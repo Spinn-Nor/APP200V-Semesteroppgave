@@ -36,17 +36,13 @@ function Nav() {
               {link.label}
             </NavLink>
           ))}
-        </div>
 
-        {/* Right side */}
-        <div className="nav-actions">
-
-          <Link to="/login" className="login-link">
+          <Link
+            to="/login"
+            className="login-btn"
+            onClick={() => setIsOpen(false)}
+          >
             Login / Register
-          </Link>
-
-          <Link to="/booking" className="book-now-btn">
-            Book Now
           </Link>
         </div>
 
