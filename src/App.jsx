@@ -4,6 +4,7 @@ import './App.css'
 import Home from './pages/Home';
 import Hotels from './pages/Hotels';
 import Nav from './components/Nav';
+import Locations from './components/LocationsMap';
 
 import Events from './pages/Events';
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/hotels" element={<Hotels />} />
         <Route path="/hotels/:id" element={<HotelDetail />} />
 
+        <Route path="/locations" element={<Locations />} />
       </Routes>
     </Router>
   )

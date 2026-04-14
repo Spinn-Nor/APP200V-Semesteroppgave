@@ -11,17 +11,13 @@ function Home() {
   const [destination, setDestination] = useState('')
 
   // AI-FIKS: Denne blokken må kommenteres ut før push for å unngå krasj hos andre
-  
+
   useEffect(() => {
-    testFirebaseConnection();
-
-  }, []);  
-
-
-  
+    // testFirebaseConnection();
+  }, []);
 
   return (
-    <main className="home"> 
+    <main className="home">
       {/* Hero */}
       <section className="hero">
         <div className="hero-overlay" />
