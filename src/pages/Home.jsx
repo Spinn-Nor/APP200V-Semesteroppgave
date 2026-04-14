@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { testFirebaseConnection } from '../firebase/testConnection';
+// 
+// import { testFirebaseConnection } from '../firebase/testConnection';
 
 function Home() {
   const [checkIn, setCheckIn] = useState('')
@@ -8,12 +10,13 @@ function Home() {
   const [guests, setGuests] = useState('1')
   const [destination, setDestination] = useState('')
 
+  // AI-FIKS: Denne blokken må kommenteres ut før push for å unngå krasj hos andre
+  
   useEffect(() => {
     testFirebaseConnection();
-  }, []);
+  }, []); // denne blokka . 
   return (
-    <main className="home">
-
+    <main className="home"> 
       {/* Hero */}
       <section className="hero">
         <div className="hero-overlay" />

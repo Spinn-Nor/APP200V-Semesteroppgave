@@ -1,0 +1,138 @@
+/* Vi bruker en renere, mer moderne font-stack */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+.events-page {
+  padding: 140px 40px 80px; /* Masse luft på toppen */
+  max-width: 1300px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  background-color: #fcfdfe; /* Nesten hvit, veldig ren */
+  min-height: 100vh;
+}
+
+.events-hero {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.events-hero h1 {
+  color: #0f172a; /* Mørkere, nesten sort blå for autoritet */
+  font-size: 3.5rem; /* Stor, tydelig overskrift */
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.events-hero p {
+  color: #64748b;
+  font-size: 1.4rem; /* Skrudd opp størrelsen på underteksten */
+  margin-top: 15px;
+}
+
+/* Tabell-containeren */
+.events-table {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05); /* Mykere, dypere skygge */
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+/* Overskriftsraden i tabellen */
+.table-header {
+  display: grid;
+  grid-template-columns: 1.8fr 1.8fr 1fr 1.8fr 1fr 0.8fr;
+  background-color: #f8fafc;
+  padding: 25px 30px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.table-header span {
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 0.95rem; /* Større header-tekst */
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Radene */
+.table-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1.8fr 1fr 1.8fr 1fr 0.8fr;
+  padding: 35px 30px; /* Mye mer luft mellom radene */
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: #f1f7ff;
+  transform: scale(1.005); /* En veldig subtil zoom-effekt */
+}
+
+/* Cellen for romnavn */
+.room-name-cell strong {
+  color: #1e293b;
+  font-size: 1.4rem; /* Skrudd opp fonten her! */
+  display: block;
+}
+
+/* Hotell-taggen */
+.hotel-tag {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 6px 12px;
+  border-radius: 99px; /* Pill-shape */
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
+/* Kapasitet og Utstyr */
+.capacity-cell {
+  font-size: 1.2rem; /* Skrudd opp */
+  color: #334155;
+  font-weight: 500;
+}
+
+.equipment-cell small {
+  font-size: 1.05rem; /* Gjort denne lesbar */
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Pris */
+.price-cell {
+  font-size: 1.25rem; /* Tydelig pris */
+  font-weight: 700;
+  color: #000000; /* En profesjonell grønnfarge */
+}
+
+/* Knappen */
+.book-room-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s;
+}
+
+.book-room-btn:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+}
+
+/* Mobil-fix */
+@media (max-width: 1000px) {
+  .table-header { display: none; }
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 30px;
+    text-align: center;
+  }
+}
