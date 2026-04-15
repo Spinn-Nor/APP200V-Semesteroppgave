@@ -11,24 +11,27 @@ import Events from './pages/Events';
 
 import HotelDetail from './pages/HotelDetail';
 import Login from './pages/Login';
+import { CartProvider } from './context/CartContext';
 
 function App() {
   return (
-    <Router>
-      <Nav />
+    <CartProvider>
+      <Router>
+        <Nav />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-        <Route path="/events" element={<Events />} />
+          <Route path="/events" element={<Events />} />
 
-        <Route path="/hotels" element={<Hotels />} />
-        <Route path="/hotels/:id" element={<HotelDetail />} />
+          <Route path="/hotels" element={<Hotels />} />
+          <Route path="/hotels/:id" element={<HotelDetail />} />
 
-        <Route path="/locations" element={<Locations />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+          <Route path="/locations" element={<Locations />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
     </Router>
+    </CartProvider>
   )
 }
 
