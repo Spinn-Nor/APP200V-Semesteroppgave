@@ -10,6 +10,7 @@ import Events from './pages/Events';
 
 
 import HotelDetail from './pages/HotelDetail';
+import Login from './pages/Login';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/hotels/:id" element={<HotelDetail />} />
 
         <Route path="/locations" element={<Locations />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   )
