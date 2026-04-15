@@ -1,66 +1,110 @@
-import {createContext, useContext, useState} from 'react'
+/**
+ * CartContext.jsx
+ * 
+ * Manages the global shopping cart state for the Blueberry Hotels application.
+ * Allows users to add multiple bookings (rooms, spa, conference rooms) before
+ * confirming the entire order as one booking in Firebase.
+ * 
+ * @author Fredrik Fordelsen - Full implementation of CartContext, addToCart,
+ *
+ */
 
+import { createContext, useContext, useState } from 'react';
+import { db } from '../firebase/config';
+import { ref, push, set } from 'firebase/database';
+import { useAuth } from './AuthContext';
+
+const CartContext = createContext();
 
 /**
- * CartContext - Provides global cart state and functions to the entire application.
- * This follows the React Context API pattern for sharing state without prop drilling.
- * * @author Fredrik Fordelsen - Created CartContext, addToCart, removeFromCart and totalPrice logic
+ * CartProvider - Provides cart state and functions to all child components.
+ * Uses React Context to avoid prop drilling.
  */
-const cartContext = createContext();
-
-/**
- * CartProvider - Wraps the application and makes cart data available to all components.
- * This is the "Provider" part of the Context pattern.
- */
-export function CartProvider({children}) {
-    const [cart, setCart] = useState(); // Array of items currently in the cart
+export function CartProvider({ children }) {
+    const [cart, setCart] = useState([]);
+    const { currentUser } = useAuth();
 
     /**
-     * Adds a new item (room, spa treatment, conference room, etc.) to the cart.
-     * Each item gets a unique cartId for easy removal later.
+     * Adds a new item to the cart.
+     * Each item receives a unique cartId for easy removal.
      */
-
     const addToCart = (item) => {
-        const newItem = {
-            ...item,
-            cartId: Date.now() // Unique identifier for this cart entry
+        const newItem = { 
+            ...item, 
+            cartId: Date.now() 
         };
         setCart(prev => [...prev, newItem]);
     };
 
     /**
-     * Removes a specific item from the cart using its cartId
+     * Removes an item from the cart using its cartId.
      */
-
     const removeFromCart = (cartId) => {
         setCart(prev => prev.filter(item => item.cartId !== cartId));
     };
 
     /**
-     * Clears entire cart (used after successful booking)
+     * Clears the entire cart after a successful booking.
      */
-
     const clearCart = () => setCart([]);
 
     /**
-     * Calculates the total price of all items currently in the cart
+     * Calculates the total price of all items in the cart.
      */
-
     const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0), 0);
 
+    /**
+     * Saves the entire cart as one Order in Firebase Realtime Database.
+     * Path: orders/{userId}/{orderId}
+     * This allows users to later view their bookings on a "My Bookings" page.
+     */
+    const confirmBooking = async () => {
+        if (cart.length === 0 || !currentUser) {
+            alert("You must be logged in to confirm a booking.");
+            return false;
+        }
+
+        try {
+            const orderRef = ref(db, `orders/${currentUser.uid}`);
+            const newOrderRef = push(orderRef);
+
+            const orderData = {
+                orderId: newOrderRef.key,
+                userId: currentUser.uid,
+                items: cart,
+                totalPrice: totalPrice,
+                status: "confirmed",
+                createdAt: new Date().toISOString()
+            };
+
+            await set(newOrderRef, orderData);
+
+            console.log("Order successfully saved to Firebase:", orderData);
+            clearCart();
+            return true;
+
+        } catch (error) {
+            console.error("Failed to save order to Firebase:", error);
+            alert("Failed to save booking. Please try again.");
+            return false;
+        }
+    };
+
     return (
-        <cartContext.Provider value={{
+        <CartContext.Provider value={{
             cart,
             addToCart,
             removeFromCart,
             clearCart,
-            totalPrice
+            totalPrice,
+            confirmBooking
         }}>
             {children}
-        </cartContext.Provider>
+        </CartContext.Provider>
     );
 }
 
 /**
- * Custom hook to easily access cart data and functions from any component.
+ * Custom hook to access cart context from any component.
  */
+export const useCart = () => useContext(CartContext);
