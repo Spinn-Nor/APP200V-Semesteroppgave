@@ -1,57 +1,52 @@
-import {useCart} from '../context/CartContext'
-import './styles/CartDrawer.css';
-
 /**
+ * CartDrawer.jsx
  * 
- * Slide-in cart panel (drawer) from the right side of the screen.
- * Displays all items in the cart, allows removal of items, shows total price,
- * and confirms the full booking by calling confirmBooking() from CartContext.
+ * Slide-in cart panel from the right side.
+ * Displays cart items, allows removal, and confirms booking.
  * 
- * @author Fredrik Fordelsen - Full implementation of slide-in cart drawer.
+ * @author Fredrik Fordelsen - Added null-check to prevent useCart error before provider is ready
+ * @version 1.0
  */
 
-function CartDrawer({isOpen, onClose}) {
-    // Get cart data and functions from our global CartContext
-    const [cart, removeFromCart, clearCart, totalPrice] = useCart();
+import { useCart } from '../context/CartContext';
+import './styles/CartDrawer.css';
 
-    /**
-     * Handles the final confirmation of the booking.
-     * Calls confirmBooking() from CartContext which saves the order to Firebase.
-     * If successful, the cart is cleared and the drawer is closed.
-     */
+function CartDrawer({ isOpen, onClose }) {
+    // Safety check: prevent crash if CartContext is not yet available
+    const cartContext = useCart();
+    
+    if (!cartContext) {
+        console.warn("CartContext not available yet");
+        return null;
+    }
+
+    const { cart, removeFromCart, totalPrice, confirmBooking } = cartContext;
 
     const handleConfirm = async () => {
         if (cart.length === 0) return;
 
         const success = await confirmBooking();
-
         if (success) {
-            onClose(); // Close the drawer after successful booking
+            onClose();
         }
     };
 
-    // Do not render anything if the drawer is closed
     if (!isOpen) return null;
 
     return (
         <>
-            {/* Dark overlay behind the drawer - clicking it closes the cart */}
             {isOpen && <div className="cart-overlay" onClick={onClose}></div>}
 
-            {/* The actual sliding drawer */}
             <div className={`cart-drawer ${isOpen ? 'open' : ''}`}>
-
-                {/* Header with title and close button */}
                 <div className="cart-header">
                     <h2>Your Cart</h2>
                     <button className="close-drawer-btn" onClick={onClose}>✕</button>
                 </div>
 
-                {/* Main content area - shows cart items or empty message */}
                 <div className="cart-content">
                     {cart.length === 0 ? (
                         <p className="empty-cart">Your cart is empty.</p>
-                    ): (
+                    ) : (
                         <ul className="cart-items">
                             {cart.map(item => (
                                 <li key={item.cartId} className="cart-item">
@@ -63,8 +58,8 @@ function CartDrawer({isOpen, onClose}) {
                                     <div className="cart-item-price">
                                         {item.price} kr
                                         <button 
-                                        className="remove btn"
-                                        onClick={removeFromCart(item.cartId)}
+                                            className="remove-btn"
+                                            onClick={() => removeFromCart(item.cartId)}
                                         >
                                             Remove
                                         </button>
@@ -75,7 +70,6 @@ function CartDrawer({isOpen, onClose}) {
                     )}
                 </div>
 
-                {/* Footer with total price and confirm button - only shown if cart has items */}
                 {cart.length > 0 && (
                     <div className="cart-footer">
                         <div className="cart-total">
@@ -89,7 +83,7 @@ function CartDrawer({isOpen, onClose}) {
                 )}
             </div>
         </>
-    )
+    );
 }
 
 export default CartDrawer;
