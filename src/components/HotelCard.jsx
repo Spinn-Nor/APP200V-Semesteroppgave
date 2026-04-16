@@ -16,7 +16,7 @@ function HotelCard({hotel}) {
             <p className="hotel-description">{hotel.description}</p>
 
             <Link to={`/hotels/${hotel.id}`} className="see-rooms-btn">
-                Se tilgjengelige rom
+                View available rooms
             </Link>
         </div>
     </div>
