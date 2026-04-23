@@ -1,13 +1,36 @@
 /**
  * RoomCard.jsx
  * 
- * Displays a single room with details and an "Add to Cart" button.
+ * Displays room information and adds the room to the cart.
  * 
  * @author Fredrik Fordelsen
- * @version 1.0
+ * @version 1.1
  */
 
-function RoomCard({ room, onAddToCart }) {
+import { useCart } from '../context/CartContext';
+
+function RoomCard({ room, hotelName }) {
+
+    const { addToCart } = useCart();
+
+    const handleAddToCart = () => {
+        const cartItem = {
+            name: room.type || "Unknown Room",
+            type: "Room",
+            price: room.price || 0,
+            capacity: room.capacity || 1,
+            date: "Dates to be selected",
+            hotelId: "unknown",
+            hotelName: hotelName || "Unknown Hotel",
+            itemId: room.id || Date.now(),
+            category: "accommodation"
+        };
+
+        console.log("Adding to cart with hotelName:", cartItem);
+        addToCart(cartItem);
+
+        alert(`"${room.type}" from ${hotelName || "Unknown Hotel"} has been added to your cart!`);
+    };
 
     return (
         <div className="room-card">
@@ -29,7 +52,7 @@ function RoomCard({ room, onAddToCart }) {
 
             <button 
                 className="book-roomBtn"
-                onClick={onAddToCart}
+                onClick={handleAddToCart}
             >
                 Add to Cart
             </button>

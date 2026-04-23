@@ -1,26 +1,18 @@
 /**
  * CartDrawer.jsx
  * 
- * Slide-in cart panel from the right side.
- * Displays cart items, allows removal, and confirms booking.
+ * Slide-in cart panel from the right side of the screen.
+ * Displays all items in the cart and shows which hotel each room belongs to.
  * 
- * @author Fredrik Fordelsen - Added null-check to prevent useCart error before provider is ready
- * @version 1.0
+ * @author Fredrik Fordelsen - Added hotelName display
+ * @version 1.3
  */
 
 import { useCart } from '../context/CartContext';
 import './styles/CartDrawer.css';
 
 function CartDrawer({ isOpen, onClose }) {
-    // Safety check: prevent crash if CartContext is not yet available
-    const cartContext = useCart();
-    
-    if (!cartContext) {
-        console.warn("CartContext not available yet");
-        return null;
-    }
-
-    const { cart, removeFromCart, totalPrice, confirmBooking } = cartContext;
+    const { cart, removeFromCart, totalPrice, confirmBooking } = useCart();
 
     const handleConfirm = async () => {
         if (cart.length === 0) return;
@@ -52,6 +44,14 @@ function CartDrawer({ isOpen, onClose }) {
                                 <li key={item.cartId} className="cart-item">
                                     <div className="cart-item-info">
                                         <strong>{item.name}</strong>
+                                        
+                                        {/* Show hotel name if available */}
+                                        {item.hotelName && (
+                                            <p className="item-hotel">
+                                                at {item.hotelName}
+                                            </p>
+                                        )}
+                                        
                                         <p>{item.type}</p>
                                         {item.date && <small>{item.date}</small>}
                                     </div>
@@ -76,7 +76,10 @@ function CartDrawer({ isOpen, onClose }) {
                             <span>Total:</span>
                             <strong>{totalPrice} kr</strong>
                         </div>
-                        <button className="confirm-order-btn" onClick={handleConfirm}>
+                        <button 
+                            className="confirm-order-btn" 
+                            onClick={handleConfirm}
+                        >
                             Confirm Booking
                         </button>
                     </div>

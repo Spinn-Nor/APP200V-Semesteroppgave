@@ -1,11 +1,15 @@
 /**
  * CartContext.jsx
  * 
- * Manages the global shopping cart state and allows saving the entire cart
- * as one Order in Firebase when the user confirms the booking.
+ * Global cart management supporting multiple booking types:
+ * - Rooms (accommodation)
+ * - Spa treatments
+ * - Events / Conference rooms
  * 
- * @author Fredrik Fordelsen - Full implementation of CartContext with Firebase integration
- * @version 1.0
+ * When confirmed, the entire cart is saved as one Order in Firebase.
+ * 
+ * @author Fredrik Fordelsen - Extended cart to support multiple booking types
+ * @version 1.1
  */
 
 import { createContext, useContext, useState } from 'react';
@@ -19,12 +23,16 @@ export function CartProvider({ children }) {
     const [cart, setCart] = useState([]);
     const { currentUser } = useAuth();
 
+    /**
+     * Add any type of booking item to the cart
+     */
     const addToCart = (item) => {
-        const newItem = { 
-            ...item, 
-            cartId: Date.now() 
+        const cartItem = {
+            ...item,
+            cartId: Date.now(),
+            addedAt: new Date().toISOString()
         };
-        setCart(prev => [...prev, newItem]);
+        setCart(prev => [...prev, cartItem]);
     };
 
     const removeFromCart = (cartId) => {
@@ -36,16 +44,12 @@ export function CartProvider({ children }) {
     const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0), 0);
 
     /**
-     * Saves the entire cart as one Order in Firebase.
+     * Saves the entire cart as one single Order in Firebase.
+     * This allows showing all bookings on "My Bookings" page later.
      */
     const confirmBooking = async () => {
-        if (cart.length === 0) {
-            alert("Your cart is empty.");
-            return false;
-        }
-
-        if (!currentUser) {
-            alert("You must be logged in to confirm a booking.");
+        if (cart.length === 0 || !currentUser) {
+            alert("You must be logged in and have items in cart.");
             return false;
         }
 
@@ -64,13 +68,13 @@ export function CartProvider({ children }) {
 
             await set(newOrderRef, orderData);
 
-            console.log("Order successfully saved to Firebase:", orderData);
+            console.log("Full order saved to Firebase:", orderData);
             clearCart();
             return true;
 
         } catch (error) {
             console.error("Failed to save order:", error);
-            alert("Failed to save booking. Please try again.");
+            alert("Could not save booking. Please try again.");
             return false;
         }
     };

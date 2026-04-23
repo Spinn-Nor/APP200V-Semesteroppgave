@@ -1,10 +1,10 @@
 /**
  * HotelDetail.jsx
  * 
- * Displays detailed information about a specific hotel fetched from Firebase.
- * Allows users to add available rooms directly to the shopping cart.
+ * Displays detailed information about a specific hotel and its rooms.
+ * Allows users to add rooms to the shopping cart.
  * 
- * @author Fredrik Fordelsen - Added useCart hook and handleAddToCart functionality
+ * @author Fredrik Fordelsen - Added cart integration
  * @version 1.1
  */
 
@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { db } from '../firebase/config';
 import { ref, get } from 'firebase/database';
-import { useCart } from '../context/CartContext';   // ← Denne linjen manglet
+import { useCart } from '../context/CartContext';
 import RoomCard from '../components/RoomCard';
 
 function HotelDetail() {
@@ -20,8 +20,7 @@ function HotelDetail() {
     const [hotel, setHotel] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Get addToCart function from global CartContext
-    const { addToCart } = useCart();
+    const { addToCart } = useCart();     
 
     useEffect(() => {
         const fetchHotel = async () => {
@@ -48,27 +47,30 @@ function HotelDetail() {
     if (!hotel) return <h2>Hotel not found</h2>;
 
     /**
-     * Creates a cart item from the selected room and adds it to the global cart.
+     * Adds the selected room to the cart
      */
     const handleAddToCart = (room) => {
         const cartItem = {
-            name: room.type || room.name || "Unknown Room",
+            name: room.type || "Unknown Room",
             type: "Room",
             price: room.price || 0,
-            date: "Dates to be selected",           // Can be improved later with date picker
+            capacity: room.capacity || 1,
+            date: "Dates to be selected",
             hotelId: id,
-            hotelName: hotel.name,
-            roomId: room.id || "unknown"
-        };
+            hotelName: hotel?.name || "Unknown Hotel",
+            city: hotel?.city || "",
+            itemId: room.id || Date.now(),
+            category: "accommodation"
+        };  
 
         addToCart(cartItem);
-        alert(`"${room.type || room.name}" has been added to your cart!`);
+
+        alert(`"${room.type}" from ${hotel?.name || "Unknown Hotel"} has been added to your cart!`);
     };
 
     return (
         <div className="container">
             <div className="hotel-detail">
-
                 <div className="hotel-detail-header">
                     <img 
                         src={hotel.imageUrl || "https://picsum.photos/id/1015/1200/600"} 
@@ -97,7 +99,8 @@ function HotelDetail() {
                             <RoomCard 
                                 key={key} 
                                 room={room}
-                                onAddToCart={() => handleAddToCart(room)}   // Pass the function
+                                hotelName={hotel.name}
+                                onAddToCart={() => handleAddToCart(room)}
                             />
                         ))}
                     </div>
