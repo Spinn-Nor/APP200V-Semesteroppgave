@@ -2,23 +2,25 @@
  * CartDrawer.jsx
  * 
  * Slide-in cart panel from the right side of the screen.
- * Displays all items in the cart and shows which hotel each room belongs to.
+ * Shows success toast when booking is confirmed.
  * 
- * @author Fredrik Fordelsen - Added hotelName display
- * @version 1.3
+ * @author Fredrik Fordelsen - Added success toast on confirm booking
+ * @version 1.4
  */
 
 import { useCart } from '../context/CartContext';
 import './styles/CartDrawer.css';
 
 function CartDrawer({ isOpen, onClose }) {
-    const { cart, removeFromCart, totalPrice, confirmBooking } = useCart();
+    const { cart, removeFromCart, totalPrice, confirmBooking, showToast } = useCart();
 
     const handleConfirm = async () => {
         if (cart.length === 0) return;
 
         const success = await confirmBooking();
+
         if (success) {
+            showToast("Your reservation has been confirmed! Thank you for choosing Blueberry Hotels!", "success");
             onClose();
         }
     };
@@ -44,14 +46,7 @@ function CartDrawer({ isOpen, onClose }) {
                                 <li key={item.cartId} className="cart-item">
                                     <div className="cart-item-info">
                                         <strong>{item.name}</strong>
-                                        
-                                        {/* Show hotel name if available */}
-                                        {item.hotelName && (
-                                            <p className="item-hotel">
-                                                at {item.hotelName}
-                                            </p>
-                                        )}
-                                        
+                                        {item.hotelName && <p className="item-hotel">at {item.hotelName}</p>}
                                         <p>{item.type}</p>
                                         {item.date && <small>{item.date}</small>}
                                     </div>

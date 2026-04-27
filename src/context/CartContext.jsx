@@ -22,6 +22,7 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
     const [cart, setCart] = useState([]);
     const { currentUser } = useAuth();
+    const [toast, setToast] = useState(null);
 
     /**
      * Add any type of booking item to the cart
@@ -42,6 +43,12 @@ export function CartProvider({ children }) {
     const clearCart = () => setCart([]);
 
     const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0), 0);
+
+    const showToast = (message, type = "success") => {
+        setToast({ message, type });
+        // Fjern toast etter 4 sekunder
+        setTimeout(() => setToast(null), 4000);
+    };
 
     /**
      * Saves the entire cart as one Order in Firebase
@@ -81,6 +88,11 @@ export function CartProvider({ children }) {
             alert("Kunne ikke lagre bestillingen. Prøv igjen.");
             return false;
         }
+
+        if (success) {
+            showToast("Bestillingen er bekreftet! 🎉", "success");   // ← Pen melding
+            return true;
+        }
     };
 
     return (
@@ -90,9 +102,15 @@ export function CartProvider({ children }) {
             removeFromCart,
             clearCart,
             totalPrice,
-            confirmBooking
+            confirmBooking,
+            showToast
         }}>
             {children}
+            {toast && (
+                <div className={`toast toast-${toast.type}`}>
+                    {toast.message}
+                </div>
+            )}
         </CartContext.Provider>
     );
 }

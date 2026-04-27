@@ -14,7 +14,7 @@ import { useCart } from '../context/CartContext';
 import './styles/RoomBookingModal.css';
 
 function RoomBookingModal({isOpen, onClose, room, hotelName}) {
-    const { addToCart } = useCart();
+    const { addToCart, showToast } = useCart();
 
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
@@ -35,7 +35,7 @@ function RoomBookingModal({isOpen, onClose, room, hotelName}) {
 
     const handleAddToCart = () => {
         if (!checkIn || !checkOut || nights <= 0) {
-            alert("Please choose a check in and check out date.");
+            showToast("Please choose a check in and check out date", "error");
             return;
         }
 
@@ -55,7 +55,7 @@ function RoomBookingModal({isOpen, onClose, room, hotelName}) {
         };
 
         addToCart(cartItem);
-        alert(`"${room.type}" from ${hotelName} has been added to the cart!`);
+        showToast(`"${room.type}" from ${hotelName} has been added to the cart!`, "success");
         onClose();
     };
 

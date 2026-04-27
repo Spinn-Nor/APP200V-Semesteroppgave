@@ -154,3 +154,27 @@
 .confirm-order-btn:hover {
     background: #1d4ed8;
 }
+
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+    z-index: 2000;
+    font-weight: 500;
+    animation: toastIn 0.3s ease;
+}
+
+.toast-error {
+    background: #ef4444;
+}
+
+@keyframes toastIn {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
