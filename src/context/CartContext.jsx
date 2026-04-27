@@ -44,22 +44,26 @@ export function CartProvider({ children }) {
     const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0), 0);
 
     /**
-     * Saves the entire cart as one single Order in Firebase.
-     * This allows showing all bookings on "My Bookings" page later.
+     * Saves the entire cart as one Order in Firebase
      */
     const confirmBooking = async () => {
-        if (cart.length === 0 || !currentUser) {
-            alert("You must be logged in and have items in cart.");
+        if (cart.length === 0) {
+            alert("Handlekurven er tom.");
             return false;
         }
 
+        // Temporary test user (bytt senere)
+        const testUserId = "fredrik-123";   // ← change to dynamic id later
+
+        const currentUserId = currentUser?.uid || testUserId;
+
         try {
-            const orderRef = ref(db, `orders/${currentUser.uid}`);
+            const orderRef = ref(db, `orders/${currentUserId}`);
             const newOrderRef = push(orderRef);
 
             const orderData = {
                 orderId: newOrderRef.key,
-                userId: currentUser.uid,
+                userId: currentUserId,
                 items: cart,
                 totalPrice: totalPrice,
                 status: "confirmed",
@@ -68,13 +72,13 @@ export function CartProvider({ children }) {
 
             await set(newOrderRef, orderData);
 
-            console.log("Full order saved to Firebase:", orderData);
+            console.log("✅ Bestilling lagret i Firebase:", orderData);
             clearCart();
             return true;
 
         } catch (error) {
-            console.error("Failed to save order:", error);
-            alert("Could not save booking. Please try again.");
+            console.error("Feil ved lagring til Firebase:", error);
+            alert("Kunne ikke lagre bestillingen. Prøv igjen.");
             return false;
         }
     };
