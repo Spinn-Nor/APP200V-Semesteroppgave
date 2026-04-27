@@ -27,7 +27,7 @@ function RoomBookingModal({isOpen, onClose, room, hotelName}) {
             const end = new Date(checkOut);
             const diffTime = Math.abs(end - start);
             const calculatedNights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            setNights(calculateNights > 0 ? calculatedNights : 0);
+            setNights(calculatedNights > 0 ? calculatedNights : 0);
         }
     }, [checkIn, checkOut]);
 
@@ -90,9 +90,9 @@ function RoomBookingModal({isOpen, onClose, room, hotelName}) {
 
                     {nights > 0 && (
                         <div className="price-summary">
-                            <p>Antall netter: <strong>{nights}</strong></p>
-                            <p>Pris per natt: <strong>{room.price} kr</strong></p>
-                            <p><strong>Totalpris: {totalPrice} kr</strong></p>
+                            <p>Amount of nights: <strong>{nights}</strong></p>
+                            <p>Price per night: <strong>{room.price} kr</strong></p>
+                            <p><strong>Total Price: {totalPrice} kr</strong></p>
                         </div>
                     )}
                 </div>
