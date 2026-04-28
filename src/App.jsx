@@ -7,6 +7,7 @@ import Nav from './components/Nav';
 import Locations from './components/LocationsMap';
 
 import Events from './pages/Events';
+import Wellness from './pages/Wellness';
 
 
 import HotelDetail from './pages/HotelDetail';
@@ -24,6 +25,7 @@ function App() {
 
         <Route path="/hotels" element={<Hotels />} />
         <Route path="/hotels/:id" element={<HotelDetail />} />
+        <Route path="/wellness" element={<Wellness />} />
 
         <Route path="/locations" element={<Locations />} />
         <Route path="/login" element={<Login />} />

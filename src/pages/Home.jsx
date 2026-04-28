@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useHotels } from '../hooks/useHotels'
 import { testFirebaseConnection } from '../firebase/testConnection';
-// 
-// import { testFirebaseConnection } from '../firebase/testConnection';
+
+
 
 function Home() {
   const [checkIn, setCheckIn] = useState('')
@@ -10,10 +11,17 @@ function Home() {
   const [guests, setGuests] = useState('1')
   const [destination, setDestination] = useState('')
 
-  // AI-FIKS: Denne blokken må kommenteres ut før push for å unngå krasj hos andre
+  // Logic start for dropdown menu
+  const { hotels } = useHotels(); // Gathers hotell-data from useHotels hook
+  const [showDropdown, setShowDropdown] = useState(false); // Controlls dopdown visibility
+  // filters dropdown based on what you write in "Where to?" input field
+ 
+  const filteredHotels = (hotels || []).filter(hotel => 
+    hotel.name && hotel.name.toLowerCase().includes(destination.toLowerCase())
+  );
 
   useEffect(() => {
-    // testFirebaseConnection();
+   
   }, []);
 
   return (
@@ -33,12 +41,39 @@ function Home() {
             <div className="booking-field">
               <label>Destination</label>
               <input
+                id="destination-input" 
+                name="destination"     
                 type="text"
                 placeholder="Where to?"
                 value={destination}
+                // Opens and closes meny for dropdown
+                onFocus={() => setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                 onChange={(e) => setDestination(e.target.value)}
               />
+
+              {/* Dropdown functionality*/}
+              {showDropdown && destination.length > 0 && (
+                <ul className="destination-dropdown">
+                  {filteredHotels.length > 0 ? (
+                    filteredHotels.map((hotel) => (
+                      <li 
+                        key={hotel.id} 
+                        onClick={() => {
+                          setDestination(hotel.name);
+                          setShowDropdown(false);
+                        }}
+                      >
+                        {hotel.name}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="no-match">No hotels found</li>
+                  )}
+                </ul>
+              )}
             </div>
+
             <div className="booking-divider" />
             <div className="booking-field">
               <label>Check-in</label>
@@ -70,10 +105,8 @@ function Home() {
           </div>
         </div>
       </section>
-
     </main>
   )
 }
-
 
 export default Home
