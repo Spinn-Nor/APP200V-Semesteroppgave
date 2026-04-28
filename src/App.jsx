@@ -24,24 +24,24 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 
 function App() {
-    return (
-        <AuthProvider>
-            <CartProvider>
-                <Router>
-                    <Nav />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/events" element={<Events />} />
-                        <Route path="/hotels" element={<Hotels />} />
-                        <Route path="/hotels/:id" element={<HotelDetail />} />
-                        <Route path="/wellness" element={<Wellness />} />
-                        <Route path="/locations" element={<Locations />} />
-                        <Route path="/login" element={<Login />} />
-                    </Routes>
-                </Router>
-            </CartProvider>
-        </AuthProvider>
-    );
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <Nav />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/hotels" element={<Hotels />} />
+            <Route path="/hotels/:id" element={<HotelDetail />} />
+            <Route path="/wellness" element={<Wellness />} />
+            <Route path="/locations" element={<Locations />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
+  );
 }
 
 export default App;

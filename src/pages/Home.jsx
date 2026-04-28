@@ -15,13 +15,13 @@ function Home() {
   const { hotels } = useHotels(); // Gathers hotell-data from useHotels hook
   const [showDropdown, setShowDropdown] = useState(false); // Controlls dopdown visibility
   // filters dropdown based on what you write in "Where to?" input field
- 
-  const filteredHotels = (hotels || []).filter(hotel => 
+
+  const filteredHotels = (hotels || []).filter(hotel =>
     hotel.name && hotel.name.toLowerCase().includes(destination.toLowerCase())
   );
 
   useEffect(() => {
-   
+
   }, []);
 
   return (
@@ -41,8 +41,8 @@ function Home() {
             <div className="booking-field">
               <label>Destination</label>
               <input
-                id="destination-input" 
-                name="destination"     
+                id="destination-input"
+                name="destination"
                 type="text"
                 placeholder="Where to?"
                 value={destination}
@@ -57,8 +57,8 @@ function Home() {
                 <ul className="destination-dropdown">
                   {filteredHotels.length > 0 ? (
                     filteredHotels.map((hotel) => (
-                      <li 
-                        key={hotel.id} 
+                      <li
+                        key={hotel.id}
                         onClick={() => {
                           setDestination(hotel.name);
                           setShowDropdown(false);
