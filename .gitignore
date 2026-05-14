@@ -12,7 +12,6 @@ dist
 dist-ssr
 *.local
 .claude
-src/firebase
 
 # Editor directories and files
 .vscode/*
