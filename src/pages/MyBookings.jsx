@@ -12,6 +12,8 @@ import { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { ref, get } from 'firebase/database';
 
+import './MyBookings.css';
+
 function MyBookings() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ function MyBookings() {
     useEffect(() => {
         const fetchBookings = async () => {
             try {
-                const bookingsRef = ref(db, `order/${testUserId}`);
+                const bookingsRef = ref(db, `orders/${testUserId}`);
                 const snapshot = await get(bookingsRef);
 
                 if (snapshot.exists()) {
@@ -55,10 +57,10 @@ function MyBookings() {
 
             {bookings.length === 0 ? (
                 <p>You have no bookings.</p>
-            ): (
+            ) : (
                 <div className="bookings-list">
                     {bookings.map(booking => (
-                        <div key={booking.id} className="booking-card">
+                        <div key={booking.orderId} className="booking-card">
                             <div className="booking-header">
                                 <h3>Order #{booking.orderId?.slice(0, 8)}</h3>
                                 <span className={`status ${booking.status}`}>{booking.status}</span>

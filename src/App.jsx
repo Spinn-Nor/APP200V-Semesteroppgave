@@ -22,6 +22,7 @@ import Login from './pages/Login';
 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import MyBookings from './pages/MyBookings';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/wellness" element={<Wellness />} />
             <Route path="/locations" element={<Locations />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
           </Routes>
         </Router>
       </CartProvider>
