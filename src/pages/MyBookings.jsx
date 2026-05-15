@@ -73,7 +73,7 @@ function MyBookings() {
                                 {booking.items.map((item, index) => (
                                     <div key={index} className="booking-item">
                                         <strong>{item.name}</strong> — {item.type}
-                                        {item.hotelName && <span> hos {item.hotelName}</span>}
+                                        {item.hotelName && <span> at {item.hotelName}</span>}
                                         {item.date && <p>{item.date}</p>}
                                     </div>
                                 ))}
