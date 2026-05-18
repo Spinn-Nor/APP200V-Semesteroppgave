@@ -101,6 +101,7 @@ function HotelDetail() {
                                 room={room}
                                 hotelName={hotel.name}
                                 onAddToCart={() => handleAddToCart(room)}
+                                hotelId={id}
                             />
                         ))}
                     </div>
