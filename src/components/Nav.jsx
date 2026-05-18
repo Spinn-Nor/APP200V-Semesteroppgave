@@ -1,29 +1,37 @@
 /**
  * Nav.jsx
  * 
- * Main navigation bar for Blueberry Hotels.
- * Includes logo, navigation links, login button and cart icon with slide-in drawer.
+ * Dynamic navigation bar that changes based on authentication state.
  * 
- * @author Fredrik Fordelsen - Added cart icon and CartDrawer integration
- * @version 1.0
+ * @author Fredrik Fordelsen - Made navigation dynamic with auth
+ * @version 1.2
  */
 
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
 
 function Nav() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
-    
-    const { cart } = useCart();
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const { currentUser, logout } = useAuth();
+    const { cart } = useCart();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/');
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
 
     const navLinks = [
         { to: "/", label: "Home" },
-        { to: "/locations", label: "Locations" },
         { to: "/hotels", label: "Hotels" },
         { to: "/wellness", label: "Wellness" },
         { to: "/events", label: "Events" },
@@ -40,7 +48,7 @@ function Nav() {
                         <span className="logo-text">Blueberry Hotels</span>
                     </Link>
 
-                    {/* Desktop Navigation Links */}
+                    {/* Navigation Links */}
                     <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
                         {navLinks.map((link) => (
                             <NavLink
@@ -53,14 +61,33 @@ function Nav() {
                             </NavLink>
                         ))}
 
-                        {/* Login / Register */}
-                        <Link
-                            to="/login"
-                            className="login-btn"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            Login / Register
-                        </Link>
+                        {/* Auth Links */}
+                        {currentUser ? (
+                            <>
+                                <NavLink 
+                                    to="/my-bookings" 
+                                    className="nav-item"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    My Bookings
+                                </NavLink>
+
+                                <div className="nav-user">
+                                    <span className="user-name">Hi, {currentUser.email?.split('@')[0]}</span>
+                                    <button className="logout-btn" onClick={handleLogout}>
+                                        Logout
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <Link 
+                                to="/login" 
+                                className="login-btn"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Login / Register
+                            </Link>
+                        )}
 
                         {/* Cart Icon */}
                         <div 
@@ -74,14 +101,13 @@ function Nav() {
                         </div>
                     </div>
 
-                    {/* Hamburger Button for Mobile */}
-                    <button className="hamburger" onClick={toggleMenu}>
+                    {/* Hamburger */}
+                    <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                         {isMenuOpen ? '✕' : '☰'}
                     </button>
                 </nav>
             </header>
 
-            {/* Cart Slide-in Drawer */}
             <CartDrawer 
                 isOpen={isCartOpen} 
                 onClose={() => setIsCartOpen(false)} 
