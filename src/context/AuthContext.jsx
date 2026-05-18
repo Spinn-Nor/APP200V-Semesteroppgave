@@ -4,7 +4,7 @@
  * Provides authentication state and functions (login, register, logout)
  * to the entire application using Firebase Authentication.
  * 
- * @author Fredrik Fordelsen - Full AuthContext with login/register/logout
+ * @author Fredrik Fordelsen & Bendik Viken Wangen - Full AuthContext with login/register/logout
  * @version 1.2
  */
 

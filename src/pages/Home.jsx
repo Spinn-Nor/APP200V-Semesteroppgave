@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useHotels } from '../hooks/useHotels'
 import { testFirebaseConnection } from '../firebase/testConnection';
 
-
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
   const [checkIn, setCheckIn] = useState('')
@@ -20,9 +20,7 @@ function Home() {
     hotel.name && hotel.name.toLowerCase().includes(destination.toLowerCase())
   );
 
-  useEffect(() => {
-
-  }, []);
+  const { user } = useAuth();
 
   return (
     <main className="home">

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Login and Register page with Firebase Authentication.
  * 
@@ -10,6 +11,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
+=======
+import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import './Login.css';
+import { loginEmailPassword, registerUser } from '../firebase/auth';
+import { useAuth } from '../context/AuthContext';
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
 
 function Login() {
   const [activeTab, setActiveTab] = useState('login');
@@ -17,6 +25,8 @@ function Login() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
+  const [signupFirstName, setSignupFirstName] = useState('');
+  const [signupLastName, setSignupLastName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
@@ -68,6 +78,29 @@ function Login() {
     }
   };
 
+  const navigate = useNavigate();
+
+  const { user } = useAuth();
+
+  // redirects user to homepage on successful login 
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    await loginEmailPassword(loginEmail, loginPassword);
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+
+    await registerUser(signupFirstName, signupLastName, signupEmail, signupPassword);
+  }
+
   return (
     <div className="login-page">
       <div className="login-header">
@@ -94,6 +127,7 @@ function Login() {
         {error && <p className="error-message">{error}</p>}
 
         {activeTab === 'login' && (
+<<<<<<< HEAD
           <form onSubmit={handleLogin} className="login-body">
             <div className="form-group">
               <label htmlFor="login-email">Email</label>
@@ -118,9 +152,23 @@ function Login() {
                 required
               />
             </div>
+=======
+          <div className="login-body">
+            <form onSubmit={handleLogin}>
+              <div className="form-group">
+                <label htmlFor="login-email">Email</label>
+                <input id="login-email" type="email" placeholder="you@example.com" onChange={(e) => setLoginEmail(e.target.value)} />
+              </div>
 
-            <a href="#" className="forgot-link">Forgot password?</a>
+              <div className="form-group">
+                <label htmlFor="login-password">Password</label>
+                <input id="login-password" type="password" placeholder="••••••••" onChange={(e) => setLoginPassword(e.target.value)} />
+              </div>
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
 
+              <a href="#" className="forgot-link">Forgot password?</a>
+
+<<<<<<< HEAD
             <button 
               type="submit" 
               className="login-submit-btn"
@@ -137,13 +185,33 @@ function Login() {
               <div className="form-group">
                 <label htmlFor="reg-first">First name</label>
                 <input id="reg-first" type="text" placeholder="John" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="reg-last">Last name</label>
-                <input id="reg-last" type="text" placeholder="Doe" />
-              </div>
-            </div>
+=======
+              <button type="submit" className="login-submit-btn" >Sign in</button>
+            </form>
+          </div>
+        )}
 
+        {activeTab === 'register' && (
+          <div className="login-body">
+            <form onSubmit={handleRegister}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="reg-first">First name</label>
+                  <input id="reg-first" type="text" placeholder="John" onChange={(e) => setSignupFirstName(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="reg-last">Last name</label>
+                  <input id="reg-last" type="text" placeholder="Doe" onChange={(e) => setSignupLastName(e.target.value)} />
+                </div>
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="reg-email">Email</label>
+                <input id="reg-email" type="email" placeholder="you@example.com" onChange={(e) => setSignupEmail(e.target.value)} />
+              </div>
+
+<<<<<<< HEAD
             <div className="form-group">
               <label htmlFor="reg-email">Email</label>
               <input 
@@ -188,6 +256,21 @@ function Login() {
               {loading ? "Creating account..." : "Create account"}
             </button>
           </form>
+=======
+              <div className="form-group">
+                <label htmlFor="reg-password">Password</label>
+                <input id="reg-password" type="password" placeholder="Min. 8 characters" onChange={(e) => setSignupPassword(e.target.value)} />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="reg-confirm">Confirm password</label>
+                <input id="reg-confirm" type="password" placeholder="••••••••" />
+              </div>
+
+              <button type="submit" className="login-submit-btn" >Create account</button>
+            </form>
+          </div>
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
         )}
       </div>
     </div>

@@ -3,8 +3,14 @@
  * 
  * Dynamic navigation bar that changes based on authentication state.
  * 
+<<<<<<< HEAD
  * @author Fredrik Fordelsen - Made navigation dynamic with auth
  * @version 1.2
+=======
+ * @author Fredrik Fordelsen - Added cart icon and CartDrawer integration
+ * @author Bendik Viken Wangen
+ * @version 1.0
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
  */
 
 import { useState } from 'react';
@@ -12,10 +18,19 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
+import { useAuth } from '../context/AuthContext';
+import { signoutUser } from '../firebase/auth';
 
 function Nav() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+<<<<<<< HEAD
+=======
+
+    const { user } = useAuth();
+
+    const { cart } = useCart();
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
 
     const { currentUser, logout } = useAuth();
     const { cart } = useCart();
@@ -61,6 +76,7 @@ function Nav() {
                             </NavLink>
                         ))}
 
+<<<<<<< HEAD
                         {/* Auth Links */}
                         {currentUser ? (
                             <>
@@ -82,6 +98,21 @@ function Nav() {
                         ) : (
                             <Link 
                                 to="/login" 
+=======
+                        {/* Login / Register */}
+                        {user ? (
+                            <>
+                                <span className="user-greeting">Hello, {user.displayName}</span>
+
+                                <button onClick={async () => {
+                                    await signoutUser();
+                                    setIsMenuOpen(false);
+                                }}>Logout</button>
+                            </>
+                        ) : (
+                            <Link
+                                to="/login"
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
                                 className="login-btn"
                                 onClick={() => setIsMenuOpen(false)}
                             >
@@ -90,8 +121,8 @@ function Nav() {
                         )}
 
                         {/* Cart Icon */}
-                        <div 
-                            className="nav-cart-icon" 
+                        <div
+                            className="nav-cart-icon"
                             onClick={() => setIsCartOpen(true)}
                         >
                             🛒
@@ -108,9 +139,16 @@ function Nav() {
                 </nav>
             </header>
 
+<<<<<<< HEAD
             <CartDrawer 
                 isOpen={isCartOpen} 
                 onClose={() => setIsCartOpen(false)} 
+=======
+            {/* Cart Slide-in Drawer */}
+            <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+>>>>>>> d463073639d5ed6c16b3c70e6fdbf8f14b964148
             />
         </>
     );
