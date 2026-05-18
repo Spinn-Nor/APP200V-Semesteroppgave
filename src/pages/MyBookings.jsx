@@ -1,15 +1,17 @@
 /**
  * MyBookings.jsx
  * 
- * Modern user dashboard with detailed reservation modal.
+ * Dynamic user dashboard with details modal and custom cancel confirmation.
  * 
- * @author Fredrik Fordelsen - Improved details modal
- * @version 1.5
+ * @author Fredrik Fordelsen
+ * @version 1.8
  */
 
 import { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { ref, get, remove } from 'firebase/database';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import BookingCard from '../components/BookingCard';
 import './MyBookings.css';
 
@@ -17,12 +19,24 @@ function MyBookings() {
     const [upcomingBookings, setUpcomingBookings] = useState([]);
     const [pastBookings, setPastBookings] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedBooking, setSelectedBooking] = useState(null);
 
-    const userId = "fredrik-123";
-    const userName = "Fredrik";
+    // Modal states
+    const [selectedBooking, setSelectedBooking] = useState(null);     // Details modal
+    const [showCancelModal, setShowCancelModal] = useState(false);    // Cancel modal
+    const [bookingToCancel, setBookingToCancel] = useState(null);
+
+    const { currentUser } = useAuth();
+    const { showToast } = useCart();
+
+    const userId = currentUser?.uid;
+    const userName = currentUser?.displayName || currentUser?.email?.split('@')[0] || "User";
 
     useEffect(() => {
+        if (!userId) {
+            setLoading(false);
+            return;
+        }
+
         const fetchBookings = async () => {
             try {
                 const bookingsRef = ref(db, `orders/${userId}`);
@@ -49,6 +63,9 @@ function MyBookings() {
 
                     setUpcomingBookings(upcoming);
                     setPastBookings(past);
+                } else {
+                    setUpcomingBookings([]);
+                    setPastBookings([]);
                 }
             } catch (error) {
                 console.error("Error fetching bookings:", error);
@@ -58,22 +75,36 @@ function MyBookings() {
         };
 
         fetchBookings();
-    }, []);
+    }, [userId]);
 
-    const cancelBooking = async (orderId) => {
-        if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+    const openCancelModal = (orderId) => {
+        setBookingToCancel(orderId);
+        setShowCancelModal(true);
+    };
+
+    const confirmCancel = async () => {
+        if (!bookingToCancel) return;
 
         try {
-            const orderRef = ref(db, `orders/${userId}/${orderId}`);
+            const orderRef = ref(db, `orders/${userId}/${bookingToCancel}`);
             await remove(orderRef);
-            
-            setUpcomingBookings(prev => prev.filter(b => b.id !== orderId));
-            setPastBookings(prev => prev.filter(b => b.id !== orderId));
+
+            setUpcomingBookings(prev => prev.filter(b => b.id !== bookingToCancel));
+            setPastBookings(prev => prev.filter(b => b.id !== bookingToCancel));
+
+            showToast("Booking has been successfully cancelled.", "success");
         } catch (error) {
             console.error("Error cancelling booking:", error);
-            alert("Could not cancel the booking.");
+            showToast("Could not cancel the booking.", "error");
+        } finally {
+            setShowCancelModal(false);
+            setBookingToCancel(null);
         }
     };
+
+    if (!currentUser) {
+        return <div className="my-bookings-container"><h2>Please log in to see your bookings</h2></div>;
+    }
 
     if (loading) return <h2>Loading your reservations...</h2>;
 
@@ -92,7 +123,7 @@ function MyBookings() {
                             <BookingCard 
                                 key={booking.id} 
                                 booking={booking} 
-                                onCancel={cancelBooking}
+                                onCancel={openCancelModal}
                                 onViewDetails={setSelectedBooking}
                             />
                         ))}
@@ -108,7 +139,7 @@ function MyBookings() {
                             <BookingCard 
                                 key={booking.id} 
                                 booking={booking} 
-                                onCancel={cancelBooking}
+                                onCancel={openCancelModal}
                                 onViewDetails={setSelectedBooking}
                             />
                         ))}
@@ -119,10 +150,11 @@ function MyBookings() {
             {upcomingBookings.length === 0 && pastBookings.length === 0 && (
                 <div className="no-bookings">
                     <h3>You have no reservations yet</h3>
+                    <p>When you book rooms, they will appear here.</p>
                 </div>
             )}
 
-            {/* Modern Details Modal */}
+            {/* === DETAILS MODAL === */}
             {selectedBooking && (
                 <div className="modal-overlay" onClick={() => setSelectedBooking(null)}>
                     <div className="details-modal" onClick={e => e.stopPropagation()}>
@@ -133,33 +165,51 @@ function MyBookings() {
 
                         <div className="modal-body">
                             <div className="detail-row">
-                                <span className="detail-label">Reservation ID</span>
-                                <span className="detail-value">#{selectedBooking.orderId?.slice(-8)}</span>
+                                <span>Reservation ID</span>
+                                <span>#{selectedBooking.orderId?.slice(-8)}</span>
                             </div>
                             <div className="detail-row">
-                                <span className="detail-label">Date</span>
-                                <span className="detail-value">
-                                    {new Date(selectedBooking.createdAt).toLocaleDateString('nb-NO', {
-                                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                                    })}
-                                </span>
+                                <span>Date</span>
+                                <span>{new Date(selectedBooking.createdAt).toLocaleDateString('nb-NO')}</span>
                             </div>
                             <div className="detail-row">
-                                <span className="detail-label">Total Amount</span>
-                                <span className="detail-value total">{selectedBooking.totalPrice} kr</span>
+                                <span>Total Amount</span>
+                                <span className="total-price">{selectedBooking.totalPrice} kr</span>
                             </div>
 
-                            <h3 className="items-title">Booked Items</h3>
-                            <div className="modal-items">
-                                {selectedBooking.items && selectedBooking.items.map((item, index) => (
-                                    <div key={index} className="modal-item">
-                                        <strong>{item.name}</strong> — {item.type}
-                                        {item.hotelName && <p>at {item.hotelName}</p>}
-                                        {item.date && <p className="item-date">{item.date}</p>}
-                                        {item.nights && <p>{item.nights} nights</p>}
-                                    </div>
-                                ))}
-                            </div>
+                            <h3>Booked Items</h3>
+                            {selectedBooking.items?.map((item, index) => (
+                                <div key={index} className="modal-item">
+                                    <strong>{item.name}</strong> — {item.type}
+                                    {item.hotelName && <p>at {item.hotelName}</p>}
+                                    {item.checkIn && <p>{item.checkIn} → {item.checkOut}</p>}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* === CANCEL CONFIRMATION MODAL === */}
+            {showCancelModal && (
+                <div className="modal-overlay" onClick={() => setShowCancelModal(false)}>
+                    <div className="cancel-modal" onClick={e => e.stopPropagation()}>
+                        <h2>Cancel Reservation</h2>
+                        <p>Are you sure you want to cancel this booking?<br />This action cannot be undone.</p>
+                        
+                        <div className="cancel-modal-actions">
+                            <button 
+                                className="cancel-modal-no"
+                                onClick={() => setShowCancelModal(false)}
+                            >
+                                No, keep it
+                            </button>
+                            <button 
+                                className="cancel-modal-yes"
+                                onClick={confirmCancel}
+                            >
+                                Yes, cancel booking
+                            </button>
                         </div>
                     </div>
                 </div>

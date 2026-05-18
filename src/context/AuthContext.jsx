@@ -14,7 +14,8 @@ import {
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     signOut, 
-    onAuthStateChanged 
+    onAuthStateChanged,
+    updateProfile
 } from 'firebase/auth';
 
 const AuthContext = createContext();
@@ -23,9 +24,16 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Register new user
-    const register = (email, password) => {
-        return createUserWithEmailAndPassword(auth, email, password);
+    // Register new user with display name
+    const register = async (email, password, firstName) => {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Update display name
+        await updateProfile(userCredential.user, {
+            displayName: firstName
+        });
+
+        return userCredential;
     };
 
     // Login user

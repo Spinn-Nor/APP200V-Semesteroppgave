@@ -74,7 +74,7 @@ function Nav() {
                                 </NavLink>
 
                                 <div className="nav-user">
-                                    <span className="user-name">Hi, {currentUser.email?.split('@')[0]}</span>
+                                    <span className="user-name">Hi, {currentUser?.displayName || currentUser?.email?.split('@')[0] || "User"}</span>
                                     <button className="logout-btn" onClick={handleLogout}>
                                         Logout
                                     </button>
