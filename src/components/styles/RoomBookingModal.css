@@ -106,3 +106,12 @@
 .add-to-cart-modal-btn:hover {
     background: #1d4ed8;
 }
+
+.error-message {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
