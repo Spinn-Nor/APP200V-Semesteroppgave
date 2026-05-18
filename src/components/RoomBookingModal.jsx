@@ -1,11 +1,10 @@
 /**
  * RoomBookingModal.jsx
  * 
- * Modal with date selection and double-booking prevention.
- * Checks against existing bookings in Firebase before allowing add to cart.
+ * Modal with precise double-booking check based on roomId + hotel.
  * 
- * @author Fredrik Fordelsen - Implemented double booking check
- * @version 1.4
+ * @author Fredrik Fordelsen - Improved availability check (room + hotel specific)
+ * @version 1.5
  */
 
 import { useState, useEffect } from 'react';
@@ -21,18 +20,16 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
     const [checkOut, setCheckOut] = useState('');
     const [nights, setNights] = useState(0);
     const [error, setError] = useState('');
-    const [checkingAvailability, setCheckingAvailability] = useState(false);
+    const [checking, setChecking] = useState(false);
 
     const today = new Date().toISOString().split('T')[0];
 
-    // Calculate nights
     useEffect(() => {
         if (checkIn && checkOut) {
             const start = new Date(checkIn);
             const end = new Date(checkOut);
-            const diffTime = Math.abs(end - start);
-            const calculatedNights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            setNights(calculatedNights > 0 ? calculatedNights : 0);
+            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            setNights(diff > 0 ? diff : 0);
         } else {
             setNights(0);
         }
@@ -40,11 +37,11 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
 
     const totalPrice = nights * (room.price || 0);
 
-    // Check if room is available in selected period
+    // === PRECISE AVAILABILITY CHECK ===
     const checkRoomAvailability = async () => {
-        if (!checkIn || !checkOut) return true;
+        if (!checkIn || !checkOut || !room.id) return true;
 
-        setCheckingAvailability(true);
+        setChecking(true);
         setError('');
 
         try {
@@ -59,15 +56,15 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
                 for (const order of Object.values(userOrders)) {
                     if (order.items) {
                         for (const item of order.items) {
-                            // Check if it's the same room
-                            if (item.roomId === room.id || item.name === room.type) {
-                                const existingCheckIn = new Date(item.checkIn);
-                                const existingCheckOut = new Date(item.checkOut);
-                                const newCheckIn = new Date(checkIn);
-                                const newCheckOut = new Date(checkOut);
+                            // Only check the same room in the same hotel
+                            if (item.roomId === room.id && item.hotelId === hotelId) {
+                                const existingIn = new Date(item.checkIn);
+                                const existingOut = new Date(item.checkOut);
+                                const newIn = new Date(checkIn);
+                                const newOut = new Date(checkOut);
 
-                                // Overlap check
-                                if (newCheckIn < existingCheckOut && newCheckOut > existingCheckIn) {
+                                // Overlap logic
+                                if (newIn < existingOut && newOut > existingIn) {
                                     setError(`This room is already booked from ${item.checkIn} to ${item.checkOut}.`);
                                     return false;
                                 }
@@ -78,10 +75,10 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
             }
             return true;
         } catch (err) {
-            console.error("Error checking availability:", err);
-            return true; // Allow booking if check fails (fail-safe)
+            console.error("Availability check failed:", err);
+            return true; // Fail-safe: allow booking if check fails
         } finally {
-            setCheckingAvailability(false);
+            setChecking(false);
         }
     };
 
@@ -92,19 +89,6 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
             return;
         }
 
-        if (new Date(checkIn) < new Date(today)) {
-            setError("Check-in cannot be in the past.");
-            showToast("Check-in cannot be in the past.", "error");
-            return;
-        }
-
-        if (new Date(checkOut) <= new Date(checkIn)) {
-            setError("Check-out must be at least one day after check-in.");
-            showToast("Check-out must be after check-in.", "error");
-            return;
-        }
-
-        // Check availability in database
         const isAvailable = await checkRoomAvailability();
         if (!isAvailable) {
             showToast("This room is not available in the selected period.", "error");
@@ -117,11 +101,11 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
             price: totalPrice,
             pricePerNight: room.price,
             nights: nights,
-            checkIn: checkIn,
-            checkOut: checkOut,
+            checkIn,
+            checkOut,
             capacity: room.capacity || 1,
-            hotelName: hotelName,
-            hotelId: hotelId,
+            hotelName,
+            hotelId,
             roomId: room.id,
             date: `${checkIn} til ${checkOut}`,
             itemId: room.id || Date.now(),
@@ -132,7 +116,6 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
         showToast(`"${room.type}" from ${hotelName} has been added to your cart! 🎉`, "success");
         onClose();
 
-        // Reset form
         setCheckIn('');
         setCheckOut('');
         setNights(0);
@@ -154,22 +137,12 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
 
                     <div className="form-group">
                         <label>Check-in Date</label>
-                        <input 
-                            type="date" 
-                            value={checkIn} 
-                            min={today}
-                            onChange={(e) => setCheckIn(e.target.value)} 
-                        />
+                        <input type="date" value={checkIn} min={today} onChange={(e) => setCheckIn(e.target.value)} />
                     </div>
 
                     <div className="form-group">
                         <label>Check-out Date</label>
-                        <input 
-                            type="date" 
-                            value={checkOut} 
-                            min={checkIn || today}
-                            onChange={(e) => setCheckOut(e.target.value)} 
-                        />
+                        <input type="date" value={checkOut} min={checkIn || today} onChange={(e) => setCheckOut(e.target.value)} />
                     </div>
 
                     {nights > 0 && (
@@ -186,9 +159,9 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId }) {
                     <button 
                         className="add-to-cart-modal-btn" 
                         onClick={handleAddToCart}
-                        disabled={checkingAvailability}
+                        disabled={checking}
                     >
-                        {checkingAvailability ? "Checking availability..." : "Add to Cart"}
+                        {checking ? "Checking availability..." : "Add to Cart"}
                     </button>
                 </div>
             </div>
