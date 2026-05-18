@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
-import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { getAuth, browserSessionPersistence, setPersistence } from "firebase/auth";
 
 const firebaseConfig = {
 
@@ -25,6 +25,7 @@ const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 export const auth = getAuth(app);
 
-export default app;
+// set persistence so user is logged in until app closes. login does not persist between sessions 
+await setPersistence(auth, browserSessionPersistence);
 
-// connectAuthEmulator(auth, "http://localhost:9099");
+export default app;

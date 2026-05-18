@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import './Login.css';
 import { loginEmailPassword, registerUser } from '../firebase/auth';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [activeTab, setActiveTab] = useState('login');
@@ -8,8 +10,33 @@ function Login() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
+  const [signupFirstName, setSignupFirstName] = useState('');
+  const [signupLastName, setSignupLastName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
+
+  const navigate = useNavigate();
+
+  const { user } = useAuth();
+
+  // redirects user to homepage on successful login 
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    await loginEmailPassword(loginEmail, loginPassword);
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+
+    await registerUser(signupFirstName, signupLastName, signupEmail, signupPassword);
+  }
 
   return (
     <div className="login-page">
@@ -36,55 +63,55 @@ function Login() {
 
         {activeTab === 'login' && (
           <div className="login-body">
-            {/* <form> */}
-            <div className="form-group">
-              <label htmlFor="login-email">Email</label>
-              <input id="login-email" type="email" placeholder="you@example.com" onChange={(e) => setLoginEmail(e.target.value)} />
-            </div>
+            <form onSubmit={handleLogin}>
+              <div className="form-group">
+                <label htmlFor="login-email">Email</label>
+                <input id="login-email" type="email" placeholder="you@example.com" onChange={(e) => setLoginEmail(e.target.value)} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="login-password">Password</label>
-              <input id="login-password" type="password" placeholder="••••••••" onChange={(e) => setLoginPassword(e.target.value)} />
-            </div>
+              <div className="form-group">
+                <label htmlFor="login-password">Password</label>
+                <input id="login-password" type="password" placeholder="••••••••" onChange={(e) => setLoginPassword(e.target.value)} />
+              </div>
 
-            <a href="#" className="forgot-link">Forgot password?</a>
+              <a href="#" className="forgot-link">Forgot password?</a>
 
-            <button type="submit" className="login-submit-btn" onClick={() => loginEmailPassword(loginEmail, loginPassword)}>Sign in</button>
-            {/* </form> */}
+              <button type="submit" className="login-submit-btn" >Sign in</button>
+            </form>
           </div>
         )}
 
         {activeTab === 'register' && (
           <div className="login-body">
-            {/* <form> */}
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="reg-first">First name</label>
-                <input id="reg-first" type="text" placeholder="John" />
+            <form onSubmit={handleRegister}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="reg-first">First name</label>
+                  <input id="reg-first" type="text" placeholder="John" onChange={(e) => setSignupFirstName(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="reg-last">Last name</label>
+                  <input id="reg-last" type="text" placeholder="Doe" onChange={(e) => setSignupLastName(e.target.value)} />
+                </div>
               </div>
+
               <div className="form-group">
-                <label htmlFor="reg-last">Last name</label>
-                <input id="reg-last" type="text" placeholder="Doe" />
+                <label htmlFor="reg-email">Email</label>
+                <input id="reg-email" type="email" placeholder="you@example.com" onChange={(e) => setSignupEmail(e.target.value)} />
               </div>
-            </div>
 
-            <div className="form-group">
-              <label htmlFor="reg-email">Email</label>
-              <input id="reg-email" type="email" placeholder="you@example.com" onChange={(e) => setSignupEmail(e.target.value)} />
-            </div>
+              <div className="form-group">
+                <label htmlFor="reg-password">Password</label>
+                <input id="reg-password" type="password" placeholder="Min. 8 characters" onChange={(e) => setSignupPassword(e.target.value)} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="reg-password">Password</label>
-              <input id="reg-password" type="password" placeholder="Min. 8 characters" onChange={(e) => setSignupPassword(e.target.value)} />
-            </div>
+              <div className="form-group">
+                <label htmlFor="reg-confirm">Confirm password</label>
+                <input id="reg-confirm" type="password" placeholder="••••••••" />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="reg-confirm">Confirm password</label>
-              <input id="reg-confirm" type="password" placeholder="••••••••" />
-            </div>
-
-            <button type="submit" className="login-submit-btn" onClick={() => registerUser(signupEmail, signupPassword)}>Create account</button>
-            {/* </form> */}
+              <button type="submit" className="login-submit-btn" >Create account</button>
+            </form>
           </div>
         )}
       </div>

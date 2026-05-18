@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "firebase/auth";
 import app from "./config";
 import { auth } from "./config";
 
@@ -13,11 +13,26 @@ export async function loginEmailPassword(loginEmail, loginPassword) {
     }
 }
 
-export async function registerUser(signupEmail, signupPassword) {
+export async function registerUser(firstName, lastName, signupEmail, signupPassword) {
     try {
         const userCredentials = await createUserWithEmailAndPassword(auth, signupEmail, signupPassword);
-        console.log(userCredentials.user);
+
+        const user = userCredentials.user;
+
+        const displayName = `${firstName} ${lastName}`;
+
+        await updateProfile(user, {
+            displayName
+        });
+
+        await user.getIdToken(true);
+
+        console.log("registered user: ", user);
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
+}
+
+export async function signoutUser() {
+    await signOut(auth);
 }

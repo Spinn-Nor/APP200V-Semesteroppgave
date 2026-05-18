@@ -4,38 +4,44 @@
  * Provides authentication state (currentUser) to the entire application.
  * Uses Firebase Authentication to track who is logged in.
  * 
- * @author Fredrik Fordelsen - Created AuthContext to support CartContext and future protected routes
+ * @author Fredrik Fordelsen & Bendik Viken Wangen - Created AuthContext to support CartContext and future protected routes
  */
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase/config';           // Din Firebase auth config
-import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase/config';
+import { onAuthStateChanged, onIdTokenChanged } from 'firebase/auth';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-    const [currentUser, setCurrentUser] = useState(null);
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Listen for authentication state changes
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user);
+        setLoading(true);
+
+        const unsubscribe = onIdTokenChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                setUser({
+                    uid: firebaseUser.uid,
+                    displayName: firebaseUser.displayName,
+                    email: firebaseUser.email,
+                });
+            } else {
+                setUser(null);
+            }
+
             setLoading(false);
         });
 
-        // Cleanup subscription when component unmounts
         return unsubscribe;
     }, []);
 
     return (
-        <AuthContext.Provider value={{ currentUser, loading }}>
-            {!loading && children}
+        <AuthContext.Provider value={{ user, loading }}>
+            {children}
         </AuthContext.Provider>
     );
 }
 
-/**
- * Custom hook to easily access the current logged-in user from anywhere.
- */
 export const useAuth = () => useContext(AuthContext);

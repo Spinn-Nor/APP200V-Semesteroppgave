@@ -5,6 +5,7 @@
  * Includes logo, navigation links, login button and cart icon with slide-in drawer.
  * 
  * @author Fredrik Fordelsen - Added cart icon and CartDrawer integration
+ * @author Bendik Viken Wangen
  * @version 1.0
  */
 
@@ -12,11 +13,15 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
+import { useAuth } from '../context/AuthContext';
+import { signoutUser } from '../firebase/auth';
 
 function Nav() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
-    
+
+    const { user } = useAuth();
+
     const { cart } = useCart();
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -54,17 +59,28 @@ function Nav() {
                         ))}
 
                         {/* Login / Register */}
-                        <Link
-                            to="/login"
-                            className="login-btn"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            Login / Register
-                        </Link>
+                        {user ? (
+                            <>
+                                <span className="user-greeting">Hello, {user.displayName}</span>
+
+                                <button onClick={async () => {
+                                    await signoutUser();
+                                    setIsMenuOpen(false);
+                                }}>Logout</button>
+                            </>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="login-btn"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Login / Register
+                            </Link>
+                        )}
 
                         {/* Cart Icon */}
-                        <div 
-                            className="nav-cart-icon" 
+                        <div
+                            className="nav-cart-icon"
                             onClick={() => setIsCartOpen(true)}
                         >
                             🛒
@@ -82,9 +98,9 @@ function Nav() {
             </header>
 
             {/* Cart Slide-in Drawer */}
-            <CartDrawer 
-                isOpen={isCartOpen} 
-                onClose={() => setIsCartOpen(false)} 
+            <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
             />
         </>
     );
