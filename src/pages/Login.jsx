@@ -3,7 +3,7 @@
  * 
  * Login and Register page with Firebase Authentication.
  * 
- * @author Fredrik Fordelsen - Fixed register function
+ * @author Fredrik Fordelsen & Bendik Viken Wangen - Fixed register function
  * @author Victor Orby - setup layout and design
  * @version 1.2
  */
