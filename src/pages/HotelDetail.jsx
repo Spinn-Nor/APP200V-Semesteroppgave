@@ -1,11 +1,8 @@
 /**
  * HotelDetail.jsx
  *
- * Displays detailed information about a specific hotel and its rooms.
- * Allows users to add rooms to the shopping cart.
- *
- * @author Fredrik Fordelsen - Added cart integration
- * @version 1.1
+ * @author Fredrik Fordelsen
+ * @version 1.2
  */
 
 import { useParams } from "react-router-dom";
@@ -46,30 +43,6 @@ function HotelDetail() {
   if (loading) return <h2>Loading hotel...</h2>;
   if (!hotel) return <h2>Hotel not found</h2>;
 
-  /**
-   * Adds the selected room to the cart
-   */
-  const handleAddToCart = (room) => {
-    const cartItem = {
-      name: room.type || "Unknown Room",
-      type: "Room",
-      price: room.price || 0,
-      capacity: room.capacity || 1,
-      date: "Dates to be selected",
-      hotelId: id,
-      hotelName: hotel?.name || "Unknown Hotel",
-      city: hotel?.city || "",
-      itemId: room.id || Date.now(),
-      category: "accommodation",
-    };
-
-    addToCart(cartItem);
-
-    alert(
-      `"${room.type}" from ${hotel?.name || "Unknown Hotel"} has been added to your cart!`,
-    );
-  };
-
   return (
     <div className="container">
       <div className="hotel-detail">
@@ -96,21 +69,23 @@ function HotelDetail() {
 
           <div className="hotel-amenities">
             {hotel.hasSpa && <span>♨️ Spa available</span>}
-            {hotel.hasConference && <span>🏢 Conference Rooms available</span>}
+            {hotel.hasEvents && <span>🎉 Events available</span>}
           </div>
 
           <h2>Available rooms</h2>
           <div className="rooms-list">
-            {hotel.rooms &&
-              Object.entries(hotel.rooms).map(([key, room]) => (
+            {hotel.rooms && Object.keys(hotel.rooms).length > 0 ? (
+              Object.entries(hotel.rooms).map(([roomId, room]) => (
                 <RoomCard
-                  key={key}
+                  key={roomId}
                   room={room}
                   hotelName={hotel.name}
-                  onAddToCart={() => handleAddToCart(room)}
                   hotelId={id}
                 />
-              ))}
+              ))
+            ) : (
+              <p>No rooms available for this hotel yet.</p>
+            )}
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@
  * Main admin dashboard with full CRUD for Hotels + details view with tabs.
  *
  * @author Fredrik Fordelsen
- * @version 1.7
+ * @version 2.0
  */
 
 import { useState } from "react";
@@ -25,8 +25,8 @@ function AdminPanel() {
   const [detailTab, setDetailTab] = useState("general");
 
   // Add New Hotel Modal
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
+  const [showHotelModal, setShowHotelModal] = useState(false);
+  const [hotelForm, setHotelForm] = useState({
     name: "",
     city: "",
     address: "",
@@ -41,7 +41,7 @@ function AdminPanel() {
 
   // Room Modal
   const [showRoomModal, setShowRoomModal] = useState(false);
-  const [editingRoom, setEditingRoom] = useState(null);
+  const [editingRoomId, setEditingRoomId] = useState(null);
   const [roomForm, setRoomForm] = useState({
     name: "",
     price: "",
@@ -52,7 +52,7 @@ function AdminPanel() {
   // ==================== HOTEL FUNCTIONS ====================
 
   const openHotelModal = () => {
-    setFormData({
+    setHotelForm({
       name: "",
       city: "",
       address: "",
@@ -61,18 +61,17 @@ function AdminPanel() {
       hasSpa: false,
       hasEvents: false,
     });
-    setShowModal(true);
+    setShowHotelModal(true);
   };
 
   const saveHotel = async (e) => {
     e.preventDefault();
     try {
       const newHotelRef = push(ref(db, "hotels"));
-      await set(newHotelRef, formData);
+      await set(newHotelRef, hotelForm);
       showToast("New hotel added successfully!", "success");
-      setShowModal(false);
+      setShowHotelModal(false);
     } catch (error) {
-      console.error(error);
       showToast("Could not add hotel.", "error");
     }
   };
@@ -92,8 +91,10 @@ function AdminPanel() {
   const saveGeneralInfo = async (e) => {
     e.preventDefault();
     if (!selectedHotel) return;
+
     try {
-      await set(ref(db, `hotels/${selectedHotel.id}`), generalForm);
+      const updatedHotel = { ...selectedHotel, ...generalForm };
+      await set(ref(db, `hotels/${selectedHotel.id}`), updatedHotel);
       showToast("Hotel information updated successfully!", "success");
     } catch (error) {
       showToast("Could not update hotel information.", "error");
@@ -104,10 +105,15 @@ function AdminPanel() {
 
   const openRoomModal = (roomId = null, room = null) => {
     if (room) {
-      setEditingRoom(roomId);
-      setRoomForm({ ...room });
+      setEditingRoomId(roomId);
+      setRoomForm({
+        name: room.name || "",
+        price: room.price || "",
+        capacity: room.capacity || "",
+        imageUrl: room.imageUrl || "",
+      });
     } else {
-      setEditingRoom(null);
+      setEditingRoomId(null);
       setRoomForm({ name: "", price: "", capacity: "", imageUrl: "" });
     }
     setShowRoomModal(true);
@@ -115,18 +121,28 @@ function AdminPanel() {
 
   const saveRoom = async (e) => {
     e.preventDefault();
-    if (!selectedHotel) return;
+    if (!selectedHotel || !roomForm.name) return;
+
+    const roomSlug = roomForm.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+
+    const roomId = roomSlug || `room-${Date.now()}`;
+
+    const roomData = {
+      name: roomForm.name,
+      price: Number(roomForm.price),
+      capacity: Number(roomForm.capacity),
+      imageUrl: roomForm.imageUrl || "",
+    };
 
     try {
-      if (editingRoom) {
-        await set(
-          ref(db, `hotels/${selectedHotel.id}/rooms/${editingRoom}`),
-          roomForm,
-        );
-      } else {
-        const newRoomRef = push(ref(db, `hotels/${selectedHotel.id}/rooms`));
-        await set(newRoomRef, roomForm);
-      }
+      await set(
+        ref(db, `hotels/${selectedHotel.id}/rooms/${roomId}`),
+        roomData,
+      );
       showToast("Room type saved successfully!", "success");
       setShowRoomModal(false);
     } catch (error) {
@@ -174,7 +190,6 @@ function AdminPanel() {
 
       {/* Main Content */}
       <div className="admin-content">
-        {/* Hotels List */}
         {activeTab === "hotels" && (
           <>
             <div className="admin-header">
@@ -209,7 +224,6 @@ function AdminPanel() {
           </>
         )}
 
-        {/* Hotel Details View */}
         {activeTab === "details" && selectedHotel && (
           <div className="hotel-details-view">
             <div className="details-header">
@@ -366,10 +380,10 @@ function AdminPanel() {
                   </div>
 
                   <div className="rooms-list">
-                    {selectedHotel.rooms ? (
-                      Object.keys(selectedHotel.rooms).map((roomId) => {
-                        const room = selectedHotel.rooms[roomId];
-                        return (
+                    {selectedHotel.rooms &&
+                    Object.keys(selectedHotel.rooms).length > 0 ? (
+                      Object.entries(selectedHotel.rooms).map(
+                        ([roomId, room]) => (
                           <div key={roomId} className="room-card">
                             <div className="room-info">
                               <h3>{room.name}</h3>
@@ -392,8 +406,8 @@ function AdminPanel() {
                               </button>
                             </div>
                           </div>
-                        );
-                      })
+                        ),
+                      )
                     ) : (
                       <p>No rooms added yet for this hotel.</p>
                     )}
@@ -410,53 +424,53 @@ function AdminPanel() {
         )}
       </div>
 
-      {/* Add New Hotel Modal */}
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+      {/* Hotel Modal */}
+      {showHotelModal && (
+        <div className="modal-overlay" onClick={() => setShowHotelModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Add New Hotel</h2>
             <form onSubmit={saveHotel}>
               <input
                 type="text"
                 placeholder="Hotel Name"
-                value={formData.name}
+                value={hotelForm.name}
                 onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+                  setHotelForm({ ...hotelForm, name: e.target.value })
                 }
                 required
               />
               <input
                 type="text"
                 placeholder="City"
-                value={formData.city}
+                value={hotelForm.city}
                 onChange={(e) =>
-                  setFormData({ ...formData, city: e.target.value })
+                  setHotelForm({ ...hotelForm, city: e.target.value })
                 }
                 required
               />
               <input
                 type="text"
                 placeholder="Address"
-                value={formData.address}
+                value={hotelForm.address}
                 onChange={(e) =>
-                  setFormData({ ...formData, address: e.target.value })
+                  setHotelForm({ ...hotelForm, address: e.target.value })
                 }
                 required
               />
               <input
                 type="text"
-                placeholder="Rating (e.g. 4.5)"
-                value={formData.rating}
+                placeholder="Rating"
+                value={hotelForm.rating}
                 onChange={(e) =>
-                  setFormData({ ...formData, rating: e.target.value })
+                  setHotelForm({ ...hotelForm, rating: e.target.value })
                 }
               />
               <input
                 type="text"
                 placeholder="Image URL"
-                value={formData.imageUrl}
+                value={hotelForm.imageUrl}
                 onChange={(e) =>
-                  setFormData({ ...formData, imageUrl: e.target.value })
+                  setHotelForm({ ...hotelForm, imageUrl: e.target.value })
                 }
               />
 
@@ -464,9 +478,9 @@ function AdminPanel() {
                 <label>Has Spa</label>
                 <input
                   type="checkbox"
-                  checked={formData.hasSpa}
+                  checked={hotelForm.hasSpa}
                   onChange={(e) =>
-                    setFormData({ ...formData, hasSpa: e.target.checked })
+                    setHotelForm({ ...hotelForm, hasSpa: e.target.checked })
                   }
                 />
               </div>
@@ -474,15 +488,15 @@ function AdminPanel() {
                 <label>Has Events</label>
                 <input
                   type="checkbox"
-                  checked={formData.hasEvents}
+                  checked={hotelForm.hasEvents}
                   onChange={(e) =>
-                    setFormData({ ...formData, hasEvents: e.target.checked })
+                    setHotelForm({ ...hotelForm, hasEvents: e.target.checked })
                   }
                 />
               </div>
 
               <div className="modal-actions">
-                <button type="button" onClick={() => setShowModal(false)}>
+                <button type="button" onClick={() => setShowHotelModal(false)}>
                   Cancel
                 </button>
                 <button type="submit">Add Hotel</button>
@@ -496,11 +510,11 @@ function AdminPanel() {
       {showRoomModal && (
         <div className="modal-overlay" onClick={() => setShowRoomModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>{editingRoom ? "Edit Room Type" : "Add New Room Type"}</h2>
+            <h2>{editingRoomId ? "Edit Room Type" : "Add New Room Type"}</h2>
             <form onSubmit={saveRoom}>
               <input
                 type="text"
-                placeholder="Room Type (e.g. Double Room, Suite)"
+                placeholder="Room Type (e.g. Double Room)"
                 value={roomForm.name}
                 onChange={(e) =>
                   setRoomForm({ ...roomForm, name: e.target.value })
@@ -509,7 +523,7 @@ function AdminPanel() {
               />
               <input
                 type="number"
-                placeholder="Price per night (kr)"
+                placeholder="Price per night"
                 value={roomForm.price}
                 onChange={(e) =>
                   setRoomForm({ ...roomForm, price: e.target.value })
