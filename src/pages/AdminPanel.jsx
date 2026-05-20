@@ -105,7 +105,7 @@ function AdminPanel() {
 
   const openRoomModal = (roomId = null, room = null) => {
     if (room) {
-      setEditingRoomId(roomId);
+      setEditingRoomId(roomId); // viktig!
       setRoomForm({
         name: room.name || "",
         price: room.price || "",
@@ -123,29 +123,45 @@ function AdminPanel() {
     e.preventDefault();
     if (!selectedHotel || !roomForm.name) return;
 
-    const roomSlug = roomForm.name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
-
-    const roomId = roomSlug || `room-${Date.now()}`;
-
-    const roomData = {
-      name: roomForm.name,
-      price: Number(roomForm.price),
-      capacity: Number(roomForm.capacity),
-      imageUrl: roomForm.imageUrl || "",
-    };
-
     try {
+      let roomId;
+
+      if (editingRoomId) {
+        // === REDIGERER EKSTISTERENDE ROM ===
+        roomId = editingRoomId;
+      } else {
+        // === LEGGER TIL NYTT ROM ===
+        const roomSlug = roomForm.name
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-");
+
+        roomId = roomSlug || `room-${Date.now()}`;
+      }
+
+      const roomData = {
+        name: roomForm.name,
+        price: Number(roomForm.price),
+        capacity: Number(roomForm.capacity),
+        imageUrl: roomForm.imageUrl || "",
+        amenities: roomForm.amenities || [], // beholdes hvis du har det
+      };
+
       await set(
         ref(db, `hotels/${selectedHotel.id}/rooms/${roomId}`),
         roomData,
       );
-      showToast("Room type saved successfully!", "success");
+
+      showToast(
+        editingRoomId ? "Room updated successfully!" : "New room type added!",
+        "success",
+      );
+
       setShowRoomModal(false);
+      setEditingRoomId(null); // reset editing state
     } catch (error) {
+      console.error(error);
       showToast("Could not save room type.", "error");
     }
   };
