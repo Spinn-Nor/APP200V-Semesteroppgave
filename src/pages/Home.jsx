@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useHotels } from '../hooks/useHotels'
 import { testFirebaseConnection } from '../firebase/testConnection';
-
 import { useAuth } from "../context/AuthContext";
+
 
 function Home() {
   const [checkIn, setCheckIn] = useState('')
   const [checkOut, setCheckOut] = useState('')
   const [guests, setGuests] = useState('1')
   const [destination, setDestination] = useState('')
+  // Wellness Popup dropdown 
+
+ const [showWellnessPopup, setShowWellnessPopup] = useState(false);
 
   // Logic start for dropdown menu
   const { hotels } = useHotels(); // Gathers hotell-data from useHotels hook
   const [showDropdown, setShowDropdown] = useState(false); // Controlls dopdown visibility
   // filters dropdown based on what you write in "Where to?" input field
-
-  const filteredHotels = (hotels || []).filter(hotel =>
-    hotel.name && hotel.name.toLowerCase().includes(destination.toLowerCase())
+  const filteredHotels = (hotels || []).filter(hotel => 
+    hotel.name && hotel.name.toLowerCase().startsWith(destination.toLowerCase())
   );
 
-  const { user } = useAuth();
+  useEffect(() => {
+   
+  }, []);
 
   return (
     <main className="home">
@@ -39,8 +43,8 @@ function Home() {
             <div className="booking-field">
               <label>Destination</label>
               <input
-                id="destination-input"
-                name="destination"
+                id="destination-input" 
+                name="destination"     
                 type="text"
                 placeholder="Where to?"
                 value={destination}
@@ -55,8 +59,8 @@ function Home() {
                 <ul className="destination-dropdown">
                   {filteredHotels.length > 0 ? (
                     filteredHotels.map((hotel) => (
-                      <li
-                        key={hotel.id}
+                      <li 
+                        key={hotel.id} 
                         onClick={() => {
                           setDestination(hotel.name);
                           setShowDropdown(false);
