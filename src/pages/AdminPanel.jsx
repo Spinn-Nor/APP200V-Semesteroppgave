@@ -171,6 +171,7 @@ function AdminPanel() {
           </button>
         </div>
       </div>
+
       {/* Main Content */}
       <div className="admin-content">
         {/* Hotels List */}
@@ -217,7 +218,7 @@ function AdminPanel() {
                 ← Back to Hotels
               </button>
             </div>
-            // Tabs on detail page
+
             <div className="details-tabs">
               <button
                 className={`detail-tab ${detailTab === "general" ? "active" : ""}`}
@@ -244,7 +245,7 @@ function AdminPanel() {
                 Events
               </button>
             </div>
-            // General info tab
+
             <div className="details-content">
               {detailTab === "general" && (
                 <form onSubmit={saveGeneralInfo} className="details-form">
@@ -408,7 +409,8 @@ function AdminPanel() {
           </div>
         )}
       </div>
-      // Modal for adding new hotels
+
+      {/* Add New Hotel Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -489,7 +491,8 @@ function AdminPanel() {
           </div>
         </div>
       )}
-      // Modal for adding/editing rooms
+
+      {/* Room Modal */}
       {showRoomModal && (
         <div className="modal-overlay" onClick={() => setShowRoomModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
