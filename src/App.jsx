@@ -1,28 +1,30 @@
 /**
  * App.jsx
- * 
+ *
  * Main application component.
  * AuthProvider must wrap CartProvider because CartContext depends on useAuth.
- * 
+ *
  * @author Fredrik Fordelsen - Fixed provider order
  * @version 1.0
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
 
-import Nav from './components/Nav';
-import Home from './pages/Home';
-import Hotels from './pages/Hotels';
-import Wellness from './pages/Wellness';
-import HotelDetail from './pages/HotelDetail';
-import Events from './pages/Events';
-import Locations from './components/LocationsMap';
-import Login from './pages/Login';
+import Nav from "./components/Nav";
+import Home from "./pages/Home";
+import Hotels from "./pages/Hotels";
+import Wellness from "./pages/Wellness";
+import HotelDetail from "./pages/HotelDetail";
+import Events from "./pages/Events";
+import Locations from "./components/LocationsMap";
+import Login from "./pages/Login";
+import AdminPanel from "./pages/AdminPanel";
+import AdminRoute from "./components/AdminRoute";
 
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
-import MyBookings from './pages/MyBookings';
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import MyBookings from "./pages/MyBookings";
 
 function App() {
   return (
@@ -39,6 +41,14 @@ function App() {
             <Route path="/locations" element={<Locations />} />
             <Route path="/login" element={<Login />} />
             <Route path="/my-bookings" element={<MyBookings />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminPanel />
+                </AdminRoute>
+              }
+            />
           </Routes>
         </Router>
       </CartProvider>
