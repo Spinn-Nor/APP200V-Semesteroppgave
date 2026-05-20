@@ -1,15 +1,22 @@
 /**
  * AuthContext.jsx
  * 
- * Provides authentication state (currentUser) to the entire application.
- * Uses Firebase Authentication to track who is logged in.
+ * Provides authentication state and functions (login, register, logout)
+ * to the entire application using Firebase Authentication.
  * 
- * @author Fredrik Fordelsen - Created AuthContext to support CartContext and future protected routes
+ * @author Fredrik Fordelsen & Bendik Viken Wangen - Full AuthContext with login/register/logout
+ * @version 1.2
  */
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase/config';           // Din Firebase auth config
-import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase/config';
+import { 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged,
+    updateProfile
+} from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -17,25 +24,51 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Register new user with display name
+    const register = async (email, password, firstName) => {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Update display name
+        await updateProfile(userCredential.user, {
+            displayName: firstName
+        });
+
+        return userCredential;
+    };
+
+    // Login user
+    const login = (email, password) => {
+        return signInWithEmailAndPassword(auth, email, password);
+    };
+
+    // Logout user
+    const logout = () => {
+        return signOut(auth);
+    };
+
     useEffect(() => {
-        // Listen for authentication state changes
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
             setLoading(false);
         });
 
-        // Cleanup subscription when component unmounts
         return unsubscribe;
     }, []);
 
     return (
-        <AuthContext.Provider value={{ currentUser, loading }}>
+        <AuthContext.Provider value={{
+            currentUser,
+            loading,
+            register,
+            login,
+            logout
+        }}>
             {!loading && children}
         </AuthContext.Provider>
     );
 }
 
 /**
- * Custom hook to easily access the current logged-in user from anywhere.
+ * Custom hook to access auth context
  */
 export const useAuth = () => useContext(AuthContext);

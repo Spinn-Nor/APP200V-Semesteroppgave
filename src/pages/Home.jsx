@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useHotels } from '../hooks/useHotels'
 import { testFirebaseConnection } from '../firebase/testConnection';
-
+import { useAuth } from "../context/AuthContext";
 
 
 function Home() {
@@ -10,6 +10,9 @@ function Home() {
   const [checkOut, setCheckOut] = useState('')
   const [guests, setGuests] = useState('1')
   const [destination, setDestination] = useState('')
+  // Wellness Popup dropdown 
+
+ const [showWellnessPopup, setShowWellnessPopup] = useState(false);
 
   // Logic start for dropdown menu
   const { hotels } = useHotels(); // Gathers hotell-data from useHotels hook

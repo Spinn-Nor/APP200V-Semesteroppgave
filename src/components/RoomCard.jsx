@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import RoomBookingModal from './RoomBookingModal';
 
-function RoomCard({ room, hotelName }) {
+function RoomCard({ room, hotelName, hotelId }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
@@ -47,6 +47,7 @@ function RoomCard({ room, hotelName }) {
                 onClose={() => setIsModalOpen(false)}
                 room={room}
                 hotelName={hotelName}
+                hotelId={hotelId}
             />
         </>
     );

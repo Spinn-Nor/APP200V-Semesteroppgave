@@ -161,3 +161,12 @@
     gap: 0;
   }
 }
+
+.error-message {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}

@@ -46,7 +46,7 @@ export function CartProvider({ children }) {
 
     const showToast = (message, type = "success") => {
         setToast({ message, type });
-        // Fjern toast etter 4 sekunder
+        // Remove toast after 4 seconds
         setTimeout(() => setToast(null), 4000);
     };
 
