@@ -161,6 +161,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  max-width: 250px;
 }
 
 .details-btn {
@@ -398,4 +399,32 @@
     margin: 20px;
     padding: 32px 24px;
   }
+}
+
+.section-title {
+  margin-top: 50px;
+}
+
+.past-bookings-list {
+  list-style: none;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+.past-booking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.past-booking-item p {
+  margin: 4px 0 0;
+  color: #64748b;
 }

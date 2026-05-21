@@ -49,15 +49,21 @@ function MyBookings() {
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
           const today = new Date();
+          today.setHours(0, 0, 0, 0);
           const upcoming = [];
           const past = [];
 
           bookingsArray.forEach((booking) => {
-            const isUpcoming = booking.items?.some(
-              (item) => item.checkIn && new Date(item.checkIn) >= today
-            );
-            if (isUpcoming) upcoming.push(booking);
-            else past.push(booking);
+            const hasUpcomingItem = booking.items?.some((item) => {
+              if (!item.checkIn) return false;
+              return new Date(item.checkIn) >= today;
+            });
+
+            if (hasUpcomingItem) {
+              upcoming.push(booking);
+            } else {
+              past.push(booking);
+            }
           });
 
           setUpcomingBookings(upcoming);
@@ -137,16 +143,26 @@ function MyBookings() {
       {pastBookings.length > 0 && (
         <>
           <h2 className="section-title">Past Reservations</h2>
-          <div className="bookings-grid">
+          <ul className="past-bookings-list">
             {pastBookings.map((booking) => (
-              <BookingCard
-                key={booking.id}
-                booking={booking}
-                onCancel={openCancelModal}
-                onViewDetails={setSelectedBooking}
-              />
+              <li key={booking.id} className="past-booking-item">
+                <div>
+                  <strong>Reservation #{booking.orderId?.slice(-8)} - {booking.items[0].name}, {booking.items[0].checkIn} - {booking.items[0].checkOut}</strong>
+                  <p>
+                    {new Date(booking.createdAt).toLocaleDateString("nb-NO")} —{" "}
+                    {booking.totalPrice} kr
+                  </p>
+                </div>
+
+                <button
+                  className="details-btn"
+                  onClick={() => setSelectedBooking(booking)}
+                >
+                  View
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
         </>
       )}
 
