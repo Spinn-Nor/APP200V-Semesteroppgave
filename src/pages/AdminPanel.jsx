@@ -7,11 +7,11 @@
  * @version 2.0
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useHotels } from "../hooks/useHotels";
 import { db } from "../firebase/config";
-import { ref, set, remove, push } from "firebase/database";
+import { ref, set, remove, push, get } from "firebase/database";
 import { useCart } from "../context/CartContext";
 import "./AdminPanel.css";
 
@@ -48,6 +48,68 @@ function AdminPanel() {
     capacity: "",
     imageUrl: "",
   });
+
+  // ==================== DASHBOARD STATS ====================
+  const totalHotels = hotels.length;
+  const totalRooms = hotels.reduce((sum, hotel) => {
+    return sum + (hotel.rooms ? Object.keys(hotel.rooms).length : 0);
+  }, 0);
+
+  const [totalBookings, setTotalBookings] = useState(0);
+  const [monthlyRevenue, setMonthlyRevenue] = useState(0);
+  const [recentBookings, setRecentBookings] = useState([]);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const ordersRef = ref(db, "orders");
+        const snapshot = await get(ordersRef);
+
+        if (!snapshot.exists()) {
+          setTotalBookings(0);
+          setMonthlyRevenue(0);
+          setRecentBookings([]);
+          return;
+        }
+
+        const allOrders = snapshot.val();
+        let bookingsCount = 0;
+        let revenue = 0;
+        const bookingsList = [];
+
+        Object.values(allOrders).forEach((userOrders) => {
+          Object.values(userOrders).forEach((order) => {
+            if (order.items) {
+              order.items.forEach((item) => {
+                if (item.type === "Room" || item.category === "accommodation") {
+                  bookingsCount++;
+                  revenue += item.price || 0;
+
+                  bookingsList.push({
+                    hotelName: item.hotelName || "Unknown Hotel",
+                    roomName: item.name || "Room",
+                    checkIn: item.checkIn,
+                    checkOut: item.checkOut,
+                    totalPrice: item.price || 0,
+                  });
+                }
+              });
+            }
+          });
+        });
+
+        setTotalBookings(bookingsCount);
+        setMonthlyRevenue(revenue);
+
+        // Vis de 5 siste bookingene
+        setRecentBookings(bookingsList.slice(0, 5));
+      } catch (error) {
+        console.error("Failed to fetch bookings:", error);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   // ==================== HOTEL FUNCTIONS ====================
 
@@ -186,13 +248,37 @@ function AdminPanel() {
 
         <div className="admin-menu">
           <button
+            className={`menu-item ${activeTab === "dashboard" ? "active" : ""}`}
+            onClick={() => setActiveTab("dashboard")}
+          >
+            📊 Dashboard
+          </button>
+          <button
             className={`menu-item ${activeTab === "hotels" ? "active" : ""}`}
             onClick={() => {
               setActiveTab("hotels");
               setSelectedHotel(null);
             }}
           >
-            🏨 Manage Hotels
+            🏨 Hotels
+          </button>
+          <button
+            className={`menu-item ${activeTab === "users" ? "active" : ""}`}
+            onClick={() => setActiveTab("users")}
+          >
+            👥 Users
+          </button>
+          <button
+            className={`menu-item ${activeTab === "orders" ? "active" : ""}`}
+            onClick={() => setActiveTab("orders")}
+          >
+            📦 Orders
+          </button>
+          <button
+            className={`menu-item ${activeTab === "settings" ? "active" : ""}`}
+            onClick={() => setActiveTab("settings")}
+          >
+            ⚙️ Settings
           </button>
         </div>
 
@@ -206,6 +292,57 @@ function AdminPanel() {
 
       {/* Main Content */}
       <div className="admin-content">
+        {/* ==================== DASHBOARD ==================== */}
+        {activeTab === "dashboard" && (
+          <div>
+            <div className="dashboard-header">
+              <h1>Dashboard</h1>
+              <p>Welcome back, {currentUser?.displayName || "Admin"}</p>
+            </div>
+
+            <div className="stats-grid">
+              <div className="stat-card">
+                <h3>Total Hotels</h3>
+                <p className="stat-number">{totalHotels}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Total Rooms</h3>
+                <p className="stat-number">{totalRooms}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Total Bookings</h3>
+                <p className="stat-number">{totalBookings}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Revenue this month</h3>
+                <p className="stat-number">
+                  {monthlyRevenue.toLocaleString("no-NO")} kr
+                </p>
+              </div>
+            </div>
+
+            <div className="recent-activity">
+              <h2>Recent Bookings</h2>
+              {recentBookings.length > 0 ? (
+                <div className="recent-list">
+                  {recentBookings.map((booking, index) => (
+                    <div key={index} className="recent-item">
+                      <strong>{booking.hotelName}</strong> — {booking.roomName}
+                      <br />
+                      <small>
+                        {booking.checkIn} → {booking.checkOut} •{" "}
+                        {booking.totalPrice} kr
+                      </small>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>Ingen bookinger registrert ennå.</p>
+              )}
+            </div>
+          </div>
+        )}
+
         {activeTab === "hotels" && (
           <>
             <div className="admin-header">
@@ -438,6 +575,27 @@ function AdminPanel() {
             </div>
           </div>
         )}
+
+        {activeTab === "users" && (
+          <div>
+            <h1>Users</h1>
+            <p>Brukeradministrasjon kommer snart...</p>
+          </div>
+        )}
+
+        {activeTab === "orders" && (
+          <div>
+            <h1>Orders</h1>
+            <p>Alle bestillinger vises her...</p>
+          </div>
+        )}
+
+        {activeTab === "settings" && (
+          <div>
+            <h1>Settings</h1>
+            <p>Generelle innstillinger...</p>
+          </div>
+        )}
       </div>
 
       {/* Hotel Modal */}
@@ -563,7 +721,6 @@ function AdminPanel() {
                   setRoomForm({ ...roomForm, imageUrl: e.target.value })
                 }
               />
-
               <div className="modal-actions">
                 <button type="button" onClick={() => setShowRoomModal(false)}>
                   Cancel
