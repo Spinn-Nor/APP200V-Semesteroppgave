@@ -3,7 +3,7 @@
  *
  * Dynamic user dashboard with details modal and custom cancel confirmation.
  *
- * @author Fredrik Fordelsen
+ * @author Fredrik Fordelsen & Bendik Viken Wangen
  * @version 1.8
  */
 
