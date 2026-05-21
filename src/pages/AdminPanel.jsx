@@ -46,6 +46,52 @@ function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
+  // Add User Modal
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [addUserForm, setAddUserForm] = useState({
+    email: "",
+    displayName: "",
+    role: "user",
+    password: "",
+  });
+
+  // ==================== ADD NEW USER ====================
+  const openAddUserModal = () => {
+    setAddUserForm({ email: "", displayName: "", role: "user", password: "" });
+    setShowAddUserModal(true);
+  };
+
+  const saveNewUser = async (e) => {
+    e.preventDefault();
+    if (
+      !addUserForm.email ||
+      !addUserForm.displayName ||
+      !addUserForm.password
+    ) {
+      showToast("Email, name and password are required", "error");
+      return;
+    }
+
+    try {
+      // Saving to db
+      const newUserRef = push(ref(db, "users"));
+      await set(newUserRef, {
+        email: addUserForm.email,
+        displayName: addUserForm.displayName,
+        role: addUserForm.role,
+        createdAt: new Date().toISOString(),
+        uid: newUserRef.key, // midlertidig ID
+      });
+
+      showToast("New user added successfully!", "success");
+      setShowAddUserModal(false);
+      fetchUsers(); // update list
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to add user", "error");
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "users") {
       fetchUsers();
@@ -113,6 +159,20 @@ function AdminPanel() {
     } catch (error) {
       console.error(error);
       showToast("Failed to update user", "error");
+    }
+  };
+
+  // ==================== DELETE USER ====================
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      await remove(ref(db, `users/${userId}`));
+      showToast("User deleted successfully!", "success");
+      fetchUsers(); // refresh list
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to delete user", "error");
     }
   };
 
@@ -657,7 +717,9 @@ function AdminPanel() {
           <div>
             <div className="admin-header">
               <h1>Users ({users.length})</h1>
-              <button className="add-btn">+ New User</button>
+              <button className="add-btn" onClick={openAddUserModal}>
+                + New User
+              </button>
             </div>
 
             {loadingUsers ? (
@@ -874,7 +936,6 @@ function AdminPanel() {
       )}
 
       {/* Edit User Modal */}
-      {/* Edit User Modal */}
       {showEditUserModal && editingUser && (
         <div
           className="modal-overlay"
@@ -924,6 +985,81 @@ function AdminPanel() {
                   Cancel
                 </button>
                 <button type="submit">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add New User Modal */}
+      {showAddUserModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowAddUserModal(false)}
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Add New User</h2>
+            <form onSubmit={saveNewUser}>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={addUserForm.email}
+                  onChange={(e) =>
+                    setAddUserForm({ ...addUserForm, email: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Display Name</label>
+                <input
+                  type="text"
+                  value={addUserForm.displayName}
+                  onChange={(e) =>
+                    setAddUserForm({
+                      ...addUserForm,
+                      displayName: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Role</label>
+                <select
+                  value={addUserForm.role}
+                  onChange={(e) =>
+                    setAddUserForm({ ...addUserForm, role: e.target.value })
+                  }
+                >
+                  <option value="customer">Customer</option>
+                  <option value="admin">Administrator</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={addUserForm.password}
+                  onChange={(e) =>
+                    setAddUserForm({ ...addUserForm, password: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  onClick={() => setShowAddUserModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit">Create User</button>
               </div>
             </form>
           </div>
