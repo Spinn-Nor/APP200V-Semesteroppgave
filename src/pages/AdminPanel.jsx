@@ -42,6 +42,80 @@ function AdminPanel() {
   // General Info
   const [generalForm, setGeneralForm] = useState({});
 
+  // ==================== USERS ====================
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "users") {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const usersRef = ref(db, "users");
+      const snapshot = await get(usersRef);
+
+      if (snapshot.exists()) {
+        const usersData = snapshot.val();
+        const usersArray = Object.keys(usersData).map((key) => ({
+          id: key,
+          ...usersData[key],
+        }));
+        setUsers(usersArray);
+      } else {
+        setUsers([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+      showToast("Kunne ikke hente brukere", "error");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // ==================== USER EDIT FUNCTIONS ====================
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editUserForm, setEditUserForm] = useState({
+    displayName: "",
+    role: "customer",
+  });
+
+  const openEditUserModal = (user) => {
+    setEditingUser(user);
+    setEditUserForm({
+      displayName: user.displayName || "",
+      role: user.role || "user",
+    });
+    setShowEditUserModal(true);
+  };
+
+  const saveUserChanges = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+
+    try {
+      await set(ref(db, `users/${editingUser.id}`), {
+        ...editingUser,
+        displayName: editUserForm.displayName,
+        role: editUserForm.role,
+        updatedAt: new Date().toISOString(),
+      });
+
+      showToast("User updated successfully!", "success");
+      setShowEditUserModal(false);
+
+      // Refresh users list
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to update user", "error");
+    }
+  };
+
   // Room Modal
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [editingRoomId, setEditingRoomId] = useState(null);
@@ -581,8 +655,72 @@ function AdminPanel() {
 
         {activeTab === "users" && (
           <div>
-            <h1>Users</h1>
-            <p>Brukeradministrasjon kommer snart...</p>
+            <div className="admin-header">
+              <h1>Users ({users.length})</h1>
+              <button className="add-btn">+ New User</button>
+            </div>
+
+            {loadingUsers ? (
+              <p className="loading-text">Loading users...</p>
+            ) : (
+              <div className="admin-table-container">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Registered</th>
+                      <th style={{ textAlign: "center" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.length > 0 ? (
+                      users.map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.displayName || "Unknown"}</td>
+                          <td>{user.email}</td>
+                          <td>
+                            <span
+                              className={`role-badge ${user.role === "admin" ? "admin" : "user"}`}
+                            >
+                              {user.role === "admin" ? "Administrator" : "User"}
+                            </span>
+                          </td>
+                          <td>
+                            {user.createdAt
+                              ? new Date(user.createdAt).toLocaleDateString(
+                                  "no-NO",
+                                )
+                              : "—"}
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <button
+                              className="action-btn edit-btn"
+                              onClick={() => openEditUserModal(user)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="action-btn delete-btn"
+                              onClick={() => handleDeleteUser(user.id)}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="no-data">
+                          No users registered yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 
@@ -729,6 +867,63 @@ function AdminPanel() {
                   Cancel
                 </button>
                 <button type="submit">Save Room Type</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {/* Edit User Modal */}
+      {showEditUserModal && editingUser && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowEditUserModal(false)}
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Edit User</h2>
+            <form onSubmit={saveUserChanges}>
+              <div className="form-group">
+                <label>Email (cannot be changed)</label>
+                <input type="email" value={editingUser.email} disabled />
+              </div>
+
+              <div className="form-group">
+                <label>Display Name</label>
+                <input
+                  type="text"
+                  value={editUserForm.displayName}
+                  onChange={(e) =>
+                    setEditUserForm({
+                      ...editUserForm,
+                      displayName: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Role</label>
+                <select
+                  value={editUserForm.role}
+                  onChange={(e) =>
+                    setEditUserForm({ ...editUserForm, role: e.target.value })
+                  }
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Administrator</option>
+                </select>
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  onClick={() => setShowEditUserModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit">Save Changes</button>
               </div>
             </form>
           </div>

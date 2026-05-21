@@ -546,3 +546,123 @@
   background: #f8fafc;
   border-radius: 12px;
 }
+
+/* ==================== USERS TABLE ==================== */
+
+.admin-table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+  margin-top: 20px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background: #f1f5f9;
+  padding: 18px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #334155;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e2937;
+  vertical-align: middle;
+}
+
+.admin-table tr:hover {
+  background: #f8fafc;
+}
+
+/* Role Badges */
+.role-badge {
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.role-badge.admin {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.role-badge.user {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Action Buttons */
+.action-btn {
+  padding: 9px 16px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.edit-btn:hover {
+  background: #bfdbfe;
+  transform: translateY(-1px);
+}
+
+.delete-btn:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* Empty state */
+.no-data {
+  text-align: center;
+  padding: 80px 20px !important;
+  color: #94a3b8;
+  font-style: italic;
+  background: #f8fafc;
+}
+
+/* Loading text */
+.loading-text {
+  text-align: center;
+  padding: 80px 20px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* Add button */
+.add-btn {
+  padding: 10px 20px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background: #1d4ed8;
+}
