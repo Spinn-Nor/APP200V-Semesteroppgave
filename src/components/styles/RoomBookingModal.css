@@ -112,6 +112,15 @@
     cursor: not-allowed;
 }
 
+.error-message {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
 .availability-checking {
     color: #64748b;
     font-size: 0.9rem;

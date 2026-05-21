@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useHotels } from '../hooks/useHotels'
-import { testFirebaseConnection } from '../firebase/testConnection';
-
-
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
   const [checkIn, setCheckIn] = useState('')
   const [checkOut, setCheckOut] = useState('')
   const [guests, setGuests] = useState('1')
   const [destination, setDestination] = useState('')
+  const [showWellnessPopup, setShowWellnessPopup] = useState(false);
   const navigate = useNavigate();
 
   const today = new Date().toISOString().split('T')[0];
@@ -68,13 +67,11 @@ function Home() {
                 type="text"
                 placeholder="Where to?"
                 value={destination}
-                // Opens and closes meny for dropdown
                 onFocus={() => setShowDropdown(true)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                 onChange={(e) => setDestination(e.target.value)}
               />
 
-              {/* Dropdown functionality*/}
               {showDropdown && destination.length > 0 && (
                 <ul className="destination-dropdown">
                   {filteredHotels.length > 0 ? (
