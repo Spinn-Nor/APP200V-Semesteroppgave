@@ -10,31 +10,25 @@
 import { useState } from "react";
 import RoomBookingModal from "./RoomBookingModal";
 
-function RoomCard({ room, hotelName, hotelId }) {
+function RoomCard({ room, hotelName, hotelId, initialCheckIn = '', initialCheckOut = '' }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
       <div className="room-card">
         <div className="room-type">
-          <h3>{room.name}</h3> {/* Bruker room.name */}
+          <h3>{room.name}</h3>
         </div>
 
         <div className="room-details">
-          <p>
-            <strong>Price per night:</strong> {room.price} kr
-          </p>
-          <p>
-            <strong>Capacity:</strong> {room.capacity} people
-          </p>
+          <p><strong>Price per night:</strong> {room.price} kr</p>
+          <p><strong>Capacity:</strong> {room.capacity} people</p>
         </div>
 
         <div className="room-amenities">
           {room.amenities && room.amenities.length > 0 ? (
             room.amenities.map((amenity, index) => (
-              <span key={index} className="amenity-tag">
-                {amenity}
-              </span>
+              <span key={index} className="amenity-tag">{amenity}</span>
             ))
           ) : (
             <span className="no-amenities">No amenities listed</span>
@@ -52,6 +46,8 @@ function RoomCard({ room, hotelName, hotelId }) {
         room={room}
         hotelName={hotelName}
         hotelId={hotelId}
+        initialCheckIn={initialCheckIn}
+        initialCheckOut={initialCheckOut}
       />
     </>
   );

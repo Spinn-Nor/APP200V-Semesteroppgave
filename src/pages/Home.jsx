@@ -1,30 +1,49 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useHotels } from '../hooks/useHotels'
-import { testFirebaseConnection } from '../firebase/testConnection';
 import { useAuth } from "../context/AuthContext";
-
 
 function Home() {
   const [checkIn, setCheckIn] = useState('')
   const [checkOut, setCheckOut] = useState('')
   const [guests, setGuests] = useState('1')
   const [destination, setDestination] = useState('')
-  // Wellness Popup dropdown 
+  const [showWellnessPopup, setShowWellnessPopup] = useState(false);
+  const navigate = useNavigate();
 
- const [showWellnessPopup, setShowWellnessPopup] = useState(false);
+  const today = new Date().toISOString().split('T')[0];
+  const minCheckOut = checkIn
+    ? new Date(new Date(checkIn).getTime() + 86400000).toISOString().split('T')[0]
+    : today;
 
-  // Logic start for dropdown menu
-  const { hotels } = useHotels(); // Gathers hotell-data from useHotels hook
-  const [showDropdown, setShowDropdown] = useState(false); // Controlls dopdown visibility
-  // filters dropdown based on what you write in "Where to?" input field
-  const filteredHotels = (hotels || []).filter(hotel => 
-    hotel.name && hotel.name.toLowerCase().startsWith(destination.toLowerCase())
+  const { hotels } = useHotels();
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const filteredHotels = (hotels || []).filter(hotel =>
+    hotel.name && hotel.name.toLowerCase().includes(destination.toLowerCase())
   );
 
-  useEffect(() => {
-   
-  }, []);
+  const handleCheckInChange = (e) => {
+    const newCheckIn = e.target.value;
+    setCheckIn(newCheckIn);
+    if (checkOut && checkOut <= newCheckIn) setCheckOut('');
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (checkIn) params.set('checkIn', checkIn);
+    if (checkOut) params.set('checkOut', checkOut);
+
+    const matchedHotel = hotels?.find(
+      h => h.name.toLowerCase() === destination.toLowerCase()
+    );
+
+    if (matchedHotel) {
+      navigate(`/hotels/${matchedHotel.id}?${params.toString()}`);
+    } else {
+      navigate(`/hotels?${params.toString()}`);
+    }
+  };
 
   return (
     <main className="home">
@@ -43,24 +62,22 @@ function Home() {
             <div className="booking-field">
               <label>Destination</label>
               <input
-                id="destination-input" 
-                name="destination"     
+                id="destination-input"
+                name="destination"
                 type="text"
                 placeholder="Where to?"
                 value={destination}
-                // Opens and closes meny for dropdown
                 onFocus={() => setShowDropdown(true)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                 onChange={(e) => setDestination(e.target.value)}
               />
 
-              {/* Dropdown functionality*/}
               {showDropdown && destination.length > 0 && (
                 <ul className="destination-dropdown">
                   {filteredHotels.length > 0 ? (
                     filteredHotels.map((hotel) => (
-                      <li 
-                        key={hotel.id} 
+                      <li
+                        key={hotel.id}
                         onClick={() => {
                           setDestination(hotel.name);
                           setShowDropdown(false);
@@ -82,7 +99,8 @@ function Home() {
               <input
                 type="date"
                 value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
+                min={today}
+                onChange={handleCheckInChange}
               />
             </div>
             <div className="booking-divider" />
@@ -91,6 +109,7 @@ function Home() {
               <input
                 type="date"
                 value={checkOut}
+                min={minCheckOut}
                 onChange={(e) => setCheckOut(e.target.value)}
               />
             </div>
@@ -103,7 +122,7 @@ function Home() {
                 ))}
               </select>
             </div>
-            <Link to="/booking" className="booking-search-btn">Search Hotels</Link>
+            <button className="booking-search-btn" onClick={handleSearch}>Search Hotels</button>
           </div>
         </div>
       </section>

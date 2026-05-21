@@ -107,6 +107,11 @@
     background: #1d4ed8;
 }
 
+.add-to-cart-modal-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
 .error-message {
     background: #fee2e2;
     color: #b91c1c;
@@ -114,4 +119,22 @@
     border-radius: 8px;
     margin-bottom: 16px;
     font-weight: 500;
+}
+
+.availability-checking {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+.availability-ok {
+    color: #16a34a;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.availability-error {
+    color: #dc2626;
+    font-weight: 600;
+    margin-top: 8px;
 }

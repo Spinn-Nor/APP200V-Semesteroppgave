@@ -5,7 +5,7 @@
  * @version 1.2
  */
 
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import { ref, get } from "firebase/database";
@@ -14,6 +14,10 @@ import RoomCard from "../components/RoomCard";
 
 function HotelDetail() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const initialCheckIn = searchParams.get('checkIn') || '';
+  const initialCheckOut = searchParams.get('checkOut') || '';
+
   const [hotel, setHotel] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,12 +60,8 @@ function HotelDetail() {
 
         <div className="hotel-detail-info">
           <h1>{hotel.name}</h1>
-          <p className="hotel-city">
-            {hotel.city} • {hotel.address}
-          </p>
-          <p className="rating">
-            ⭐ {hotel.rating} ({hotel.reviewCount || 0} reviews)
-          </p>
+          <p className="hotel-city">{hotel.city} • {hotel.address}</p>
+          <p className="rating">⭐ {hotel.rating} ({hotel.reviewCount || 0} reviews)</p>
         </div>
 
         <div className="hotel-detail-content">
@@ -81,6 +81,8 @@ function HotelDetail() {
                   room={room}
                   hotelName={hotel.name}
                   hotelId={id}
+                  initialCheckIn={initialCheckIn}
+                  initialCheckOut={initialCheckOut}
                 />
               ))
             ) : (

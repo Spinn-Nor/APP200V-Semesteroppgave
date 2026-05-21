@@ -20,9 +20,8 @@ function MyBookings() {
   const [pastBookings, setPastBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal states
-  const [selectedBooking, setSelectedBooking] = useState(null); // Details modal
-  const [showCancelModal, setShowCancelModal] = useState(false); // Cancel modal
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState(null);
 
   const { currentUser } = useAuth();
@@ -46,10 +45,7 @@ function MyBookings() {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const bookingsArray = Object.keys(data)
-            .map((key) => ({
-              id: key,
-              ...data[key],
-            }))
+            .map((key) => ({ id: key, ...data[key] }))
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
           const today = new Date();
@@ -58,7 +54,7 @@ function MyBookings() {
 
           bookingsArray.forEach((booking) => {
             const isUpcoming = booking.items?.some(
-              (item) => item.checkIn && new Date(item.checkIn) >= today,
+              (item) => item.checkIn && new Date(item.checkIn) >= today
             );
             if (isUpcoming) upcoming.push(booking);
             else past.push(booking);
@@ -92,9 +88,7 @@ function MyBookings() {
       const orderRef = ref(db, `orders/${userId}/${bookingToCancel}`);
       await remove(orderRef);
 
-      setUpcomingBookings((prev) =>
-        prev.filter((b) => b.id !== bookingToCancel),
-      );
+      setUpcomingBookings((prev) => prev.filter((b) => b.id !== bookingToCancel));
       setPastBookings((prev) => prev.filter((b) => b.id !== bookingToCancel));
 
       showToast("Booking has been successfully cancelled.", "success");
@@ -163,20 +157,13 @@ function MyBookings() {
         </div>
       )}
 
-      {/* === DETAILS MODAL === */}
       {selectedBooking && (
         <div className="modal-overlay" onClick={() => setSelectedBooking(null)}>
           <div className="details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Reservation Details</h2>
-              <button
-                className="close-modal-btn"
-                onClick={() => setSelectedBooking(null)}
-              >
-                ✕
-              </button>
+              <button className="close-modal-btn" onClick={() => setSelectedBooking(null)}>✕</button>
             </div>
-
             <div className="modal-body">
               <div className="detail-row">
                 <span>Reservation ID</span>
@@ -184,29 +171,18 @@ function MyBookings() {
               </div>
               <div className="detail-row">
                 <span>Date</span>
-                <span>
-                  {new Date(selectedBooking.createdAt).toLocaleDateString(
-                    "nb-NO",
-                  )}
-                </span>
+                <span>{new Date(selectedBooking.createdAt).toLocaleDateString("nb-NO")}</span>
               </div>
               <div className="detail-row">
                 <span>Total Amount</span>
-                <span className="total-price">
-                  {selectedBooking.totalPrice} kr
-                </span>
+                <span className="total-price">{selectedBooking.totalPrice} kr</span>
               </div>
-
               <h3>Booked Items</h3>
               {selectedBooking.items?.map((item, index) => (
                 <div key={index} className="modal-item">
                   <strong>{item.name}</strong> — {item.type}
                   {item.hotelName && <p>at {item.hotelName}</p>}
-                  {item.checkIn && (
-                    <p>
-                      {item.checkIn} → {item.checkOut}
-                    </p>
-                  )}
+                  {item.checkIn && <p>{item.checkIn} → {item.checkOut}</p>}
                 </div>
               ))}
             </div>
@@ -214,30 +190,14 @@ function MyBookings() {
         </div>
       )}
 
-      {/* === CANCEL CONFIRMATION MODAL === */}
       {showCancelModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowCancelModal(false)}
-        >
+        <div className="modal-overlay" onClick={() => setShowCancelModal(false)}>
           <div className="cancel-modal" onClick={(e) => e.stopPropagation()}>
             <h2>Cancel Reservation</h2>
-            <p>
-              Are you sure you want to cancel this booking?
-              <br />
-              This action cannot be undone.
-            </p>
-
+            <p>Are you sure you want to cancel this booking?<br />This action cannot be undone.</p>
             <div className="cancel-modal-actions">
-              <button
-                className="cancel-modal-no"
-                onClick={() => setShowCancelModal(false)}
-              >
-                No, keep it
-              </button>
-              <button className="cancel-modal-yes" onClick={confirmCancel}>
-                Yes, cancel booking
-              </button>
+              <button className="cancel-modal-no" onClick={() => setShowCancelModal(false)}>No, keep it</button>
+              <button className="cancel-modal-yes" onClick={confirmCancel}>Yes, cancel booking</button>
             </div>
           </div>
         </div>
