@@ -14,7 +14,7 @@
 
 import { createContext, useContext, useState } from 'react';
 import { db } from '../firebase/config';
-import { ref, push, set } from 'firebase/database';
+import { ref, push, set, get } from 'firebase/database';
 import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
@@ -77,21 +77,27 @@ export function CartProvider({ children }) {
                 createdAt: new Date().toISOString()
             };
 
-            await set(newOrderRef, orderData);
+            const roomBookingWrites = cart
+                .filter(item => item.category === 'accommodation' && item.itemId && item.checkIn && item.checkOut)
+                .map(item => {
+                    const roomBookingRef = push(ref(db, `roomBookings/${item.itemId}`));
+                    return set(roomBookingRef, {
+                        checkIn: item.checkIn,
+                        checkOut: item.checkOut,
+                        orderId: newOrderRef.key
+                    });
+                });
 
-            console.log("✅ Bestilling lagret i Firebase:", orderData);
+            await Promise.all([set(newOrderRef, orderData), ...roomBookingWrites]);
+
             clearCart();
+            showToast("Booking confirmed!", "success");
             return true;
 
         } catch (error) {
             console.error("Feil ved lagring til Firebase:", error);
-            alert("Kunne ikke lagre bestillingen. Prøv igjen.");
+            showToast("Could not save booking. Please try again.", "error");
             return false;
-        }
-
-        if (success) {
-            showToast("Bestillingen er bekreftet! 🎉", "success");   // ← Pen melding
-            return true;
         }
     };
 

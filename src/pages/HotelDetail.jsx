@@ -8,7 +8,7 @@
  * @version 1.1
  */
 
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { db } from '../firebase/config';
 import { ref, get } from 'firebase/database';
@@ -17,6 +17,10 @@ import RoomCard from '../components/RoomCard';
 
 function HotelDetail() {
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const initialCheckIn = searchParams.get('checkIn') || '';
+    const initialCheckOut = searchParams.get('checkOut') || '';
+
     const [hotel, setHotel] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -96,10 +100,12 @@ function HotelDetail() {
                     <h2>Available rooms</h2>
                     <div className="rooms-list">
                         {hotel.rooms && Object.entries(hotel.rooms).map(([key, room]) => (
-                            <RoomCard 
-                                key={key} 
+                            <RoomCard
+                                key={key}
                                 room={room}
                                 hotelName={hotel.name}
+                                initialCheckIn={initialCheckIn}
+                                initialCheckOut={initialCheckOut}
                                 onAddToCart={() => handleAddToCart(room)}
                             />
                         ))}

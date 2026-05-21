@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import RoomBookingModal from './RoomBookingModal';
 
-function RoomCard({ room, hotelName }) {
+function RoomCard({ room, hotelName, initialCheckIn = '', initialCheckOut = '' }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
@@ -42,11 +42,13 @@ function RoomCard({ room, hotelName }) {
             </div>
 
             {/* Booking Modal */}
-            <RoomBookingModal 
+            <RoomBookingModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 room={room}
                 hotelName={hotelName}
+                initialCheckIn={initialCheckIn}
+                initialCheckOut={initialCheckOut}
             />
         </>
     );

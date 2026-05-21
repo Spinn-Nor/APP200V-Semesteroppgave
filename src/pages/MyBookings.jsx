@@ -11,20 +11,24 @@
 import { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { ref, get } from 'firebase/database';
+import { useAuth } from '../context/AuthContext';
 
 import './MyBookings.css';
 
 function MyBookings() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    // Temporary test ID
-    const testUserId = "fredrik-123";
+    const { currentUser } = useAuth();
 
     useEffect(() => {
+        if (!currentUser) {
+            setLoading(false);
+            return;
+        }
+
         const fetchBookings = async () => {
             try {
-                const bookingsRef = ref(db, `orders/${testUserId}`);
+                const bookingsRef = ref(db, `orders/${currentUser.uid}`);
                 const snapshot = await get(bookingsRef);
 
                 if (snapshot.exists()) {
@@ -46,9 +50,11 @@ function MyBookings() {
         };
 
         fetchBookings();
-    }, []);
+    }, [currentUser]);
 
     if (loading) return <h2>Laster dine bestillinger...</h2>;
+
+    if (!currentUser) return <p>You must be logged in to view your bookings.</p>;
 
     return (
         <div className="container">

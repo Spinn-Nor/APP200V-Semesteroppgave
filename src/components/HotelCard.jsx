@@ -1,6 +1,8 @@
-import {Link} from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 function HotelCard({hotel}) {
+  const { search } = useLocation();
+
   return (
     <div className="hotel-card">
         <img src={hotel.imageUrl} alt={hotel.name} className="hotel-image" />
@@ -15,7 +17,7 @@ function HotelCard({hotel}) {
 
             <p className="hotel-description">{hotel.description}</p>
 
-            <Link to={`/hotels/${hotel.id}`} className="see-rooms-btn">
+            <Link to={`/hotels/${hotel.id}${search}`} className="see-rooms-btn">
                 View available rooms
             </Link>
         </div>
