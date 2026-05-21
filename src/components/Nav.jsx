@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "../components/CartDrawer";
 import { signoutUser } from "../firebase/auth";
+import UserMenu from "./UserMenu";
 
 function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -63,27 +64,7 @@ function Nav() {
 
             {/* Auth Links */}
             {currentUser ? (
-              <>
-                <NavLink
-                  to="/my-bookings"
-                  className="nav-item"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  My Bookings
-                </NavLink>
-
-                <div className="nav-user">
-                  <span className="user-name">
-                    Hi,{" "}
-                    {currentUser?.displayName ||
-                      currentUser?.email?.split("@")[0] ||
-                      "User"}
-                  </span>
-                  <button className="logout-btn" onClick={handleLogout}>
-                    Logout
-                  </button>
-                </div>
-              </>
+              <UserMenu />
             ) : (
               <Link
                 to="/login"
