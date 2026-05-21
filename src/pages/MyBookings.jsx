@@ -13,6 +13,8 @@ import { ref, get, remove } from "firebase/database";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import BookingCard from "../components/BookingCard";
+
+import { usePageTitle } from "../hooks/usePageTitle";
 import "./MyBookings.css";
 
 function MyBookings() {
@@ -26,6 +28,8 @@ function MyBookings() {
 
   const { currentUser } = useAuth();
   const { showToast } = useCart();
+
+  usePageTitle("My Bookings");
 
   const userId = currentUser?.uid;
   const userName =
@@ -94,7 +98,9 @@ function MyBookings() {
       const orderRef = ref(db, `orders/${userId}/${bookingToCancel}`);
       await remove(orderRef);
 
-      setUpcomingBookings((prev) => prev.filter((b) => b.id !== bookingToCancel));
+      setUpcomingBookings((prev) =>
+        prev.filter((b) => b.id !== bookingToCancel),
+      );
       setPastBookings((prev) => prev.filter((b) => b.id !== bookingToCancel));
 
       showToast("Booking has been successfully cancelled.", "success");
@@ -178,7 +184,12 @@ function MyBookings() {
           <div className="details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Reservation Details</h2>
-              <button className="close-modal-btn" onClick={() => setSelectedBooking(null)}>✕</button>
+              <button
+                className="close-modal-btn"
+                onClick={() => setSelectedBooking(null)}
+              >
+                ✕
+              </button>
             </div>
             <div className="modal-body">
               <div className="detail-row">
@@ -187,18 +198,28 @@ function MyBookings() {
               </div>
               <div className="detail-row">
                 <span>Date</span>
-                <span>{new Date(selectedBooking.createdAt).toLocaleDateString("nb-NO")}</span>
+                <span>
+                  {new Date(selectedBooking.createdAt).toLocaleDateString(
+                    "nb-NO",
+                  )}
+                </span>
               </div>
               <div className="detail-row">
                 <span>Total Amount</span>
-                <span className="total-price">{selectedBooking.totalPrice} kr</span>
+                <span className="total-price">
+                  {selectedBooking.totalPrice} kr
+                </span>
               </div>
               <h3>Booked Items</h3>
               {selectedBooking.items?.map((item, index) => (
                 <div key={index} className="modal-item">
                   <strong>{item.name}</strong> — {item.type}
                   {item.hotelName && <p>at {item.hotelName}</p>}
-                  {item.checkIn && <p>{item.checkIn} → {item.checkOut}</p>}
+                  {item.checkIn && (
+                    <p>
+                      {item.checkIn} → {item.checkOut}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -207,13 +228,27 @@ function MyBookings() {
       )}
 
       {showCancelModal && (
-        <div className="modal-overlay" onClick={() => setShowCancelModal(false)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowCancelModal(false)}
+        >
           <div className="cancel-modal" onClick={(e) => e.stopPropagation()}>
             <h2>Cancel Reservation</h2>
-            <p>Are you sure you want to cancel this booking?<br />This action cannot be undone.</p>
+            <p>
+              Are you sure you want to cancel this booking?
+              <br />
+              This action cannot be undone.
+            </p>
             <div className="cancel-modal-actions">
-              <button className="cancel-modal-no" onClick={() => setShowCancelModal(false)}>No, keep it</button>
-              <button className="cancel-modal-yes" onClick={confirmCancel}>Yes, cancel booking</button>
+              <button
+                className="cancel-modal-no"
+                onClick={() => setShowCancelModal(false)}
+              >
+                No, keep it
+              </button>
+              <button className="cancel-modal-yes" onClick={confirmCancel}>
+                Yes, cancel booking
+              </button>
             </div>
           </div>
         </div>

@@ -414,3 +414,135 @@
 .view-btn:hover {
   background: #1e3a8a;
 }
+
+/* ==================== DASHBOARD ==================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 28px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-number {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1e2937;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-card:nth-child(1) .stat-number {
+  color: #1e40af;
+}
+.stat-card:nth-child(2) .stat-number {
+  color: #2563eb;
+}
+.stat-card:nth-child(3) .stat-number {
+  color: #3b82f6;
+}
+.stat-card:nth-child(4) .stat-number {
+  color: #1e40af;
+}
+
+/* Dashboard header */
+.admin-content h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+  color: #1e2937;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    padding: 24px 20px;
+  }
+
+  .stat-number {
+    font-size: 36px;
+  }
+}
+
+/* ==================== RECENT BOOKINGS ==================== */
+
+.recent-activity {
+  margin-top: 60px;
+}
+
+.recent-activity h2 {
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #1e2937;
+  font-weight: 600;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 800px;
+}
+
+.recent-item {
+  background: white;
+  border-radius: 12px;
+  padding: 18px 24px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #2563eb;
+  transition: all 0.3s ease;
+}
+
+.recent-item:hover {
+  transform: translateX(6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.recent-item strong {
+  color: #1e2937;
+  font-size: 16.5px;
+}
+
+.recent-item small {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 14.5px;
+}
+
+/* Empty state */
+.recent-activity p {
+  color: #94a3b8;
+  font-style: italic;
+  padding: 40px 20px;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 12px;
+}
