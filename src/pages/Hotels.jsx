@@ -1,11 +1,14 @@
 import { useState } from "react";
 import HotelCard from "../components/HotelCard";
 import { useHotels } from "../hooks/useHotels";
+import { usePageTitle } from "../hooks/usePageTitle";
 import "./Hotels.css";
 
 function Hotels() {
   const { hotels, loading, error } = useHotels();
   const [selectedCity, setSelectedCity] = useState("All");
+
+  usePageTitle("Hotels");
 
   // Filtering hotels based on chosen city
   const filteredHotels =

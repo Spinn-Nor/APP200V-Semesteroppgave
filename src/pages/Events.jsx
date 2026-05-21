@@ -1,32 +1,35 @@
-import React from 'react';
-import './Events.css';
+import React from "react";
+import { usePageTitle } from "../hooks/usePageTitle";
+import "./Events.css";
 
 const Events = () => {
+  usePageTitle("Events");
+
   const roomData = [
-    { 
-      id: 1, 
-      name: "The Boardroom", 
-      hotel: "Blueberry Grand Central", 
-      capacity: "12 people", 
+    {
+      id: 1,
+      name: "The Boardroom",
+      hotel: "Blueberry Grand Central",
+      capacity: "12 people",
       equipment: "65'' Screen, Video Hub",
-      price: "From 4500,-" 
+      price: "From 4500,-",
     },
-    { 
-      id: 2, 
-      name: "The Ocean Hall", 
-      hotel: "Farris Bad (Blueberry)", 
-      capacity: "150 people", 
+    {
+      id: 2,
+      name: "The Ocean Hall",
+      hotel: "Farris Bad (Blueberry)",
+      capacity: "150 people",
       equipment: "Stage, Projector, Sound System",
-      price: "From 12000,-" 
+      price: "From 12000,-",
     },
-    { 
-      id: 3, 
-      name: "The Creative Studio", 
-      hotel: "Blueberry Boutique", 
-      capacity: "25 people", 
+    {
+      id: 3,
+      name: "The Creative Studio",
+      hotel: "Blueberry Boutique",
+      capacity: "25 people",
       equipment: "Whiteboard, VR-set",
-      price: "From 6000,-" 
-    }
+      price: "From 6000,-",
+    },
   ];
 
   return (
@@ -46,7 +49,7 @@ const Events = () => {
           <span></span>
         </div>
 
-        {roomData.map(room => (
+        {roomData.map((room) => (
           <div key={room.id} className="table-row">
             <div className="room-name-cell">
               <strong>{room.name}</strong>
@@ -54,15 +57,11 @@ const Events = () => {
             <div className="hotel-name-cell">
               <span className="hotel-tag">{room.hotel}</span>
             </div>
-            <div className="capacity-cell">
-              {room.capacity}
-            </div>
+            <div className="capacity-cell">{room.capacity}</div>
             <div className="equipment-cell">
               <small>{room.equipment}</small>
             </div>
-            <div className="price-cell">
-              {room.price}
-            </div>
+            <div className="price-cell">{room.price}</div>
             <div className="action-cell">
               <button className="book-room-btn">Inquiry</button>
             </div>

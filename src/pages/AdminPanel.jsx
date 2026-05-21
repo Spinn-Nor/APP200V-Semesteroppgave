@@ -13,6 +13,7 @@ import { useHotels } from "../hooks/useHotels";
 import { db } from "../firebase/config";
 import { ref, set, remove, push, get } from "firebase/database";
 import { useCart } from "../context/CartContext";
+import { usePageTitle } from "../hooks/usePageTitle";
 import "./AdminPanel.css";
 
 function AdminPanel() {
@@ -35,6 +36,8 @@ function AdminPanel() {
     hasSpa: false,
     hasEvents: false,
   });
+
+  usePageTitle("Admin Panel");
 
   // General Info
   const [generalForm, setGeneralForm] = useState({});
