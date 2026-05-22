@@ -70,7 +70,7 @@ function UserMenu() {
                 <div className="user-dropdown">
                     <div className="user-dropdown-header">
                         <p className="user-dropdown-name">
-                            {displayName} {currentUser.role}
+                            {displayName}
                         </p>
                     </div>
 
