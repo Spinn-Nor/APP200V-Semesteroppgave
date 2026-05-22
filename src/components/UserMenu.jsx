@@ -70,9 +70,19 @@ function UserMenu() {
                 <div className="user-dropdown">
                     <div className="user-dropdown-header">
                         <p className="user-dropdown-name">
-                            {displayName}
+                            {displayName} {currentUser.role}
                         </p>
                     </div>
+
+                    {currentUser.role == "admin" && (
+                        <Link
+                            to="/admin"
+                            className="dropdown-link"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Admin Dashboard
+                        </Link>
+                    )}
 
                     <Link
                         to="/account"
