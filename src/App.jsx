@@ -25,6 +25,7 @@ import AdminRoute from "./components/AdminRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import MyBookings from "./pages/MyBookings";
+import Account from "./pages/Account";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
             <Route path="/locations" element={<Locations />} />
             <Route path="/login" element={<Login />} />
             <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="/account" element={<Account />} />
             <Route
               path="/admin"
               element={

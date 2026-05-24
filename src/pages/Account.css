@@ -1,0 +1,172 @@
+/* ==================== ACCOUNT PAGE - Consistent with AdminPanel ==================== */
+
+.account-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* ==================== SIDEBAR ==================== */
+
+.account-sidebar {
+  width: 280px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.account-logo {
+  padding: 0 28px 32px;
+}
+
+.account-logo h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.account-menu button {
+  width: 100%;
+  padding: 14px 24px;
+  background: none;
+  border: none;
+  color: #475569;
+  text-align: left;
+  font-size: 1.02rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.account-menu button:hover {
+  background: #f1f5f9;
+  color: #1e40af;
+}
+
+.account-menu button.active {
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+/* ==================== MAIN CONTENT ==================== */
+
+.account-content {
+  margin-left: 280px;
+  flex: 1;
+  padding: 40px;
+  background: #f8fafc;
+}
+
+.account-content h1 {
+  margin: 0 0 30px 0;
+  font-size: 2rem;
+  color: #1e2937;
+}
+
+/* Profile Card */
+.profile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+  max-width: 720px;
+  border: 1px solid #e2e8f0;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #1e2937;
+}
+
+.edit-btn {
+  padding: 10px 20px;
+  background: #e0f2fe;
+  color: #1e40af;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background: #bae6fd;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-group input:disabled {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.save-btn {
+  padding: 14px 28px;
+  background: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background: #1e3a8a;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 1024px) {
+  .account-content {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .account-sidebar {
+    width: 240px;
+  }
+  .account-content {
+    margin-left: 240px;
+    padding: 24px;
+  }
+}

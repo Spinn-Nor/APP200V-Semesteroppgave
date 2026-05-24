@@ -13,7 +13,6 @@ function Wellness() {
     const database = db || getDatabase();
     const treatmentsRef = ref(database, 'Spa/treatments');
     
-    
     const unsubscribe = onValue(treatmentsRef, (snapshot) => {
       const data = snapshot.val();
       
@@ -40,7 +39,7 @@ function Wellness() {
 
   return (
     <main className="wellness-page">
-      {/* Hero-seksjon */}
+      {/* Hero */}
       <section className="wellness-hero">
         <div className="wellness-hero-overlay" />
         <div className="wellness-hero-content">
@@ -99,7 +98,7 @@ function Wellness() {
         </div>
       </section>
 
-      {/* Booking-seksjon */}
+      {/* Booking */}
       <section className="wellness-booking">
         <div className="wellness-booking-content container">
           <h2>Ready for Your Spa Experience?</h2>
