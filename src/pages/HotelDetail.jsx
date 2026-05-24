@@ -11,12 +11,13 @@ import { db } from "../firebase/config";
 import { ref, get } from "firebase/database";
 import { useCart } from "../context/CartContext";
 import RoomCard from "../components/RoomCard";
+import ImageCarousel from "../components/ImageCarousel";
 
 function HotelDetail() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const initialCheckIn = searchParams.get('checkIn') || '';
-  const initialCheckOut = searchParams.get('checkOut') || '';
+  const initialCheckIn = searchParams.get("checkIn") || "";
+  const initialCheckOut = searchParams.get("checkOut") || "";
 
   const [hotel, setHotel] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,17 +52,21 @@ function HotelDetail() {
     <div className="container">
       <div className="hotel-detail">
         <div className="hotel-detail-header">
-          <img
-            src={hotel.imageUrl || "https://picsum.photos/id/1015/1200/600"}
-            alt={hotel.name}
-            className="detail-image"
+          <ImageCarousel
+            images={hotel.images || []}
+            autoScroll={true}
+            interval={5000}
           />
         </div>
 
         <div className="hotel-detail-info">
           <h1>{hotel.name}</h1>
-          <p className="hotel-city">{hotel.city} • {hotel.address}</p>
-          <p className="rating">⭐ {hotel.rating} ({hotel.reviewCount || 0} reviews)</p>
+          <p className="hotel-city">
+            {hotel.city} • {hotel.address}
+          </p>
+          <p className="rating">
+            ⭐ {hotel.rating} ({hotel.reviewCount || 0} reviews)
+          </p>
         </div>
 
         <div className="hotel-detail-content">

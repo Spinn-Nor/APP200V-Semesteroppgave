@@ -153,11 +153,26 @@
   padding: 60px 0 100px;
 }
 
+/* Hotel Detail Header - Karusell */
 .hotel-detail-header {
-  border-radius: 20px;
+  width: 100%;
+  margin-bottom: 30px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 60px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Gjør at karusellen fyller headeren */
+.hotel-detail-header .image-carousel {
+  height: 520px;
+  border-radius: 8px;
+}
+
+/* Justering for mobil */
+@media (max-width: 768px) {
+  .hotel-detail-header .image-carousel {
+    height: 380px;
+  }
 }
 
 .detail-image {

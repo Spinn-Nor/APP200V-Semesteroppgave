@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from "react-router-dom";
 import "../pages/Hotels.css";
 
 function HotelCard({ hotel }) {
@@ -6,7 +6,7 @@ function HotelCard({ hotel }) {
 
   return (
     <div className="hotel-card">
-      <img src={hotel.imageUrl} alt={hotel.name} className="hotel-image" />
+      <img src={hotel.images[0]} alt={hotel.name} className="hotel-image" />
 
       <div className="hotel-info">
         <h3>{hotel.name}</h3>

@@ -1,0 +1,52 @@
+.image-carousel {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.carousel-slides {
+  display: flex;
+  height: 100%;
+  transition: transform 0.8s ease-in-out;
+  transform: translateX(calc(var(--current-index) * -100%));
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: white;
+  transform: scale(1.4);
+}
+
+/* Pause when hovering */
+.image-carousel:hover .carousel-slides {
+  animation-play-state: paused;
+}
