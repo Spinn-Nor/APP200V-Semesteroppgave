@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { db } from "../firebase/config";
-import { ref, get } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import "./Account.css";
 
 function Account() {
@@ -23,7 +23,22 @@ function Account() {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!currentUser) return;
+
     setEditMode(false);
+
+    try {
+      await set(ref(db, `users/${currentUser.uid}`), {
+        email: currentUser.email,
+        displayName: formData.displayName,
+        updatedAt: new Date().toISOString(),
+      });
+
+      showToast("Profile updated successfully!", "success");
+    } catch (error) {
+      showToast("Failed to update profile. Please try again.", "error");
+      setEditMode(true); // keep edit mode if the call fails
+    }
   };
 
   if (!currentUser) {
