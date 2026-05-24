@@ -36,6 +36,7 @@ function Nav() {
     { to: "/", label: "Home" },
     { to: "/hotels", label: "Hotels" },
     { to: "/wellness", label: "Wellness" },
+    { to: "/locations", label: "Locations" },
     { to: "/events", label: "Events" },
   ];
 
