@@ -5,6 +5,7 @@ import "./Wellness.css";
 
 function Wellness() {
   usePageTitle("Wellness");
+
   const treatments = [
     {
       id: 1,
@@ -14,7 +15,7 @@ function Wellness() {
       duration: "60 min",
       price: "1200 NOK",
       image:
-        "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=600&auto=format&fit=crop", // Massasje-bilde
+        "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=600&auto=format&fit=crop",
     },
     {
       id: 2,
@@ -24,7 +25,7 @@ function Wellness() {
       duration: "45 min",
       price: "950 NOK",
       image:
-        "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=600&auto=format&fit=crop", // Ansiktsbehandling-bilde
+        "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=600&auto=format&fit=crop",
     },
     {
       id: 3,
@@ -34,7 +35,7 @@ function Wellness() {
       duration: "90 min",
       price: "1600 NOK",
       image:
-        "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=600&auto=format&fit=crop", // Steiner-bilde
+        "https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=600&auto=format&fit=crop",
     },
     {
       id: 4,
@@ -44,24 +45,20 @@ function Wellness() {
       duration: "75 min",
       price: "1450 NOK",
       image:
-        "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=600&auto=format&fit=crop", // Spa-atmosfære
+        "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=600&auto=format&fit=crop",
     },
   ];
 
   return (
     <main className="wellness-page">
-      {/* Hero-seksjon */}
+      {/* Hero */}
       <section className="wellness-hero">
         <div className="wellness-hero-overlay" />
         <div className="wellness-hero-content">
           <p className="wellness-tagline">Serenity & Balance</p>
-          <h1 className="wellness-title">
-            Your Sanctuary <br />
-            of Wellness
-          </h1>
+          <h1 className="wellness-title">Your Sanctuary of Wellness</h1>
           <p className="wellness-subtitle">
-            Escape the everyday and discover a world of pure relaxation at
-            Blueberry Spa.
+            Escape the everyday and discover pure relaxation at Blueberry Spa.
           </p>
           <a href="#treatments" className="wellness-cta-btn">
             Explore Treatments
@@ -69,55 +66,55 @@ function Wellness() {
         </div>
       </section>
 
-      {/* Introduksjon-seksjon */}
+      {/* Intro */}
       <section className="wellness-intro container">
         <div className="wellness-intro-text">
           <h2>Rejuvenate Your Mind & Body</h2>
           <p>
-            Our expert therapists are dedicated to providing personalized care
-            in a tranquil environment. From therapeutic massages to revitalizing
-            facials, every treatment is designed to restore balance and enhance
-            your well-being.
+            Our expert therapists provide personalized care in a tranquil
+            environment. Every treatment is crafted to restore balance and
+            enhance your well-being.
           </p>
         </div>
         <div className="wellness-intro-image">
           <img
             src="https://images.unsplash.com/photo-1591348113651-78709559c55b?q=80&w=800&auto=format&fit=crop"
-            alt="Tranquil spa relaxation area"
+            alt="Tranquil spa relaxation"
           />
         </div>
       </section>
 
-      {/* Behandlingsmeny (Grid) */}
-      <section id="treatments" className="wellness-treatments container">
-        <h2>Spa Menu</h2>
-        <div className="treatment-grid">
-          {treatments.map((treatment) => (
-            <div key={treatment.id} className="treatment-card">
-              <div className="treatment-image-wrapper">
-                <img src={treatment.image} alt={treatment.title} />
-              </div>
-              <div className="treatment-details">
-                <h3>{treatment.title}</h3>
-                <p className="treatment-description">{treatment.description}</p>
-                <div className="treatment-meta">
-                  <span className="duration">{treatment.duration}</span>
-                  <span className="price">{treatment.price}</span>
+      {/* Treatments - Full width background */}
+      <section id="treatments" className="wellness-treatments">
+        <div className="container">
+          <h2>Spa Menu</h2>
+          <div className="treatment-grid">
+            {treatments.map((treatment) => (
+              <div key={treatment.id} className="treatment-card">
+                <div className="treatment-image-wrapper">
+                  <img src={treatment.image} alt={treatment.title} />
+                </div>
+                <div className="treatment-details">
+                  <h3>{treatment.title}</h3>
+                  <p className="treatment-description">
+                    {treatment.description}
+                  </p>
+                  <div className="treatment-meta">
+                    <span className="duration">{treatment.duration}</span>
+                    <span className="price">{treatment.price}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Booking-seksjon */}
+      {/* Booking */}
       <section className="wellness-booking">
         <div className="wellness-booking-content container">
           <h2>Ready for Your Spa Experience?</h2>
-          <p>
-            Book your appointment online or contact our reception to create your
-            personalized wellness journey.
-          </p>
+          <p>Book your appointment online or contact our reception.</p>
           <div className="booking-actions">
             <Link to="/contact" className="contact-btn">
               Call Reception
