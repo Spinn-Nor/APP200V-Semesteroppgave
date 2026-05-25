@@ -1,32 +1,27 @@
-
-
-
 /* ============================================================
    BLUEBERRY HOTELS — Wellness Page (Refined Luxury)
    Theme: Deep Sea, Silver Mist & Blueberry Navy
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
-
 :root {
-  --blue-ink: #0a1128;       /* Dyp nattblå */
-  --blue-brand: #1e3a8a;     /* Blueberry kjerneblå */
-  --blue-soft: #4765ad;      /* Dus mellomblå */
-  --blue-mist: #f0f4f9;      /* Veldig lys blå bakgrunn */
-  --silver: #cbd5e1;         /* Ren luksus-sølv */
+  --blue-ink: #0a1128;       /* Deep night blue */
+  --blue-brand: #1e3a8a;     /* Blueberry core blue */
+  --blue-soft: #4765ad;      /* Soft medium blue */
+  --blue-mist: #f0f4f9;      /* Very light blue background */
+  --silver: #cbd5e1;         /* Luxury silver accent */
   --white: #ffffff;
   --text-main: #1e293b;
   --text-muted: #64748b;
   --transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* ---- Base ---- */
+/* ---- Base Styles ---- */
 .wellness-page {
   font-family: 'DM Sans', sans-serif;
   color: var(--text-main);
   background-color: var(--white);
   line-height: 1.6;
-  overflow-x: hidden; /* Fikser: Hindrer uønsket horisontal scrolling og kantskygger */
+  overflow-x: hidden; /* Prevents unwanted horizontal scrolling and edge shadows */
 }
 
 .container {
@@ -108,18 +103,18 @@
 }
 
 /* ==============================================
-   INTRO SECTION (Sentrerert luksus-layout uten bildekrasj)
+   INTRO SECTION (Centered Luxury Layout)
    ============================================== */
 .wellness-intro {
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center; /* Fikser: Sentrerer overskrift og brødtekst */
+  text-align: center; /* Centers headings and paragraph texts */
   padding: 90px 0;
 }
 
 .wellness-intro-text {
-  max-width: 750px; /* Sørger for en behagelig lesebredde når det er sentrert */
+  max-width: 750px; /* Provides a comfortable reading width when centered */
   margin: 0 auto;
 }
 
@@ -135,10 +130,8 @@
   color: var(--text-muted);
 }
 
-/* Fikser: Fjernet den gamle .wellness-intro-image-klassen siden bildet krasjet og ødela layouten */
-
 /* ==============================================
-   TREATMENTS GRID (Luksus skygger og lys boks)
+   TREATMENTS & DESTINATIONS GRID
    ============================================== */
 .wellness-treatments {
   padding: 100px 0;
@@ -171,14 +164,12 @@
   overflow: hidden;
   transition: var(--transition);
   border: 1px solid rgba(30, 58, 138, 0.05);
-  /* Fikser: Mer sofistikert skygge rundt boksene */
-  box-shadow: 0 10px 30px rgba(10, 17, 40, 0.04);
+  box-shadow: 0 10px 30px rgba(10, 17, 40, 0.04); /* Sophisticated card shadow */
 }
 
 .treatment-card:hover {
   transform: translateY(-8px);
-  /* Fikser: Markant og dypere skygge ved hover for "pop"-effekt */
-  box-shadow: 0 20px 40px rgba(30, 58, 138, 0.12);
+  box-shadow: 0 20px 40px rgba(30, 58, 138, 0.12); /* Distinct hover card shadow depth */
 }
 
 .treatment-image-wrapper {
@@ -194,7 +185,7 @@
 }
 
 .treatment-card:hover .treatment-image-wrapper img {
-  transform: scale(1.05); /* Elegant liten zoom på bildet ved hover */
+  transform: scale(1.05); /* Soft image zoom effect on hover */
 }
 
 .treatment-details {
@@ -212,7 +203,7 @@
   color: var(--text-muted);
   font-size: 0.95rem;
   margin-bottom: 25px;
-  height: 65px; /* Sørger for at alle kort forblir nøyaktig like høye */
+  height: 65px; /* Ensures all card structures stay perfectly uniform in height */
 }
 
 .treatment-meta {
@@ -230,12 +221,11 @@
 }
 
 /* ==============================================
-   BOOKING SECTION (Harmonisert dyp og moderne blå)
+   BOOKING SECTION (Harmonized Corporate Navy)
    ============================================== */
 .wellness-booking {
   padding: 120px 0;
-  /* Fikser: Endret til kjerneblå for å harmonisere bedre med headere og logoer */
-  background-color: var(--blue-brand);
+  background-color: var(--blue-brand); /* Main branding blue for consistency */
   color: var(--white);
   text-align: center;
 }
@@ -261,7 +251,6 @@
   gap: 25px;
 }
 
-/* Fikser styling på begge knappene i bunnen */
 .contact-btn, .book-now-btn {
   display: inline-block;
   padding: 16px 35px;
@@ -296,11 +285,68 @@
 }
 
 /* ==============================================
-   RESPONSIVE
+   RESPONSIVE MEDIA QUERIES
    ============================================== */
 @media (max-width: 768px) {
   .wellness-title { font-size: 3rem; }
   .wellness-booking h2 { font-size: 2.5rem; }
   .booking-actions { flex-direction: column; gap: 15px; }
   .contact-btn, .book-now-btn { width: 100%; max-width: 300px; text-align: center; }
+}
+
+/* ==============================================
+   NEW SPA APPLICATION UTILITIES & DYNAMIC STATES
+   ============================================== */
+
+/* Shared styles for database fetch and feedback loaders */
+.wellness-loading {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.wellness-error {
+  text-align: center;
+  color: #ff4d4d;
+  font-size: 1.2rem;
+}
+
+/* Dynamic error block structure safety space adjustments */
+.format-error-spacing {
+  margin-bottom: 2rem;
+}
+
+/* Spacing layout for smooth anchor page scrolls */
+.spa-selection-divider {
+  padding-bottom: 20px;
+}
+
+/* Navigation button to clear active locations */
+.back-location-btn {
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+
+/* Typography styles for Destination Selector Header (Step 1) */
+.spa-destination-title {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.spa-destination-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 50px;
+}
+
+/* Typography styles for Target Active Spa Menu Header (Step 2) */
+.spa-menu-title {
+  text-align: center; /* Centers the main Spa Menu heading */
+  margin-bottom: 10px;
+}
+
+.spa-menu-subtitle {
+  text-align: center; /* Centers the selected hotel message text line */
+  color: #64748b;
+  margin-bottom: 50px;
+  font-size: 1.2rem;
 }
