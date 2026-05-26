@@ -12,8 +12,9 @@ function Wellness() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // >>> POPUP STATE: Stores the treatment that is currently clicked on
+  //  POPUP STATE: Stores the treatment that is currently clicked on
   const [activeTreatment, setActiveTreatment] = useState(null);
+
 
   useEffect(() => {
     const database = db || getDatabase();
@@ -37,6 +38,8 @@ function Wellness() {
       setError("Failed to retrieve treatments. Please try again later.");
       setLoading(false);
     });
+
+    
 
     return () => unsubscribe();
   }, []);
