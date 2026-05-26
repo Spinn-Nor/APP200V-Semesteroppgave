@@ -173,6 +173,7 @@
   transition: var(--transition);
   border: 1px solid rgba(30, 58, 138, 0.05);
   box-shadow: 0 10px 30px rgba(10, 17, 40, 0.04);
+  
   /* Sophisticated card shadow */
 }
 
@@ -214,7 +215,8 @@
   color: var(--text-muted);
   font-size: 0.95rem;
   margin-bottom: 25px;
-  height: 65px;
+  min-height: 60px;
+  height: auto;
   /* Ensures all card structures stay perfectly uniform in height */
 }
 

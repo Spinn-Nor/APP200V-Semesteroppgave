@@ -147,7 +147,7 @@ function Wellness() {
                       <p className="treatment-description">{treatment.Description}</p>
                       <div className="treatment-meta">
                         <span className="duration">{treatment.Duration}</span>
-                        <span className="price">{treatment.Price}</span>
+                        <span className="price">{treatment.Price}kr</span>
                       </div>
                     </div>
                   </div>
