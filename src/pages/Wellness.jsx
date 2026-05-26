@@ -72,36 +72,42 @@ function Wellness() {
       <div id="spa-selection" className="spa-selection-divider"></div>
 
       {/*  Select Location */}
-      {!selectedHotelId && (
-        <section className="wellness-treatments">
-          <div className="container">
-            <h2 className="spa-destination-title">Select a Spa Destination</h2>
-            <p className="spa-destination-subtitle">Our luxury treatments are tailored to each unique location.</p>
+     {!selectedHotelId && (
+  <section className="wellness-treatments">
+    <div className="container">
+      <h2 className="spa-destination-title">Select a Spa Destination</h2>
+      <p className="spa-destination-subtitle">Our luxury treatments are tailored to each unique location.</p>
 
-            {hotelsLoading ? (
-              <p className="wellness-loading">Loading destinations...</p>
-            ) : hotelsError ? (
-              <p className="wellness-error">Error loading locations.</p>
-            ) : (
-              <div className="hotels-grid">
-                {spaHotels.map((hotel) => (
-                  <div key={hotel.id} className="hotel-card">
-                    <img src={hotel.image} alt={hotel.name} className="hotel-image" />
-                    <div className="hotel-info">
-                      <h3>{hotel.name}</h3>
-                      <p className="hotel-location">📍 {hotel.city}</p>
-                      <p className="hotel-description">{hotel.description}</p>
-                      <button className="see-rooms-btn" onClick={() => setSelectedHotelId(hotel.id)}>
-                        View Spa Menu
-                      </button>
-                    </div>
-                  </div>
-                ))}
+      {hotelsLoading ? (
+        <p className="wellness-loading">Loading destinations...</p>
+      ) : hotelsError ? (
+        <p className="wellness-error">Error loading locations.</p>
+      ) : (
+        <div className="hotels-grid">
+          {spaHotels.map((hotel) => (
+            <div key={hotel.id} className="hotel-card">
+              {/* Gathers pictures stored in DB as an array */}
+              <img 
+                src={(hotel.images && hotel.images[0])} 
+                alt={hotel.name} 
+                className="hotel-image" 
+              />
+              <div className="hotel-info">
+                <h3>{hotel.name}</h3>
+                <p className="hotel-location">📍 {hotel.city}</p>
+                <p className="hotel-description">{hotel.description}</p>
+                <button className="see-rooms-btn" onClick={() => setSelectedHotelId(hotel.id)}>
+                  View Spa Menu
+                </button>
               </div>
-            )}
-          </div>
-        </section>
+            </div>
+          ))}
+        </div>
       )}
+    </div>
+  </section>
+)}
+
 
       {/* STEP 2: Show Spa Menu */}
       {selectedHotelId && (
