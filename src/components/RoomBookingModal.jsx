@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import AmenitiesSelector from "./AmenitiesSelector";
 import "./styles/RoomBookingModal.css";
+import { useAuth } from "../context/AuthContext";
 
 function RoomBookingModal({
   isOpen,
@@ -28,6 +29,8 @@ function RoomBookingModal({
   const [selectedAmenities, setSelectedAmenities] = useState([]);
 
   const [error, setError] = useState("");
+
+  const { currentUser } = useAuth();
 
   // Scroll Lock when modal is open
   useEffect(() => {
@@ -88,6 +91,12 @@ function RoomBookingModal({
   const handleAddToCart = () => {
     if (!checkIn || !checkOut || nights <= 0) {
       setError("Please select both check-in and check-out dates.");
+      return;
+    }
+
+    // Check if user is logged in
+    if (!currentUser) {
+      showToast("You must be logged in to book a room", "error");
       return;
     }
 

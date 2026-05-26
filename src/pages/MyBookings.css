@@ -54,6 +54,8 @@
   }
 }
 
+/* ==================== BOOKING CARD ==================== */
+
 .booking-card-modern {
   background: white;
   border-radius: 20px;
@@ -161,7 +163,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  max-width: 250px;
 }
 
 .details-btn {
@@ -184,7 +185,7 @@
   background: #fecaca;
 }
 
-/* ==================== DETAILS MODAL - Luftig og moderne ==================== */
+/* ==================== DETAILS MODAL ==================== */
 
 .modal-overlay {
   position: fixed;
@@ -207,7 +208,6 @@
   max-height: 92vh;
   overflow-y: auto;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-  padding: 0;
 }
 
 .modal-header {
@@ -240,7 +240,6 @@
   color: #1e2937;
 }
 
-/* Modal body - mer luft */
 .modal-body {
   padding: 36px;
   display: flex;
@@ -261,28 +260,21 @@
   border-bottom: none;
 }
 
-.detail-label {
-  color: #64748b;
+.detail-row span:first-child {
   font-weight: 500;
+  color: #475569;
 }
 
-.detail-value {
-  font-weight: 600;
-  color: #1e2937;
+.detail-total {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f0f9ff;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.3rem;
 }
 
-.total-price {
-  font-size: 1.35rem;
-  color: #10b981;
-  font-weight: 700;
-}
-
-.items-title {
-  margin: 12px 0 16px 0;
-  color: #1e2937;
-  font-size: 1.35rem;
-}
-
+/* Modal Items + Amenities */
 .modal-item {
   background: #f8fafc;
   padding: 20px;
@@ -290,51 +282,43 @@
   border-left: 5px solid #3b82f6;
 }
 
-/* Ekstra luft på mobil */
-@media (max-width: 640px) {
-  .details-modal {
-    margin: 20px;
-    max-height: 88vh;
-  }
-
-  .modal-body {
-    padding: 28px 24px;
-  }
+.modal-item strong {
+  font-size: 1.1rem;
+  color: #1e3a8a;
 }
 
-/* Empty state - Mer luftig og moderne */
-.no-bookings {
-  text-align: center;
-  padding: 100px 40px;
-  background: white;
-  margin-top: 40px;
+.modal-amenities {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
 }
 
-.no-bookings h3 {
-  font-size: 1.8rem;
-  color: #1e2937;
-  margin-bottom: 16px;
+.modal-amenities strong {
+  display: block;
+  margin-bottom: 12px;
+  color: #1e3a8a;
+}
+
+.modal-amenities ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-amenities li {
+  padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.98rem;
+  color: #334155;
+}
+
+.modal-amenities .price {
+  color: #10b981;
   font-weight: 600;
 }
 
-.no-bookings p {
-  font-size: 1.1rem;
-  color: #64748b;
-  max-width: 420px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
-.no-bookings::before {
-  content: "🏨";
-  font-size: 4.5rem;
-  display: block;
-  margin-bottom: 24px;
-  opacity: 0.7;
-}
-
-/* ==================== CANCEL CONFIRMATION MODAL ==================== */
-
+/* Cancel Modal */
 .cancel-modal {
   background: white;
   border-radius: 20px;
@@ -376,29 +360,42 @@
 .cancel-modal-no {
   background: #f1f5f9;
   color: #334155;
-  border: none;
-}
-
-.cancel-modal-no:hover {
-  background: #e2e8f0;
 }
 
 .cancel-modal-yes {
   background: #ef4444;
   color: white;
-  border: none;
 }
 
-.cancel-modal-yes:hover {
-  background: #dc2626;
+/* Empty state */
+.no-bookings {
+  text-align: center;
+  padding: 100px 40px;
+  background: white;
+  margin-top: 40px;
 }
 
-/* Ekstra luft på mobil */
-@media (max-width: 640px) {
-  .cancel-modal {
-    margin: 20px;
-    padding: 32px 24px;
-  }
+.no-bookings h3 {
+  font-size: 1.8rem;
+  color: #1e2937;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.no-bookings p {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.no-bookings::before {
+  content: "🏨";
+  font-size: 4.5rem;
+  display: block;
+  margin-bottom: 24px;
+  opacity: 0.7;
 }
 
 .section-title {

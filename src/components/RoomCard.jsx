@@ -4,21 +4,34 @@
  * Displays a single room card and opens booking modal.
  *
  * @author Fredrik Fordelsen
- * @version 1.3
+ * @version 1.8
  */
 
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext"; // ← Lagt til
 import RoomBookingModal from "./RoomBookingModal";
 
 function RoomCard({
   room,
   hotelName,
   hotelId,
-  initialCheckIn = "",
-  initialCheckOut = "",
   hotelAmenities,
+  initialCheckIn,
+  initialCheckOut,
 }) {
+  const { currentUser } = useAuth();
+  const { showToast } = useCart(); // ← Lagt til
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openBookingModal = () => {
+    if (!currentUser) {
+      showToast("You must be logged in to book a room", "error");
+      return;
+    }
+    setIsModalOpen(true);
+  };
 
   return (
     <>
@@ -48,7 +61,10 @@ function RoomCard({
           )}
         </div>
 
-        <button className="book-roomBtn" onClick={() => setIsModalOpen(true)}>
+        <button
+          className="book-roomBtn"
+          onClick={openBookingModal} // ← Endret til openBookingModal
+        >
           Add to Cart
         </button>
       </div>
@@ -59,7 +75,7 @@ function RoomCard({
         room={room}
         hotelName={hotelName}
         hotelId={hotelId}
-        hotelAmenities={hotelAmenities || []} // ← Legg til denne linjen
+        hotelAmenities={hotelAmenities || []}
         initialCheckIn={initialCheckIn}
         initialCheckOut={initialCheckOut}
       />

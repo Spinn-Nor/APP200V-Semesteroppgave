@@ -55,15 +55,32 @@ function CartDrawer({ isOpen, onClose }) {
           ) : (
             <ul className="cart-items">
               {cart.map((item) => (
+                // CartDrawer.jsx - Oppdatert
                 <li key={item.cartId} className="cart-item">
                   <div className="cart-item-info">
                     <strong>{item.name}</strong>
                     {item.hotelName && (
                       <p className="item-hotel">at {item.hotelName}</p>
                     )}
-                    <p>{item.type}</p>
-                    {item.date && <small>{item.date}</small>}
+                    <p>
+                      {item.date} • {item.nights} nights
+                    </p>
+
+                    {/* Vis amenities */}
+                    {item.amenities && item.amenities.length > 0 && (
+                      <div className="cart-item-amenities">
+                        <small>Additional:</small>
+                        <ul>
+                          {item.amenities.map((amenity, index) => (
+                            <li key={index}>
+                              {amenity.label} (+{amenity.price} kr)
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
+
                   <div className="cart-item-price">
                     {item.price} kr
                     <button
