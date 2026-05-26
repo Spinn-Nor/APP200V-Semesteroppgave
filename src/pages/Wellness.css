@@ -350,3 +350,174 @@
   margin-bottom: 50px;
   font-size: 1.2rem;
 }
+
+/* ==============================================
+   POPUP MODAL (FIXED VERSION)
+   ============================================== */
+
+/* Makes treatment cards trigger pointer icons */
+.interactive-card {
+  cursor: pointer;
+}
+
+/* Dark blurring background overlay covering full screen */
+.treatment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 17, 40, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Centralized modal container container */
+.treatment-modal-content {
+  background-color: var(--white);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(10, 17, 40, 0.25);
+  animation: modalFadeIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+/* Smooth fade-in presentation transition */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close button positioning and interaction styling */
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  z-index: 10;
+  transition: var(--transition);
+}
+
+.modal-close-btn:hover {
+  color: var(--blue-ink);
+}
+
+/* Split content screen layout grid */
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Fixed container restricting image boundaries */
+.modal-image-container {
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
+  overflow: hidden;
+}
+
+/* Enforces image coverage without distorting aspect ratios */
+.modal-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Responsive configurations for small mobile viewports */
+@media (max-width: 650px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+  }
+  .modal-image-container {
+    height: 240px !important;
+    min-height: auto;
+  }
+}
+
+/* Right-side text element wrapping alignment container */
+.modal-info-container {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-info-container h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  color: var(--blue-ink);
+  margin-bottom: 15px;
+  line-height: 1.2;
+}
+
+/* Badge tracking details row */
+.modal-meta-tags {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.modal-tag-duration {
+  color: var(--text-muted);
+}
+
+.modal-tag-price {
+  color: var(--blue-brand);
+  font-weight: 600;
+}
+
+/* Thin semantic segmentation line */
+.modal-divider {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+}
+
+/* Core textual description spacing formatting */
+.modal-description-text {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+/* Final core CTA conversion link trigger button styling */
+.modal-book-btn {
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+  padding: 16px 30px;
+  background-color: var(--blue-brand);
+  color: var(--white);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  font-size: 0.9rem;
+  border-radius: 2px;
+  transition: var(--transition);
+  border: 1px solid var(--blue-brand);
+}
+
+.modal-book-btn:hover {
+  background-color: var(--blue-ink);
+  border-color: var(--blue-ink);
+}
