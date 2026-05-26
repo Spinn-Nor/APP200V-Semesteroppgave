@@ -4,7 +4,7 @@
  * Dynamic user dashboard with details modal and custom cancel confirmation.
  *
  * @author Fredrik Fordelsen & Bendik Viken Wangen
- * @version 1.8
+ * @version 1.9
  */
 
 import { useState, useEffect } from "react";
@@ -54,6 +54,7 @@ function MyBookings() {
 
           const today = new Date();
           today.setHours(0, 0, 0, 0);
+
           const upcoming = [];
           const past = [];
 
@@ -149,26 +150,16 @@ function MyBookings() {
       {pastBookings.length > 0 && (
         <>
           <h2 className="section-title">Past Reservations</h2>
-          <ul className="past-bookings-list">
+          <div className="bookings-grid">
             {pastBookings.map((booking) => (
-              <li key={booking.id} className="past-booking-item">
-                <div>
-                  <strong>Reservation #{booking.orderId?.slice(-8)} - {booking.items[0].name}, {booking.items[0].checkIn} - {booking.items[0].checkOut}</strong>
-                  <p>
-                    {new Date(booking.createdAt).toLocaleDateString("nb-NO")} —{" "}
-                    {booking.totalPrice} kr
-                  </p>
-                </div>
-
-                <button
-                  className="details-btn"
-                  onClick={() => setSelectedBooking(booking)}
-                >
-                  View
-                </button>
-              </li>
+              <BookingCard
+                key={booking.id}
+                booking={booking}
+                onCancel={openCancelModal}
+                onViewDetails={setSelectedBooking}
+              />
             ))}
-          </ul>
+          </div>
         </>
       )}
 
@@ -179,6 +170,7 @@ function MyBookings() {
         </div>
       )}
 
+      {/* ==================== DETAIL MODAL ==================== */}
       {selectedBooking && (
         <div className="modal-overlay" onClick={() => setSelectedBooking(null)}>
           <div className="details-modal" onClick={(e) => e.stopPropagation()}>
@@ -191,42 +183,53 @@ function MyBookings() {
                 ✕
               </button>
             </div>
+
             <div className="modal-body">
               <div className="detail-row">
                 <span>Reservation ID</span>
                 <span>#{selectedBooking.orderId?.slice(-8)}</span>
               </div>
               <div className="detail-row">
-                <span>Date</span>
+                <span>Booked on</span>
                 <span>
                   {new Date(selectedBooking.createdAt).toLocaleDateString(
                     "nb-NO",
                   )}
                 </span>
               </div>
-              <div className="detail-row">
-                <span>Total Amount</span>
-                <span className="total-price">
-                  {selectedBooking.totalPrice} kr
-                </span>
-              </div>
+
               <h3>Booked Items</h3>
               {selectedBooking.items?.map((item, index) => (
                 <div key={index} className="modal-item">
                   <strong>{item.name}</strong> — {item.type}
                   {item.hotelName && <p>at {item.hotelName}</p>}
-                  {item.checkIn && (
-                    <p>
-                      {item.checkIn} → {item.checkOut}
-                    </p>
+                  {item.date && <p className="item-date">{item.date}</p>}
+                  {/* Amenities vises her */}
+                  {item.amenities && item.amenities.length > 0 && (
+                    <div className="modal-amenities">
+                      <strong>Additional Services:</strong>
+                      <ul>
+                        {item.amenities.map((amenity, i) => (
+                          <li key={i}>
+                            {amenity.label}{" "}
+                            <span className="price">+{amenity.price} kr</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </div>
               ))}
+
+              <div className="detail-total">
+                <strong>Total Amount: {selectedBooking.totalPrice} kr</strong>
+              </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Cancel Modal */}
       {showCancelModal && (
         <div
           className="modal-overlay"

@@ -4,15 +4,19 @@
  * Slide-in cart panel from the right side of the screen.
  *
  * @author Fredrik Fordelsen
- * @version 1.5
+ * @version 1.6
  */
 
 import { useCart } from "../context/CartContext";
+import { useScrollLock } from "../hooks/useScrollLock"; // ← Lagt til
 import "./styles/CartDrawer.css";
 
 function CartDrawer({ isOpen, onClose }) {
   const { cart, removeFromCart, totalPrice, confirmBooking, showToast } =
     useCart();
+
+  // Scroll Lock når carten er åpen
+  useScrollLock(isOpen);
 
   const handleConfirm = async () => {
     if (cart.length === 0) return;
@@ -30,13 +34,13 @@ function CartDrawer({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Overlay - always rendered but hidden with class */}
+      {/* Overlay */}
       <div
         className={`cart-overlay ${isOpen ? "open" : ""}`}
         onClick={onClose}
       ></div>
 
-      {/* Drawer - always rendered, controlled by class */}
+      {/* Drawer */}
       <div className={`cart-drawer ${isOpen ? "open" : ""}`}>
         <div className="cart-header">
           <h2>Your Cart</h2>
@@ -51,15 +55,32 @@ function CartDrawer({ isOpen, onClose }) {
           ) : (
             <ul className="cart-items">
               {cart.map((item) => (
+                // CartDrawer.jsx - Oppdatert
                 <li key={item.cartId} className="cart-item">
                   <div className="cart-item-info">
                     <strong>{item.name}</strong>
                     {item.hotelName && (
                       <p className="item-hotel">at {item.hotelName}</p>
                     )}
-                    <p>{item.type}</p>
-                    {item.date && <small>{item.date}</small>}
+                    <p>
+                      {item.date} • {item.nights} nights
+                    </p>
+
+                    {/* Vis amenities */}
+                    {item.amenities && item.amenities.length > 0 && (
+                      <div className="cart-item-amenities">
+                        <small>Additional:</small>
+                        <ul>
+                          {item.amenities.map((amenity, index) => (
+                            <li key={index}>
+                              {amenity.label} (+{amenity.price} kr)
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
+
                   <div className="cart-item-price">
                     {item.price} kr
                     <button
