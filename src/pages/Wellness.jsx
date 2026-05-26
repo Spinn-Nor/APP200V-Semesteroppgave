@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './Wellness.css'; 
+import './Wellness.css';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { db } from '../firebase/config';
 import { useHotels } from '../hooks/useHotels';
 
 function Wellness() {
   const { hotels, loading: hotelsLoading, error: hotelsError } = useHotels();
-  const [selectedHotelId, setSelectedHotelId] = useState(null); 
+  const [selectedHotelId, setSelectedHotelId] = useState(null);
   const [treatments, setTreatments] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // >>> POPUP STATE: Stores the treatment that is currently clicked on
@@ -18,7 +18,7 @@ function Wellness() {
   useEffect(() => {
     const database = db || getDatabase();
     const treatmentsRef = ref(database, 'Spa/treatments');
-    
+
     const unsubscribe = onValue(treatmentsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -39,7 +39,7 @@ function Wellness() {
     });
 
     return () => unsubscribe();
-  }, []); 
+  }, []);
 
   const spaHotels = hotels ? hotels.filter(hotel => hotel.hasSpa === true) : [];
   const currentHotel = hotels ? hotels.find(h => h.id === selectedHotelId) : null;
@@ -115,17 +115,17 @@ function Wellness() {
             <p className="spa-menu-subtitle">
               Currently viewing treatments available at <strong>{currentHotel?.name || 'Chosen Location'}</strong>
             </p>
-            
+
             {error && <p className="wellness-error format-error-spacing">{error}</p>}
-            
+
             {loading ? (
               <p className="wellness-loading">Loading treatments...</p>
             ) : (
               <div className="treatment-grid">
                 {treatments.map((treatment) => (
                   /* Clicking this card opens the popup by setting the active treatment */
-                  <div 
-                    key={treatment.id} 
+                  <div
+                    key={treatment.id}
                     className="treatment-card interactive-card"
                     onClick={() => setActiveTreatment(treatment)}
                   >
@@ -153,12 +153,12 @@ function Wellness() {
         <div className="treatment-modal-overlay" onClick={() => setActiveTreatment(null)}>
           <div className="treatment-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close-btn" onClick={() => setActiveTreatment(null)}>×</button>
-            
-            <div className="modal-body">
+
+            <div className="wellness-modal-body">
               <div className="modal-image-container">
                 <img src={activeTreatment.image} alt={activeTreatment.name} />
               </div>
-              
+
               <div className="modal-info-container">
                 <h2>{activeTreatment.name}</h2>
                 <div className="modal-meta-tags">
@@ -167,7 +167,7 @@ function Wellness() {
                 </div>
                 <hr className="modal-divider" />
                 <p className="modal-description-text">{activeTreatment.Description}</p>
-                
+
                 <div className="modal-action-row">
                   <Link to="/booking" className="modal-book-btn">
                     Book Treatment

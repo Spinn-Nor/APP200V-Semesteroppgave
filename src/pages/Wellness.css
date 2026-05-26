@@ -4,11 +4,16 @@
    ============================================================ */
 
 :root {
-  --blue-ink: #0a1128;       /* Deep night blue */
-  --blue-brand: #1e3a8a;     /* Blueberry core blue */
-  --blue-soft: #4765ad;      /* Soft medium blue */
-  --blue-mist: #f0f4f9;      /* Very light blue background */
-  --silver: #cbd5e1;         /* Luxury silver accent */
+  --blue-ink: #0a1128;
+  /* Deep night blue */
+  --blue-brand: #1e3a8a;
+  /* Blueberry core blue */
+  --blue-soft: #4765ad;
+  /* Soft medium blue */
+  --blue-mist: #f0f4f9;
+  /* Very light blue background */
+  --silver: #cbd5e1;
+  /* Luxury silver accent */
   --white: #ffffff;
   --text-main: #1e293b;
   --text-muted: #64748b;
@@ -21,7 +26,8 @@
   color: var(--text-main);
   background-color: var(--white);
   line-height: 1.6;
-  overflow-x: hidden; /* Prevents unwanted horizontal scrolling and edge shadows */
+  overflow-x: hidden;
+  /* Prevents unwanted horizontal scrolling and edge shadows */
 }
 
 .container {
@@ -109,12 +115,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center; /* Centers headings and paragraph texts */
+  text-align: center;
+  /* Centers headings and paragraph texts */
   padding: 90px 0;
 }
 
 .wellness-intro-text {
-  max-width: 750px; /* Provides a comfortable reading width when centered */
+  max-width: 750px;
+  /* Provides a comfortable reading width when centered */
   margin: 0 auto;
 }
 
@@ -164,12 +172,14 @@
   overflow: hidden;
   transition: var(--transition);
   border: 1px solid rgba(30, 58, 138, 0.05);
-  box-shadow: 0 10px 30px rgba(10, 17, 40, 0.04); /* Sophisticated card shadow */
+  box-shadow: 0 10px 30px rgba(10, 17, 40, 0.04);
+  /* Sophisticated card shadow */
 }
 
 .treatment-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(30, 58, 138, 0.12); /* Distinct hover card shadow depth */
+  box-shadow: 0 20px 40px rgba(30, 58, 138, 0.12);
+  /* Distinct hover card shadow depth */
 }
 
 .treatment-image-wrapper {
@@ -185,7 +195,8 @@
 }
 
 .treatment-card:hover .treatment-image-wrapper img {
-  transform: scale(1.05); /* Soft image zoom effect on hover */
+  transform: scale(1.05);
+  /* Soft image zoom effect on hover */
 }
 
 .treatment-details {
@@ -203,7 +214,8 @@
   color: var(--text-muted);
   font-size: 0.95rem;
   margin-bottom: 25px;
-  height: 65px; /* Ensures all card structures stay perfectly uniform in height */
+  height: 65px;
+  /* Ensures all card structures stay perfectly uniform in height */
 }
 
 .treatment-meta {
@@ -225,7 +237,8 @@
    ============================================== */
 .wellness-booking {
   padding: 120px 0;
-  background-color: var(--blue-brand); /* Main branding blue for consistency */
+  background-color: var(--blue-brand);
+  /* Main branding blue for consistency */
   color: var(--white);
   text-align: center;
 }
@@ -288,10 +301,24 @@
    RESPONSIVE MEDIA QUERIES
    ============================================== */
 @media (max-width: 768px) {
-  .wellness-title { font-size: 3rem; }
-  .wellness-booking h2 { font-size: 2.5rem; }
-  .booking-actions { flex-direction: column; gap: 15px; }
-  .contact-btn, .book-now-btn { width: 100%; max-width: 300px; text-align: center; }
+  .wellness-title {
+    font-size: 3rem;
+  }
+
+  .wellness-booking h2 {
+    font-size: 2.5rem;
+  }
+
+  .booking-actions {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .contact-btn, .book-now-btn {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
 }
 
 /* ==============================================
@@ -340,12 +367,14 @@
 
 /* Typography styles for Target Active Spa Menu Header (Step 2) */
 .spa-menu-title {
-  text-align: center; /* Centers the main Spa Menu heading */
+  text-align: center;
+  /* Centers the main Spa Menu heading */
   margin-bottom: 10px;
 }
 
 .spa-menu-subtitle {
-  text-align: center; /* Centers the selected hotel message text line */
+  text-align: center;
+  /* Centers the selected hotel message text line */
   color: #64748b;
   margin-bottom: 50px;
   font-size: 1.2rem;
@@ -393,6 +422,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -418,9 +448,13 @@
 }
 
 /* Split content screen layout grid */
-.modal-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.wellness-modal-body {
+  /* display: grid;
+  grid-template-columns: 1fr 1fr; */
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  padding: 36px;
 }
 
 /* Fixed container restricting image boundaries */
@@ -429,14 +463,18 @@
   height: 100%;
   min-height: 350px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Enforces image coverage without distorting aspect ratios */
 .modal-image-container img {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
   object-fit: cover;
   display: block;
+  max-height: 600px;
 }
 
 /* Responsive configurations for small mobile viewports */
@@ -444,6 +482,7 @@
   .modal-body {
     grid-template-columns: 1fr;
   }
+
   .modal-image-container {
     height: 240px !important;
     min-height: auto;
