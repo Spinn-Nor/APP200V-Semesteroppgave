@@ -86,6 +86,7 @@ function HotelDetail() {
                   room={room}
                   hotelName={hotel.name}
                   hotelId={id}
+                  hotelAmenities={hotel.amenities || []} // ← Legg til denne
                   initialCheckIn={initialCheckIn}
                   initialCheckOut={initialCheckOut}
                 />

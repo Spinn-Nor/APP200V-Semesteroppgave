@@ -1,129 +1,121 @@
 /**
  * RoomBookingModal.jsx
- *
- * Modal with date selection and availability check for booking a room.
- *
- * @author Fredrik Fordelsen
- * @version 1.6
+ * Multi-step booking wizard with amenities selection
+ * @version 2.1
  */
 
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { db } from "../firebase/config";
-import { ref, get } from "firebase/database";
+import AmenitiesSelector from "./AmenitiesSelector";
 import "./styles/RoomBookingModal.css";
 
-function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId, initialCheckIn = '', initialCheckOut = '' }) {
+function RoomBookingModal({
+  isOpen,
+  onClose,
+  room,
+  hotelName,
+  hotelId,
+  hotelAmenities = [],
+  initialCheckIn = "",
+  initialCheckOut = "",
+}) {
   const { addToCart, showToast } = useCart();
 
+  const [step, setStep] = useState(1);
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
   const [nights, setNights] = useState(0);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
   const [error, setError] = useState("");
-  const [availability, setAvailability] = useState(null); // null | 'available' | 'unavailable'
-  const [checkingAvailability, setCheckingAvailability] = useState(false);
 
-  const today = new Date().toISOString().split("T")[0];
-  const minCheckOut = checkIn
-    ? new Date(new Date(checkIn).getTime() + 86400000).toISOString().split("T")[0]
-    : today;
-
-  // Reset state when modal closes
+  // Scroll Lock when modal is open
   useEffect(() => {
-    if (!isOpen) {
-      setCheckIn(initialCheckIn);
-      setCheckOut(initialCheckOut);
-      setNights(0);
-      setAvailability(null);
-      setError("");
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = "15px"; // Hindrer layout shift
+    } else {
+      document.body.style.overflow = "unset";
+      document.body.style.paddingRight = "0";
     }
-  }, [isOpen, initialCheckIn, initialCheckOut]);
+
+    return () => {
+      document.body.style.overflow = "unset";
+      document.body.style.paddingRight = "0";
+    };
+  }, [isOpen]);
 
   // Calculate nights
   useEffect(() => {
     if (checkIn && checkOut) {
       const start = new Date(checkIn);
       const end = new Date(checkOut);
-      const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      const diff = Math.ceil((end - start) / 86400000);
       setNights(diff > 0 ? diff : 0);
     } else {
       setNights(0);
     }
   }, [checkIn, checkOut]);
 
-  // Check availability against existing roomBookings when dates are set
-  useEffect(() => {
-    if (!checkIn || !checkOut || nights <= 0 || !room.id) {
-      setAvailability(null);
+  const roomTotal = nights * (room.price || 0);
+  const amenitiesTotal = selectedAmenities.reduce(
+    (sum, item) => sum + (item.price || 0),
+    0,
+  );
+  const totalPrice = roomTotal + amenitiesTotal;
+
+  const nextStep = () => {
+    if (step === 1 && (!checkIn || !checkOut)) {
+      setError("Please select both check-in and check-out dates.");
       return;
     }
-
-    let cancelled = false;
-    const checkAvailability = async () => {
-      setCheckingAvailability(true);
-      try {
-        const snapshot = await get(ref(db, `roomBookings/${room.id}`));
-        if (cancelled) return;
-
-        if (!snapshot.exists()) {
-          setAvailability('available');
-          return;
-        }
-
-        const hasOverlap = Object.values(snapshot.val()).some(
-          booking => checkIn < booking.checkOut && checkOut > booking.checkIn
-        );
-        setAvailability(hasOverlap ? 'unavailable' : 'available');
-      } catch (err) {
-        console.error('Error checking availability:', err);
-        if (!cancelled) setAvailability(null);
-      } finally {
-        if (!cancelled) setCheckingAvailability(false);
-      }
-    };
-
-    checkAvailability();
-    return () => { cancelled = true; };
-  }, [checkIn, checkOut, nights, room.id]);
-
-  const handleCheckInChange = (e) => {
-    const newCheckIn = e.target.value;
-    setCheckIn(newCheckIn);
-    if (checkOut && checkOut <= newCheckIn) setCheckOut('');
+    setError("");
+    setStep(step + 1);
   };
 
-  const totalPrice = nights * (room.price || 0);
+  const prevStep = () => setStep(step - 1);
+
+  const goToStep = (newStep) => {
+    if (
+      newStep === 1 ||
+      (newStep === 2 && checkIn && checkOut) ||
+      newStep === 3
+    ) {
+      setStep(newStep);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!checkIn || !checkOut || nights <= 0) {
       setError("Please select both check-in and check-out dates.");
-      showToast("Please select both dates.", "error");
       return;
     }
-    if (availability === 'unavailable') {
-      showToast("This room is not available for the selected dates.", "error");
-      return;
-    }
+
+    // Sikker roomId - dette er hovedårsaken til feilen
+    const safeRoomId = room.id || Object.keys(room)[0] || `room-${Date.now()}`;
 
     const cartItem = {
       name: room.name || "Unknown Room",
       type: "Room",
       price: totalPrice,
-      pricePerNight: room.price,
-      nights,
+      pricePerNight: room.price || 0,
+      nights: Number(nights),
       checkIn,
       checkOut,
       capacity: room.capacity || 1,
-      hotelName,
-      hotelId,
-      roomId: room.id || room.name?.toLowerCase().replace(/\s+/g, "-"),
-      date: `${checkIn} to ${checkOut}`,
-      itemId: room.id || Date.now(),
+      hotelName: hotelName || "Unknown Hotel",
+      hotelId: hotelId,
+      roomId: safeRoomId, // ← Viktig fix
+      amenities: selectedAmenities || [],
+      amenitiesTotal: amenitiesTotal || 0,
+      date: `${checkIn} — ${checkOut}`,
+      itemId: `${safeRoomId}-${Date.now()}`,
       category: "accommodation",
+      addedAt: new Date().toISOString(),
     };
 
     addToCart(cartItem);
-    showToast(`"${room.name}" from ${hotelName} has been added to your cart!`, "success");
+    showToast(`"${room.name}" added to cart!`, "success");
     onClose();
   };
 
@@ -131,60 +123,155 @@ function RoomBookingModal({ isOpen, onClose, room, hotelName, hotelId, initialCh
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content wizard-modal">
         <div className="modal-header">
           <h2>Book {room.name}</h2>
-          <button className="close-modal-btn" onClick={onClose}>✕</button>
+          <button className="close-modal-btn" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="step-indicator">
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${((step - 1) / 2) * 100}%` }}
+            ></div>
+          </div>
+
+          <div className="steps">
+            <div
+              className={`step ${step === 1 ? "active" : ""}`}
+              onClick={() => goToStep(1)}
+            >
+              Dates
+            </div>
+            <div
+              className={`step ${step === 2 ? "active" : ""}`}
+              onClick={() => goToStep(2)}
+            >
+              Amenities
+            </div>
+            <div
+              className={`step ${step === 3 ? "active" : ""}`}
+              onClick={() => goToStep(3)}
+            >
+              Summary
+            </div>
+          </div>
         </div>
 
         <div className="modal-body">
           {error && <p className="error-message">{error}</p>}
 
-          <div className="form-group">
-            <label>Check-in Date</label>
-            <input
-              type="date"
-              value={checkIn}
-              min={today}
-              onChange={handleCheckInChange}
-            />
-          </div>
+          {/* Step 1: Dates */}
+          {step === 1 && (
+            <div className="step-content">
+              <h3>Select Dates</h3>
+              <div className="form-group">
+                <label>Check-in Date</label>
+                <input
+                  type="date"
+                  value={checkIn}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label>Check-out Date</label>
+                <input
+                  type="date"
+                  value={checkOut}
+                  min={checkIn || new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
 
-          <div className="form-group">
-            <label>Check-out Date</label>
-            <input
-              type="date"
-              value={checkOut}
-              min={minCheckOut}
-              onChange={(e) => setCheckOut(e.target.value)}
-            />
-          </div>
+          {/* Step 2: Amenities */}
+          {step === 2 && (
+            <div className="step-content">
+              <h3>Additional Services</h3>
+              <AmenitiesSelector
+                amenities={hotelAmenities}
+                selectedAmenities={selectedAmenities}
+                onChange={setSelectedAmenities}
+              />
+            </div>
+          )}
 
-          {nights > 0 && (
-            <div className="price-summary">
-              <p>Number of nights: <strong>{nights}</strong></p>
-              <p>Price per night: <strong>{room.price} kr</strong></p>
-              <p><strong>Total: {totalPrice} kr</strong></p>
-              {checkingAvailability && <p className="availability-checking">Checking availability...</p>}
-              {!checkingAvailability && availability === 'available' && (
-                <p className="availability-ok">Room is available for these dates</p>
-              )}
-              {!checkingAvailability && availability === 'unavailable' && (
-                <p className="availability-error">Room is not available for these dates</p>
-              )}
+          {/* Step 3: Summary */}
+          {step === 3 && (
+            <div className="step-content">
+              <h3>Booking Summary</h3>
+              <div className="booking-summary">
+                <div className="summary-row">
+                  <span>Room</span>
+                  <span>
+                    <strong>{room.name}</strong>
+                  </span>
+                </div>
+                <div className="summary-row">
+                  <span>Dates</span>
+                  <span>
+                    <strong>
+                      {checkIn} — {checkOut}
+                    </strong>{" "}
+                    ({nights} nights)
+                  </span>
+                </div>
+                <div className="summary-row">
+                  <span>Room Price</span>
+                  <span>{roomTotal} kr</span>
+                </div>
+
+                {selectedAmenities.length > 0 && (
+                  <>
+                    <div className="summary-row">
+                      <span>
+                        <strong>Selected Amenities</strong>
+                      </span>
+                    </div>
+                    {selectedAmenities.map((item, index) => (
+                      <div key={index} className="summary-row amenity-row">
+                        <span>{item.label}</span>
+                        <span>+ {item.price} kr</span>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                <div className="summary-row total-row">
+                  <span>
+                    <strong>Total</strong>
+                  </span>
+                  <span>
+                    <strong>{totalPrice} kr</strong>
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
         <div className="modal-footer">
-          <button className="cancel-btn" onClick={onClose}>Cancel</button>
-          <button
-            className="add-to-cart-modal-btn"
-            onClick={handleAddToCart}
-            disabled={availability === 'unavailable' || checkingAvailability}
-          >
-            {checkingAvailability ? "Checking availability..." : "Add to Cart"}
-          </button>
+          {step > 1 && (
+            <button className="cancel-btn" onClick={prevStep}>
+              Back
+            </button>
+          )}
+
+          {step < 3 ? (
+            <button className="next-btn" onClick={nextStep}>
+              Next
+            </button>
+          ) : (
+            <button className="add-to-cart-modal-btn" onClick={handleAddToCart}>
+              Add to Cart
+            </button>
+          )}
         </div>
       </div>
     </div>

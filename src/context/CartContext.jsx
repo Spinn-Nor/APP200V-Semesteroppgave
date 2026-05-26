@@ -54,35 +54,54 @@ export function CartProvider({ children }) {
    * Saves the entire cart as one Order in Firebase
    */
   const confirmBooking = async () => {
-    if (cart.length === 0) {
-      alert("Handlekurven er tom.");
+    if (cart.length === 0) return false;
+
+    // Hent currentUser fra useAuth hook
+    const user = currentUser; // ← Bruk currentUser fra context
+
+    if (!user) {
+      showToast("You must be logged in to confirm booking", "error");
       return false;
     }
 
-    const currentUserId = currentUser?.uid || "test-user-" + Date.now();
-
     try {
-      const orderRef = ref(db, `orders/${currentUserId}`);
-      const newOrderRef = push(orderRef);
+      const orderId = `order-${Date.now()}`;
+
+      // Rens data før lagring
+      const cleanItems = cart.map((item) => ({
+        name: item.name || "Unknown Room",
+        type: item.type || "Room",
+        price: Number(item.price) || 0,
+        pricePerNight: Number(item.pricePerNight) || 0,
+        nights: Number(item.nights) || 1,
+        checkIn: item.checkIn,
+        checkOut: item.checkOut,
+        hotelName: item.hotelName || "Unknown Hotel",
+        hotelId: item.hotelId || "unknown",
+        roomId: item.roomId || "unknown-room",
+        amenities: item.amenities || [],
+        amenitiesTotal: Number(item.amenitiesTotal) || 0,
+        date: item.date || "",
+        category: item.category || "accommodation",
+      }));
 
       const orderData = {
-        orderId: newOrderRef.key,
-        userId: currentUserId,
-        userEmail: currentUser?.email || "unknown",
-        items: cart,
-        totalPrice: totalPrice,
+        userId: user.uid,
+        items: cleanItems,
+        totalPrice: Number(totalPrice) || 0,
         status: "confirmed",
         createdAt: new Date().toISOString(),
+        orderId: orderId,
       };
 
-      await set(newOrderRef, orderData);
+      await set(ref(db, `orders/${user.uid}/${orderId}`), orderData);
 
       clearCart();
       showToast("Booking confirmed successfully!", "success");
       return true;
     } catch (error) {
-      console.error("Feil ved lagring til Firebase:", error);
-      showToast("Could not save booking. Please try again.", "error");
+      console.error("Error saving order:", error);
+      showToast("Failed to confirm booking. Please try again.", "error");
       return false;
     }
   };

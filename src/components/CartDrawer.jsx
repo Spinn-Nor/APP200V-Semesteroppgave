@@ -4,15 +4,19 @@
  * Slide-in cart panel from the right side of the screen.
  *
  * @author Fredrik Fordelsen
- * @version 1.5
+ * @version 1.6
  */
 
 import { useCart } from "../context/CartContext";
+import { useScrollLock } from "../hooks/useScrollLock"; // ← Lagt til
 import "./styles/CartDrawer.css";
 
 function CartDrawer({ isOpen, onClose }) {
   const { cart, removeFromCart, totalPrice, confirmBooking, showToast } =
     useCart();
+
+  // Scroll Lock når carten er åpen
+  useScrollLock(isOpen);
 
   const handleConfirm = async () => {
     if (cart.length === 0) return;
@@ -30,13 +34,13 @@ function CartDrawer({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Overlay - always rendered but hidden with class */}
+      {/* Overlay */}
       <div
         className={`cart-overlay ${isOpen ? "open" : ""}`}
         onClick={onClose}
       ></div>
 
-      {/* Drawer - always rendered, controlled by class */}
+      {/* Drawer */}
       <div className={`cart-drawer ${isOpen ? "open" : ""}`}>
         <div className="cart-header">
           <h2>Your Cart</h2>

@@ -10,7 +10,14 @@
 import { useState } from "react";
 import RoomBookingModal from "./RoomBookingModal";
 
-function RoomCard({ room, hotelName, hotelId, initialCheckIn = '', initialCheckOut = '' }) {
+function RoomCard({
+  room,
+  hotelName,
+  hotelId,
+  initialCheckIn = "",
+  initialCheckOut = "",
+  hotelAmenities,
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -21,14 +28,20 @@ function RoomCard({ room, hotelName, hotelId, initialCheckIn = '', initialCheckO
         </div>
 
         <div className="room-details">
-          <p><strong>Price per night:</strong> {room.price} kr</p>
-          <p><strong>Capacity:</strong> {room.capacity} people</p>
+          <p>
+            <strong>Price per night:</strong> {room.price} kr
+          </p>
+          <p>
+            <strong>Capacity:</strong> {room.capacity} people
+          </p>
         </div>
 
         <div className="room-amenities">
           {room.amenities && room.amenities.length > 0 ? (
             room.amenities.map((amenity, index) => (
-              <span key={index} className="amenity-tag">{amenity}</span>
+              <span key={index} className="amenity-tag">
+                {amenity}
+              </span>
             ))
           ) : (
             <span className="no-amenities">No amenities listed</span>
@@ -46,6 +59,7 @@ function RoomCard({ room, hotelName, hotelId, initialCheckIn = '', initialCheckO
         room={room}
         hotelName={hotelName}
         hotelId={hotelId}
+        hotelAmenities={hotelAmenities || []} // ← Legg til denne linjen
         initialCheckIn={initialCheckIn}
         initialCheckOut={initialCheckOut}
       />
