@@ -107,14 +107,15 @@ function Wellness() {
       {selectedHotelId && (
         <section id="treatments" className="wellness-treatments">
           <div className="container">
-            <button className="filter-btn back-location-btn" onClick={() => setSelectedHotelId(null)}>
-              ← Change Location
-            </button>
 
             <h2 className="spa-menu-title">Spa Menu</h2>
             <p className="spa-menu-subtitle">
               Currently viewing treatments available at <strong>{currentHotel?.name || 'Chosen Location'}</strong>
             </p>
+
+            <button className="filter-btn back-location-btn" onClick={() => setSelectedHotelId(null)}>
+              ← Change Location
+            </button>
 
             {error && <p className="wellness-error format-error-spacing">{error}</p>}
 
