@@ -581,7 +581,7 @@ function AdminPanel() {
                   className="delete-btn"
                   onClick={() => openDeleteModal(selectedHotel)}
                 >
-                  🗑️ Slett hotell
+                  Delete Hotel
                 </button>
 
                 <button className="close-details-btn" onClick={closeDetails}>
@@ -1088,13 +1088,13 @@ function AdminPanel() {
           onClick={() => setShowDeleteModal(false)}
         >
           <div className="cancel-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Slett hotell</h2>
+            <h2>Delete Hotel</h2>
             <p>
-              Er du sikker på at du vil slette hotellet <br />
+              Are you sure you want to delete <br />
               <strong>"{hotelToDelete.name}"</strong>?
               <br />
               <br />
-              Dette inkluderer alle rom og kan ikke angres.
+              This includes all rooms and cannot be undone.
             </p>
             <div className="cancel-modal-actions">
               <button
@@ -1104,13 +1104,13 @@ function AdminPanel() {
                   setHotelToDelete(null);
                 }}
               >
-                Avbryt
+                Cancel
               </button>
               <button
                 className="cancel-modal-yes delete-confirm"
                 onClick={confirmDeleteHotel}
               >
-                Ja, slett hotell
+                Yes, delete hotel
               </button>
             </div>
           </div>
