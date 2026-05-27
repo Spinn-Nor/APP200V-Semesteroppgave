@@ -20,6 +20,8 @@ function AdminPanel() {
   const { currentUser, logout } = useAuth();
   const { hotels, loading } = useHotels();
   const { showToast } = useCart();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [hotelToDelete, setHotelToDelete] = useState(null);
 
   const [activeTab, setActiveTab] = useState("hotels");
   const [selectedHotel, setSelectedHotel] = useState(null);
@@ -268,6 +270,11 @@ function AdminPanel() {
     setShowHotelModal(true);
   };
 
+  const openDeleteModal = (hotel) => {
+    setHotelToDelete(hotel);
+    setShowDeleteModal(true);
+  };
+
   const saveHotel = async (e) => {
     e.preventDefault();
 
@@ -278,6 +285,16 @@ function AdminPanel() {
     }
 
     try {
+      // Cleaning amenities field to make sure that price gets passed as a number
+      const cleanedAmenities = (hotelForm.amenities || [])
+        .filter((a) => a.label && a.label.trim() !== "")
+        .map((amenity) => ({
+          ...amenity,
+          id: amenity.id || amenity.label.toLowerCase().replace(/\s+/g, "_"),
+          price: Number(amenity.price) || 0, // Specifially defines price data type to avoid error
+          label: amenity.label.trim(),
+        }));
+
       const hotelData = {
         id: hotelForm.id,
         name: hotelForm.name,
@@ -288,7 +305,7 @@ function AdminPanel() {
         hasSpa: hotelForm.hasSpa,
         hasEvents: hotelForm.hasEvents,
         images: hotelForm.images || [],
-        amenities: hotelForm.amenities || [],
+        amenities: cleanedAmenities,
         rooms: {},
       };
 
@@ -302,6 +319,29 @@ function AdminPanel() {
       // Show error message
       console.error(error);
       showToast("Could not add hotel", "error");
+    }
+  };
+
+  const confirmDeleteHotel = async () => {
+    if (!hotelToDelete) return;
+
+    const hotelName = hotelToDelete.name;
+
+    try {
+      await remove(ref(db, `hotels/${hotelToDelete.id}`));
+
+      setShowDeleteModal(false);
+      setHotelToDelete(null);
+      setSelectedHotel(null);
+      setActiveTab("hotels");
+
+      // Toast after state change
+      setTimeout(() => {
+        showToast(`Hotel "${hotelName}" has been deleted`, "success");
+      }, 100);
+    } catch (error) {
+      console.error(error);
+      showToast("Unable to delete hotel", "error");
     }
   };
 
@@ -356,10 +396,10 @@ function AdminPanel() {
       let roomId;
 
       if (editingRoomId) {
-        // === REDIGERER EKSTISTERENDE ROM ===
+        // Edit existing room
         roomId = editingRoomId;
       } else {
-        // === LEGGER TIL NYTT ROM ===
+        // === Add new room ===
         const roomSlug = roomForm.name
           .toLowerCase()
           .trim()
@@ -371,10 +411,9 @@ function AdminPanel() {
 
       const roomData = {
         name: roomForm.name,
-        price: Number(roomForm.price),
-        capacity: Number(roomForm.capacity),
+        price: Number(roomForm.price) || 0,
+        capacity: Number(roomForm.capacity) || 2,
         imageUrl: roomForm.imageUrl || "",
-        amenities: roomForm.amenities || [], // beholdes hvis du har det
       };
 
       await set(
@@ -536,9 +575,19 @@ function AdminPanel() {
           <div className="hotel-details-view">
             <div className="details-header">
               <h1>{selectedHotel.name}</h1>
-              <button className="close-details-btn" onClick={closeDetails}>
-                ← Back to Hotels
-              </button>
+
+              <div className="details-header-actions">
+                <button
+                  className="delete-btn"
+                  onClick={() => openDeleteModal(selectedHotel)}
+                >
+                  🗑️ Slett hotell
+                </button>
+
+                <button className="close-details-btn" onClick={closeDetails}>
+                  ← Back to Hotels
+                </button>
+              </div>
             </div>
 
             <div className="details-tabs">
@@ -855,6 +904,20 @@ function AdminPanel() {
                     required
                   />
                 </div>
+
+                <div className="form-group">
+                  <label>Full Address</label>
+                  <input
+                    type="text"
+                    placeholder="Storgata 12, 4005 Stavanger"
+                    value={hotelForm.address || ""}
+                    onChange={(e) =>
+                      setHotelForm({ ...hotelForm, address: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+
                 <div className="form-group">
                   <label>Rating</label>
                   <input
@@ -1014,6 +1077,42 @@ function AdminPanel() {
                 <button type="submit">Save hotel</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== DELETE HOTEL MODAL ==================== */}
+      {showDeleteModal && hotelToDelete && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div className="cancel-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Slett hotell</h2>
+            <p>
+              Er du sikker på at du vil slette hotellet <br />
+              <strong>"{hotelToDelete.name}"</strong>?
+              <br />
+              <br />
+              Dette inkluderer alle rom og kan ikke angres.
+            </p>
+            <div className="cancel-modal-actions">
+              <button
+                className="cancel-modal-no"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setHotelToDelete(null);
+                }}
+              >
+                Avbryt
+              </button>
+              <button
+                className="cancel-modal-yes delete-confirm"
+                onClick={confirmDeleteHotel}
+              >
+                Ja, slett hotell
+              </button>
+            </div>
           </div>
         </div>
       )}
