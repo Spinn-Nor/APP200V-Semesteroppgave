@@ -1,10 +1,7 @@
 import { ref, set } from "firebase/database";
 import { db } from "./config"; 
 
-// ─────────────────────────────────────────────
-// 💆 SPA-DATA  →  'Spa/treatments'-noden
-// Tekstene er nå på engelsk og nøyaktig 2 korte setninger!
-// ─────────────────────────────────────────────
+
 const newSpaData = [
   {
     name: "Arktisk Mineralsteinmassasje",
@@ -47,9 +44,9 @@ const newSpaData = [
 export const seedNewDatabaseData = async () => {
   try {
     await set(ref(db, "Spa/treatments"), newSpaData);
-    console.log("✅ Spa-behandlinger lagt inn i 'Spa/treatments'!");
+    console.log(" Spa-behandlinger lagt inn i 'Spa/treatments'!");
   } catch (error) {
-    console.error("❌ Feil ved innsending av spa-data:", error);
+    console.error(" Feil ved innsending av spa-data:", error);
     throw error;
   }
 };

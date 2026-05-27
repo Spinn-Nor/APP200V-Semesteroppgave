@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { db } from "../firebase/config";
 import { ref, get } from "firebase/database";
-import "../pages/Hotels.css";
+import "../styles/Hotels.css";
 
 function HotelCard({ hotel }) {
   const { search } = useLocation();

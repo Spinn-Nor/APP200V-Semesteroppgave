@@ -62,9 +62,11 @@ function CartDrawer({ isOpen, onClose }) {
                     {item.hotelName && (
                       <p className="item-hotel">at {item.hotelName}</p>
                     )}
-                    <p>
-                      {item.date} • {item.nights} nights
-                    </p>
+                    {item.type === "Spa" ? (
+                    <p>{item.date}</p>
+                       ) : (
+                     <p>{item.date} • {item.nights} nights</p>
+)}
 
                     {/* Vis amenities */}
                     {item.amenities && item.amenities.length > 0 && (
