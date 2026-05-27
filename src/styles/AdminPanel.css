@@ -666,3 +666,66 @@
 .add-btn:hover {
   background: #1d4ed8;
 }
+
+/* ==================== DYNAMISKE FELTER ==================== */
+
+.dynamic-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.dynamic-row input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.amenity-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.remove-row {
+  background: #ff4444;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-row:hover {
+  background: #cc0000;
+}
+
+.add-row-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.add-row-btn:hover {
+  background: #0056b3;
+}
+
+.preview-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

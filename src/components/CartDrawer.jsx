@@ -9,7 +9,7 @@
 
 import { useCart } from "../context/CartContext";
 import { useScrollLock } from "../hooks/useScrollLock"; // ← Lagt til
-import "./styles/CartDrawer.css";
+import "../styles/CartDrawer.css";
 
 function CartDrawer({ isOpen, onClose }) {
   const { cart, removeFromCart, totalPrice, confirmBooking, showToast } =

@@ -1,6 +1,6 @@
 import React from "react";
 import { usePageTitle } from "../hooks/usePageTitle";
-import "./Events.css";
+import "../styles/Events.css";
 
 const Events = () => {
   usePageTitle("Events");

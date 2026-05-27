@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./AmenitiesSelector.css";
+import "../styles/AmenitiesSelector.css";
 
 function AmenitiesSelector({
   amenities = [],

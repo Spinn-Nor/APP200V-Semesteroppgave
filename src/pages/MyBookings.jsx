@@ -15,7 +15,7 @@ import { useCart } from "../context/CartContext";
 import BookingCard from "../components/BookingCard";
 
 import { usePageTitle } from "../hooks/usePageTitle";
-import "./MyBookings.css";
+import "../styles/MyBookings.css";
 
 function MyBookings() {
   const [upcomingBookings, setUpcomingBookings] = useState([]);

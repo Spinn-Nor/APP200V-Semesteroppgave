@@ -15,7 +15,7 @@ import {
   reauthenticateWithCredential,
   getAuth,
 } from "firebase/auth";
-import "./Account.css";
+import "../styles/Account.css";
 
 function Account() {
   const { currentUser } = useAuth();

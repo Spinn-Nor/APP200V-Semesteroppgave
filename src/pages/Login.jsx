@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { usePageTitle } from "../hooks/usePageTitle";
-import "./Login.css";
+import "../styles/Login.css";
 
 function Login() {
   const [activeTab, setActiveTab] = useState("login");

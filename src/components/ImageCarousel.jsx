@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import "./ImageCarousel.css";
+import "../styles/ImageCarousel.css";
 
 function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -11,15 +11,13 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     const arr = Array.isArray(images)
       ? images
       : Object.keys(images)
-        .sort((a, b) => Number(a) - Number(b))
-        .map((key) => images[key]);
+          .sort((a, b) => Number(a) - Number(b))
+          .map((key) => images[key]);
 
     // Veldig åpen filter - aksepterer alle http-lenker
     const validImages = arr.filter(
       (url) =>
-        typeof url === "string" &&
-        url.trim() !== "" &&
-        url.startsWith("https")
+        typeof url === "string" && url.trim() !== "" && url.startsWith("https"),
     );
 
     console.log("🔥 RAW images from DB:", arr);
@@ -34,7 +32,7 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
 
   function progressCarousel() {
     setCurrentIndex((prev) =>
-      imageArray.length > 0 ? (prev + 1) % imageArray.length : 0
+      imageArray.length > 0 ? (prev + 1) % imageArray.length : 0,
     );
   }
 
@@ -79,8 +77,7 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
           {imageArray.map((_, index) => (
             <button
               key={index}
-              className={`dot ${index === currentIndex ? "active" : ""
-                }`}
+              className={`dot ${index === currentIndex ? "active" : ""}`}
               onClick={() => {
                 setCurrentIndex(index);
                 startTimer();

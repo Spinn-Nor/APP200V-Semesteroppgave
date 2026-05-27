@@ -14,7 +14,7 @@ import { db } from "../firebase/config";
 import { ref, set, remove, push, get } from "firebase/database";
 import { useCart } from "../context/CartContext";
 import { usePageTitle } from "../hooks/usePageTitle";
-import "./AdminPanel.css";
+import "../styles/AdminPanel.css";
 
 function AdminPanel() {
   const { currentUser, logout } = useAuth();
@@ -28,13 +28,16 @@ function AdminPanel() {
   // Add New Hotel Modal
   const [showHotelModal, setShowHotelModal] = useState(false);
   const [hotelForm, setHotelForm] = useState({
+    id: "",
     name: "",
     city: "",
     address: "",
     rating: "",
-    imageUrl: "",
+    description: "",
     hasSpa: false,
     hasEvents: false,
+    images: [""],
+    amenities: [{ id: "", label: "", price: "", icon: "" }],
   });
 
   usePageTitle("Admin Panel");
@@ -259,19 +262,46 @@ function AdminPanel() {
       imageUrl: "",
       hasSpa: false,
       hasEvents: false,
+      images: [],
+      amenities: [],
     });
     setShowHotelModal(true);
   };
 
   const saveHotel = async (e) => {
     e.preventDefault();
+
+    // Make sure ID and name are defined
+    if (!hotelForm.id || !hotelForm.name) {
+      showToast("Hotel ID and name are required", "error");
+      return;
+    }
+
     try {
-      const newHotelRef = push(ref(db, "hotels"));
-      await set(newHotelRef, hotelForm);
-      showToast("New hotel added successfully!", "success");
+      const hotelData = {
+        id: hotelForm.id,
+        name: hotelForm.name,
+        city: hotelForm.city,
+        address: hotelForm.address,
+        rating: Number(hotelForm.rating),
+        description: hotelForm.description,
+        hasSpa: hotelForm.hasSpa,
+        hasEvents: hotelForm.hasEvents,
+        images: hotelForm.images || [],
+        amenities: hotelForm.amenities || [],
+        rooms: {},
+      };
+
+      // Pushing form data to db
+      await set(ref(db, `hotels/${hotelForm.id}`), hotelData);
+
+      // Show success message
+      showToast(`Hotel ${hotelForm.name} added successfully!`, "success");
       setShowHotelModal(false);
     } catch (error) {
-      showToast("Could not add hotel.", "error");
+      // Show error message
+      console.error(error);
+      showToast("Could not add hotel", "error");
     }
   };
 
@@ -404,18 +434,6 @@ function AdminPanel() {
             onClick={() => setActiveTab("users")}
           >
             👥 Users
-          </button>
-          <button
-            className={`menu-item ${activeTab === "orders" ? "active" : ""}`}
-            onClick={() => setActiveTab("orders")}
-          >
-            📦 Orders
-          </button>
-          <button
-            className={`menu-item ${activeTab === "settings" ? "active" : ""}`}
-            onClick={() => setActiveTab("settings")}
-          >
-            ⚙️ Settings
           </button>
         </div>
 
@@ -785,98 +803,215 @@ function AdminPanel() {
             )}
           </div>
         )}
-
-        {activeTab === "orders" && (
-          <div>
-            <h1>Orders</h1>
-            <p>Alle bestillinger vises her...</p>
-          </div>
-        )}
-
-        {activeTab === "settings" && (
-          <div>
-            <h1>Settings</h1>
-            <p>Generelle innstillinger...</p>
-          </div>
-        )}
       </div>
 
       {/* Hotel Modal */}
       {showHotelModal && (
         <div className="modal-overlay" onClick={() => setShowHotelModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content large-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2>Add New Hotel</h2>
-            <form onSubmit={saveHotel}>
-              <input
-                type="text"
-                placeholder="Hotel Name"
-                value={hotelForm.name}
-                onChange={(e) =>
-                  setHotelForm({ ...hotelForm, name: e.target.value })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="City"
-                value={hotelForm.city}
-                onChange={(e) =>
-                  setHotelForm({ ...hotelForm, city: e.target.value })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="Address"
-                value={hotelForm.address}
-                onChange={(e) =>
-                  setHotelForm({ ...hotelForm, address: e.target.value })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="Rating"
-                value={hotelForm.rating}
-                onChange={(e) =>
-                  setHotelForm({ ...hotelForm, rating: e.target.value })
-                }
-              />
-              <input
-                type="text"
-                placeholder="Image URL"
-                value={hotelForm.imageUrl}
-                onChange={(e) =>
-                  setHotelForm({ ...hotelForm, imageUrl: e.target.value })
-                }
-              />
 
-              <div className="form-group toggle-group">
-                <label>Has Spa</label>
+            <form onSubmit={saveHotel}>
+              {/* Vanlige felter */}
+              <div className="form-group">
+                <label>Hotel ID</label>
                 <input
-                  type="checkbox"
-                  checked={hotelForm.hasSpa}
+                  type="text"
+                  value={hotelForm.id}
                   onChange={(e) =>
-                    setHotelForm({ ...hotelForm, hasSpa: e.target.checked })
+                    setHotelForm({
+                      ...hotelForm,
+                      id: e.target.value.toLowerCase().trim(),
+                    })
                   }
+                  required
                 />
               </div>
-              <div className="form-group toggle-group">
-                <label>Has Events</label>
+
+              <div className="form-group">
+                <label>Hotel Name</label>
                 <input
-                  type="checkbox"
-                  checked={hotelForm.hasEvents}
+                  type="text"
+                  value={hotelForm.name}
                   onChange={(e) =>
-                    setHotelForm({ ...hotelForm, hasEvents: e.target.checked })
+                    setHotelForm({ ...hotelForm, name: e.target.value })
                   }
+                  required
                 />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>City</label>
+                  <input
+                    type="text"
+                    value={hotelForm.city}
+                    onChange={(e) =>
+                      setHotelForm({ ...hotelForm, city: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Rating</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="1"
+                    max="5"
+                    value={hotelForm.rating}
+                    onChange={(e) =>
+                      setHotelForm({ ...hotelForm, rating: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  value={hotelForm.description}
+                  onChange={(e) =>
+                    setHotelForm({ ...hotelForm, description: e.target.value })
+                  }
+                  rows="3"
+                />
+              </div>
+
+              {/* ==================== DYNAMISKE IMAGES ==================== */}
+              <div className="form-group">
+                <label>
+                  Images{" "}
+                  <span style={{ fontSize: "0.9em", color: "#666" }}>
+                    (Add as many as you want)
+                  </span>
+                </label>
+
+                {hotelForm.images.map((url, index) => (
+                  <div key={index} className="dynamic-row">
+                    <input
+                      type="text"
+                      placeholder="https://example.com/image.jpg"
+                      value={url}
+                      onChange={(e) => {
+                        const newImages = [...hotelForm.images];
+                        newImages[index] = e.target.value;
+                        setHotelForm({ ...hotelForm, images: newImages });
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="remove-row"
+                      onClick={() => {
+                        if (hotelForm.images.length > 1) {
+                          setHotelForm({
+                            ...hotelForm,
+                            images: hotelForm.images.filter(
+                              (_, i) => i !== index,
+                            ),
+                          });
+                        }
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="add-row-btn"
+                  onClick={() =>
+                    setHotelForm({
+                      ...hotelForm,
+                      images: [...hotelForm.images, ""],
+                    })
+                  }
+                >
+                  + Legg til nytt bilde
+                </button>
+              </div>
+
+              {/* ==================== AMENITIES ==================== */}
+              <div className="form-group">
+                <label>Amenities</label>
+
+                {hotelForm.amenities.map((amenity, index) => (
+                  <div key={index} className="dynamic-row amenity-row">
+                    <input
+                      type="text"
+                      placeholder="Label (for example Spa)"
+                      value={amenity.label}
+                      onChange={(e) => {
+                        const newAmenities = [...hotelForm.amenities];
+                        newAmenities[index].label = e.target.value;
+                        setHotelForm({ ...hotelForm, amenities: newAmenities });
+                      }}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Pris"
+                      value={amenity.price}
+                      onChange={(e) => {
+                        const newAmenities = [...hotelForm.amenities];
+                        newAmenities[index].price = e.target.value;
+                        setHotelForm({ ...hotelForm, amenities: newAmenities });
+                      }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Icon"
+                      value={amenity.icon}
+                      onChange={(e) => {
+                        const newAmenities = [...hotelForm.amenities];
+                        newAmenities[index].icon = e.target.value;
+                        setHotelForm({ ...hotelForm, amenities: newAmenities });
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="remove-row"
+                      onClick={() => {
+                        if (hotelForm.amenities.length > 1) {
+                          setHotelForm({
+                            ...hotelForm,
+                            amenities: hotelForm.amenities.filter(
+                              (_, i) => i !== index,
+                            ),
+                          });
+                        }
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="add-row-btn"
+                  onClick={() =>
+                    setHotelForm({
+                      ...hotelForm,
+                      amenities: [
+                        ...hotelForm.amenities,
+                        { id: "", label: "", price: "", icon: "⭐" },
+                      ],
+                    })
+                  }
+                >
+                  Add new amenity
+                </button>
               </div>
 
               <div className="modal-actions">
                 <button type="button" onClick={() => setShowHotelModal(false)}>
-                  Cancel
+                  Avbryt
                 </button>
-                <button type="submit">Add Hotel</button>
+                <button type="submit">Save hotel</button>
               </div>
             </form>
           </div>
