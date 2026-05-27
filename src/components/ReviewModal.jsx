@@ -11,7 +11,7 @@ import { db, auth } from "../firebase/config";
 import { ref, get, set } from "firebase/database";
 import "./ReviewModal.css";
 
-function ReviewModal({ isOpen, onClose, hotelId, hotelName }) {
+function ReviewModal({ isOpen, onClose, hotelId, hotelName, onReviewSubmitted }) {
     const currentUser = auth.currentUser;
 
     const [rating, setRating] = useState(0);
@@ -66,6 +66,8 @@ function ReviewModal({ isOpen, onClose, hotelId, hotelName }) {
                 userName: currentUser.displayName || "Anonymous",
                 createdAt: Date.now(),
             });
+
+            await onReviewSubmitted();
 
             onClose();
         } catch (error) {

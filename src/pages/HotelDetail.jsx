@@ -35,40 +35,40 @@ function HotelDetail() {
 
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    const fetchHotel = async () => {
-      try {
-        const hotelRef = ref(db, `hotels/${id}`);
-        const snapshot = await get(hotelRef);
+  const fetchHotel = async () => {
+    try {
+      const hotelRef = ref(db, `hotels/${id}`);
+      const snapshot = await get(hotelRef);
 
-        if (snapshot.exists()) {
-          const hotelData = snapshot.val();
+      if (snapshot.exists()) {
+        const hotelData = snapshot.val();
 
-          setHotel(hotelData);
+        setHotel(hotelData);
 
-          if (hotelData.reviews) {
-            const reviewsArray = Object.values(hotelData.reviews);
+        if (hotelData.reviews) {
+          const reviewsArray = Object.values(hotelData.reviews);
 
-            const total = reviewsArray.reduce(
-              (sum, review) => sum + (review.rating || 0),
-              0
-            );
+          const total = reviewsArray.reduce(
+            (sum, review) => sum + (review.rating || 0),
+            0
+          );
 
-            const average = total / reviewsArray.length;
+          const average = total / reviewsArray.length;
 
-            setHotelRating(average.toFixed(1));
-            setHotelReviewCount(reviewsArray.length);
-          }
-        } else {
-          console.log("Hotel not found");
+          setHotelRating(average.toFixed(1));
+          setHotelReviewCount(reviewsArray.length);
         }
-      } catch (error) {
-        console.error("Error fetching hotel:", error);
-      } finally {
-        setLoading(false);
+      } else {
+        console.log("Hotel not found");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching hotel:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchHotel();
   }, [id]);
 
@@ -143,6 +143,7 @@ function HotelDetail() {
         onClose={() => setIsReviewOpen(false)}
         hotelId={hotel.id}
         hotelName={hotel.name}
+        onReviewSubmitted={fetchHotel}
       />
 
       <ReviewsModal
