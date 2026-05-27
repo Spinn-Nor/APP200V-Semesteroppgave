@@ -150,16 +150,26 @@ function MyBookings() {
       {pastBookings.length > 0 && (
         <>
           <h2 className="section-title">Past Reservations</h2>
-          <div className="bookings-grid">
+          <ul className="past-bookings-list">
             {pastBookings.map((booking) => (
-              <BookingCard
-                key={booking.id}
-                booking={booking}
-                onCancel={openCancelModal}
-                onViewDetails={setSelectedBooking}
-              />
+              <li key={booking.id} className="past-booking-item">
+                <div>
+                  <strong>Reservation #{booking.orderId?.slice(-8)}</strong>
+                  <p>
+                    {new Date(booking.createdAt).toLocaleDateString("nb-NO")} —{" "}
+                    {booking.totalPrice} kr
+                  </p>
+                </div>
+
+                <button
+                  className="details-btn"
+                  onClick={() => setSelectedBooking(booking)}
+                >
+                  View
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
         </>
       )}
 
