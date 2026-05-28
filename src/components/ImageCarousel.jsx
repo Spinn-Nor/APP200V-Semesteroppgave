@@ -11,8 +11,8 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     const arr = Array.isArray(images)
       ? images
       : Object.keys(images)
-          .sort((a, b) => Number(a) - Number(b))
-          .map((key) => images[key]);
+        .sort((a, b) => Number(a) - Number(b))
+        .map((key) => images[key]);
 
     // Veldig åpen filter - aksepterer alle http-lenker
     const validImages = arr.filter(
@@ -64,7 +64,7 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     startTimer();
 
     return () => clearInterval(timerRef.current);
-  }, [imageArray, autoScroll, interval]);
+  }, [imageArray, autoScroll, interval, currentIndex]);
 
   if (imageArray.length === 0) {
     return <p>Ingen bilder tilgjengelig.</p>;
