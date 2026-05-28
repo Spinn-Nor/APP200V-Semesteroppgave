@@ -109,7 +109,6 @@ function RoomBookingModal({
     if (cartConflict) {
       const msg = `This room is already in your cart for ${checkIn} — ${checkOut}`;
       setError(msg);
-      showToast(msg, "error");
       return false;
     }
 
@@ -141,7 +140,6 @@ function RoomBookingModal({
             if (hasConflict) {
               const msg = `This room is already booked by someone else for ${checkIn} — ${checkOut}`;
               setError(msg);
-              showToast(msg, "error");
               return false;
             }
           }
