@@ -218,8 +218,8 @@ function Wellness() {
           <h2>Ready for Your Spa Experience?</h2>
           <p>Book your appointment online or contact our reception.</p>
           <div className="booking-actions">
-            <Link to="/contact" className="contact-btn">Call Reception</Link>
-            <Link to="/booking" className="book-now-btn">Book Online</Link>
+            {/* <Link to="/contact" className="contact-btn">Call Reception</Link>
+            <Link to="/booking" className="book-now-btn">Book Online</Link> */}
           </div>
         </div>
       </section>
