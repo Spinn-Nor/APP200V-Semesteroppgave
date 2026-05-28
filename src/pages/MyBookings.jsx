@@ -77,15 +77,22 @@ function MyBookings() {
             }
           });
 
-          // Sort both upcoming and past by check in date (newest first)
-          const sortByCheckIn = (a, b) => {
+          // Sort Upcoming: Earliest check-in first (soonest booking on top)
+          // Sort Past: Most recent check-in first
+          const sortUpcoming = (a, b) => {
             const dateA = new Date(a.items?.[0]?.checkIn || a.createdAt);
             const dateB = new Date(b.items?.[0]?.checkIn || b.createdAt);
-            return dateB - dateA;
+            return dateA - dateB; // Earliest first
           };
 
-          upcoming.sort(sortByCheckIn);
-          past.sort(sortByCheckIn);
+          const sortPast = (a, b) => {
+            const dateA = new Date(a.items?.[0]?.checkIn || a.createdAt);
+            const dateB = new Date(b.items?.[0]?.checkIn || b.createdAt);
+            return dateB - dateA; // Newest first
+          };
+
+          upcoming.sort(sortUpcoming);
+          past.sort(sortPast);
 
           setUpcomingBookings(upcoming);
           setPastBookings(past);
