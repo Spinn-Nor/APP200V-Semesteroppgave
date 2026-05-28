@@ -362,7 +362,16 @@ function AdminPanel() {
 
   const openHotelDetails = (hotel) => {
     setSelectedHotel(hotel);
-    setGeneralForm({ ...hotel });
+
+    // Making sure images and arrays are always arrays
+    setGeneralForm({
+      ...hotel,
+      images: Array.isArray(hotel.images) ? [...hotel.images] : [],
+      amenities: Array.isArray(hotel.amenities)
+        ? hotel.amenities.map((a) => ({ ...a }))
+        : [],
+    });
+
     setDetailTab("general");
     setActiveTab("details");
   };
@@ -377,10 +386,37 @@ function AdminPanel() {
     if (!selectedHotel) return;
 
     try {
-      const updatedHotel = { ...selectedHotel, ...generalForm };
+      // Clean data before saving
+      const cleanedImages = (generalForm.images || []).filter(
+        (url) => url && url.trim() !== "",
+      );
+
+      const cleanedAmenities = (generalForm.amenities || [])
+        .filter((a) => a.label && a.label.trim() !== "")
+        .map((amenity) => ({
+          ...amenity,
+          id: amenity.id || amenity.label.toLowerCase().replace(/\s+/g, "_"),
+          price: Number(amenity.price) || 0,
+          label: amenity.label.trim(),
+        }));
+
+      const updatedHotel = {
+        ...selectedHotel,
+        ...generalForm,
+        images: cleanedImages,
+        amenities: cleanedAmenities,
+        // Update timestamp
+        updatedAt: new Date().toISOString(),
+      };
+
       await set(ref(db, `hotels/${selectedHotel.id}`), updatedHotel);
+
+      // Update local state
+      setSelectedHotel(updatedHotel);
+
       showToast("Hotel information updated successfully!", "success");
     } catch (error) {
+      console.error(error);
       showToast("Could not update hotel information.", "error");
     }
   };
@@ -682,7 +718,10 @@ function AdminPanel() {
                     <div className="form-group">
                       <label>Rating</label>
                       <input
-                        type="text"
+                        type="number"
+                        step="0.1"
+                        min="1"
+                        max="5"
                         value={generalForm.rating || ""}
                         onChange={(e) =>
                           setGeneralForm({
@@ -692,18 +731,142 @@ function AdminPanel() {
                         }
                       />
                     </div>
+
+                    {/* ==================== IMAGES ==================== */}
                     <div className="form-group full-width">
-                      <label>Image URL</label>
-                      <input
-                        type="text"
-                        value={generalForm.imageUrl || ""}
-                        onChange={(e) =>
+                      <label>Images</label>
+                      {generalForm.images?.map((url, index) => (
+                        <div key={index} className="dynamic-row">
+                          <input
+                            type="text"
+                            placeholder="https://example.com/image.jpg"
+                            value={url}
+                            onChange={(e) => {
+                              const newImages = [...(generalForm.images || [])];
+                              newImages[index] = e.target.value;
+                              setGeneralForm({
+                                ...generalForm,
+                                images: newImages,
+                              });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="remove-row"
+                            onClick={() => {
+                              if (generalForm.images.length > 1) {
+                                setGeneralForm({
+                                  ...generalForm,
+                                  images: generalForm.images.filter(
+                                    (_, i) => i !== index,
+                                  ),
+                                });
+                              }
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+
+                      <button
+                        type="button"
+                        className="add-row-btn"
+                        onClick={() =>
                           setGeneralForm({
                             ...generalForm,
-                            imageUrl: e.target.value,
+                            images: [...(generalForm.images || []), ""],
                           })
                         }
-                      />
+                      >
+                        + Add Image
+                      </button>
+                    </div>
+
+                    {/* ==================== AMENITIES ==================== */}
+                    <div className="form-group full-width">
+                      <label>Amenities</label>
+                      {generalForm.amenities?.map((amenity, index) => (
+                        <div key={index} className="dynamic-row amenity-row">
+                          <input
+                            type="text"
+                            placeholder="Label (e.g. Spa)"
+                            value={amenity.label || ""}
+                            onChange={(e) => {
+                              const newAmenities = [
+                                ...(generalForm.amenities || []),
+                              ];
+                              newAmenities[index].label = e.target.value;
+                              setGeneralForm({
+                                ...generalForm,
+                                amenities: newAmenities,
+                              });
+                            }}
+                          />
+                          <input
+                            type="number"
+                            placeholder="Price"
+                            value={amenity.price || ""}
+                            onChange={(e) => {
+                              const newAmenities = [
+                                ...(generalForm.amenities || []),
+                              ];
+                              newAmenities[index].price = e.target.value;
+                              setGeneralForm({
+                                ...generalForm,
+                                amenities: newAmenities,
+                              });
+                            }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Icon"
+                            value={amenity.icon || "⭐"}
+                            onChange={(e) => {
+                              const newAmenities = [
+                                ...(generalForm.amenities || []),
+                              ];
+                              newAmenities[index].icon = e.target.value;
+                              setGeneralForm({
+                                ...generalForm,
+                                amenities: newAmenities,
+                              });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="remove-row"
+                            onClick={() => {
+                              if (generalForm.amenities.length > 1) {
+                                setGeneralForm({
+                                  ...generalForm,
+                                  amenities: generalForm.amenities.filter(
+                                    (_, i) => i !== index,
+                                  ),
+                                });
+                              }
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+
+                      <button
+                        type="button"
+                        className="add-row-btn"
+                        onClick={() =>
+                          setGeneralForm({
+                            ...generalForm,
+                            amenities: [
+                              ...(generalForm.amenities || []),
+                              { id: "", label: "", price: "", icon: "⭐" },
+                            ],
+                          })
+                        }
+                      >
+                        + Add Amenity
+                      </button>
                     </div>
 
                     <div className="form-group toggle-group">
