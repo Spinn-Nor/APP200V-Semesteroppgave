@@ -141,12 +141,29 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
               </div>
               <div className="form-group">
                 <label>Preferred Time</label>
-                <input
-                  type="time"
+
+                <select
                   value={bookingTime}
-                  step="1800" // Half or Whole hour increments
-                  onChange={(e) => setBookingTime(e.target.value)} // Saves users choice 
-                />
+                  onChange={(e) => setBookingTime(e.target.value)}
+                  className="time-select"
+                >
+                  <option value="">Select a time</option>
+
+                  {Array.from({ length: 29 }, (_, index) => {
+                    const totalMinutes = 8 * 60 + index * 30;
+
+                    const hours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+                    const minutes = String(totalMinutes % 60).padStart(2, "0");
+
+                    const time = `${hours}:${minutes}`;
+
+                    return (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
             </div>
           )}

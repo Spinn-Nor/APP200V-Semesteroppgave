@@ -30,6 +30,11 @@
   /* Prevents unwanted horizontal scrolling and edge shadows */
 }
 
+#spa-selection {
+  position: relative;
+  top: -40px;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -117,7 +122,10 @@
   align-items: center;
   text-align: center;
   /* Centers headings and paragraph texts */
-  padding: 90px 0;
+}
+
+#wellnessIntro {
+  padding: 100px;
 }
 
 .wellness-intro-text {
@@ -173,7 +181,7 @@
   transition: var(--transition);
   border: 1px solid rgba(30, 58, 138, 0.05);
   box-shadow: 0 10px 30px rgba(10, 17, 40, 0.04);
-  
+
   /* Sophisticated card shadow */
 }
 
@@ -407,7 +415,7 @@
 /* Centralized modal container container */
 .treatment-modal-content {
   background-color: var(--white);
-  width: 100%;
+  /* width: 100%; */
   max-width: 800px;
   max-height: 90vh;
   border-radius: 8px;
@@ -416,6 +424,10 @@
   animation: modalFadeIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   overflow: hidden;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Smooth fade-in presentation transition */
@@ -434,8 +446,8 @@
 /* Close button positioning and interaction styling */
 .modal-close-btn {
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 5px;
+  right: 15px;
   background: none;
   border: none;
   font-size: 2.5rem;
@@ -443,6 +455,7 @@
   cursor: pointer;
   z-index: 10;
   transition: var(--transition);
+  text-align: center;
 }
 
 .modal-close-btn:hover {
@@ -454,9 +467,11 @@
   /* display: grid;
   grid-template-columns: 1fr 1fr; */
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 24px;
-  padding: 36px;
+  padding: 45px;
+  max-width: 600px;
+  /* padding-bottom: 10px; */
 }
 
 /* Fixed container restricting image boundaries */
@@ -476,7 +491,8 @@
   height: auto;
   object-fit: cover;
   display: block;
-  max-height: 600px;
+  /* max-height: 400px; */
+  max-width: 600px;
 }
 
 /* Responsive configurations for small mobile viewports */
@@ -493,7 +509,8 @@
 
 /* Right-side text element wrapping alignment container */
 .modal-info-container {
-  padding: 40px;
+  /* padding: 40px;
+  padding-bottom: 10px; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -561,4 +578,12 @@
 .modal-book-btn:hover {
   background-color: var(--blue-ink);
   border-color: var(--blue-ink);
+}
+
+.time-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
