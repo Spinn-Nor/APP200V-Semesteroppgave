@@ -63,10 +63,10 @@ function CartDrawer({ isOpen, onClose }) {
                       <p className="item-hotel">at {item.hotelName}</p>
                     )}
                     {item.type === "Spa" ? (
-                    <p>{item.date}</p>
-                       ) : (
-                     <p>{item.date} • {item.nights} nights</p>
-)}
+                      <p>{item.date}</p>
+                    ) : (
+                      <p>{item.date} • {item.nights} nights</p>
+                    )}
 
                     {/* Vis amenities */}
                     {item.amenities && item.amenities.length > 0 && (
@@ -87,6 +87,7 @@ function CartDrawer({ isOpen, onClose }) {
                     {item.price} kr
                     <button
                       className="remove-btn"
+                      id="cart-item-remove-btn"
                       onClick={() => removeFromCart(item.cartId)}
                     >
                       Remove

@@ -30,7 +30,8 @@
   overflow: hidden;
 
   transform: translateX(100%);
-  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1); /* <-- Dette er den viktigste linjen */
+  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  /* <-- Dette er den viktigste linjen */
   will-change: transform;
 }
 
@@ -123,6 +124,10 @@
   cursor: pointer;
 }
 
+#cart-item-remove-btn {
+  margin-left: 5px;
+}
+
 .remove-btn:hover {
   background: #dc2626;
 }
@@ -181,6 +186,7 @@
     transform: translateX(-50%) translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
