@@ -49,22 +49,7 @@ function RoomCard({
           </p>
         </div>
 
-        <div className="room-amenities">
-          {room.amenities && room.amenities.length > 0 ? (
-            room.amenities.map((amenity, index) => (
-              <span key={index} className="amenity-tag">
-                {amenity}
-              </span>
-            ))
-          ) : (
-            <span className="no-amenities">No amenities listed</span>
-          )}
-        </div>
-
-        <button
-          className="book-roomBtn"
-          onClick={openBookingModal} // ← Endret til openBookingModal
-        >
+        <button className="book-roomBtn" onClick={openBookingModal}>
           Add to Cart
         </button>
       </div>

@@ -218,21 +218,35 @@ function AdminPanel() {
         let bookingsCount = 0;
         let revenue = 0;
         const bookingsList = [];
+        const debugPrices = []; // ← Debug
 
         Object.values(allOrders).forEach((userOrders) => {
-          Object.values(userOrders).forEach((order) => {
+          Object.values(userOrders || {}).forEach((order) => {
             if (order.items) {
               order.items.forEach((item) => {
                 if (item.type === "Room" || item.category === "accommodation") {
                   bookingsCount++;
-                  revenue += item.price || 0;
+
+                  const rawPrice = item.price;
+                  const price = Number(item.price) || 0;
+                  const totalPrice = Number(item.totalPrice) || price;
+
+                  revenue += totalPrice;
+
+                  // Debug
+                  debugPrices.push({
+                    hotel: item.hotelName,
+                    room: item.name,
+                    rawPrice: rawPrice,
+                    usedPrice: totalPrice,
+                  });
 
                   bookingsList.push({
                     hotelName: item.hotelName || "Unknown Hotel",
                     roomName: item.name || "Room",
                     checkIn: item.checkIn,
                     checkOut: item.checkOut,
-                    totalPrice: item.price || 0,
+                    totalPrice: totalPrice,
                   });
                 }
               });
@@ -240,10 +254,11 @@ function AdminPanel() {
           });
         });
 
+        console.log("🔍 Debug Prices:", debugPrices); // Sjekk i konsollen
+        console.log("Total Revenue calculated:", revenue);
+
         setTotalBookings(bookingsCount);
         setMonthlyRevenue(revenue);
-
-        // Vis de 5 siste bookingene
         setRecentBookings(bookingsList.slice(0, 5));
       } catch (error) {
         console.error("Failed to fetch bookings:", error);
@@ -474,13 +489,13 @@ function AdminPanel() {
           >
             👥 Users
           </button>
-        </div>
 
-        <div className="admin-user">
-          <p>{currentUser?.displayName || currentUser?.email}</p>
-          <button onClick={logout} className="logout-btn">
-            Logout
-          </button>
+          <div className="admin-user">
+            <p>{currentUser?.displayName || currentUser?.email}</p>
+            <button onClick={logout} className="logout-btn">
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
@@ -524,8 +539,9 @@ function AdminPanel() {
                       <strong>{booking.hotelName}</strong> — {booking.roomName}
                       <br />
                       <small>
-                        {booking.checkIn} → {booking.checkOut} •{" "}
-                        {booking.totalPrice} kr
+                        {booking.checkIn} → {booking.checkOut}
+                        {booking.nights && ` • ${booking.nights} netter`}•{" "}
+                        {booking.totalPrice.toLocaleString("no-NO")} kr
                       </small>
                     </div>
                   ))}
