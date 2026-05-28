@@ -48,9 +48,11 @@ function MyBookings() {
 
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const bookingsArray = Object.keys(data)
-            .map((key) => ({ id: key, ...data[key] }))
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+          const bookingsArray = Object.keys(data).map((key) => ({
+            id: key,
+            ...data[key],
+          }));
 
           const today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -61,7 +63,11 @@ function MyBookings() {
           bookingsArray.forEach((booking) => {
             const hasUpcomingItem = booking.items?.some((item) => {
               if (!item.checkIn) return false;
-              return new Date(item.checkIn) >= today;
+
+              const checkInDate = new Date(item.checkIn);
+              checkInDate.setHours(0, 0, 0, 0); // Resetting time so that we have the same timestamp for sorting
+
+              return checkInDate >= today;
             });
 
             if (hasUpcomingItem) {
@@ -70,6 +76,16 @@ function MyBookings() {
               past.push(booking);
             }
           });
+
+          // Sort both upcoming and past by check in date (newest first)
+          const sortByCheckIn = (a, b) => {
+            const dateA = new Date(a.items?.[0]?.checkIn || a.createdAt);
+            const dateB = new Date(b.items?.[0]?.checkIn || b.createdAt);
+            return dateB - dateA;
+          };
+
+          upcoming.sort(sortByCheckIn);
+          past.sort(sortByCheckIn);
 
           setUpcomingBookings(upcoming);
           setPastBookings(past);

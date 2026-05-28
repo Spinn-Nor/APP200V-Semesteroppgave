@@ -8,12 +8,18 @@
  */
 
 function BookingCard({ booking, onCancel, onViewDetails }) {
-  // Determine if the booking is upcoming based on check-in date
+  // Determine if the booking is upcoming (kun dato-sammenligning)
   const isUpcoming = booking.items?.some((item) => {
-    if (item.checkIn) {
-      return new Date(item.checkIn) >= new Date();
-    }
-    return false;
+    if (!item.checkIn) return false;
+
+    const checkInDate = new Date(item.checkIn);
+    const today = new Date();
+
+    // Nullstill tid på begge datoer slik at vi kun sammenligner dato
+    checkInDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    return checkInDate >= today;
   });
 
   const displayStatus = isUpcoming ? "Confirmed" : "Completed";
@@ -27,13 +33,20 @@ function BookingCard({ booking, onCancel, onViewDetails }) {
         </span>
       </div>
 
+      {/* Display check-in date from the first room/item if available, 
+          otherwise fall back to when the booking was created */}
       <div className="booking-date">
-        {new Date(booking.createdAt).toLocaleDateString("nb-NO", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
+        {(() => {
+          const firstItem = booking.items?.[0];
+          const displayDate = firstItem?.checkIn || booking.createdAt;
+
+          return new Date(displayDate).toLocaleDateString("nb-NO", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+        })()}
       </div>
 
       <div className="booking-total">
