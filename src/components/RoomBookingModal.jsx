@@ -90,14 +90,14 @@ function RoomBookingModal({
     }
   };
 
-  // Full tilgjengelighetssjekk
+  // Availability check / double booking prevention
   const isRoomAvailable = async () => {
     if (!checkIn || !checkOut) return true;
 
     const safeRoomId = room.id || room.roomId || `room-${Date.now()}`;
     const roomName = room.name || "Unknown Room";
 
-    // 1. Sjekk mot egen cart
+    // Check availability against cart
     const cartConflict = cart.find(
       (item) =>
         item.type === "Room" &&
@@ -113,7 +113,7 @@ function RoomBookingModal({
       return false;
     }
 
-    // 2. Sjekk mot bekreftede bookinger i databasen
+    // Check for confirmed bookings in db
     try {
       const ordersRef = ref(db, "orders");
       const snapshot = await get(ordersRef);
