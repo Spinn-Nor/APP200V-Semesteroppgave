@@ -12,6 +12,7 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { getDatabase, ref, get } from "firebase/database";
 import "../styles/RoomBookingModal.css";
 
 function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
@@ -22,6 +23,8 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTime, setBookingTime] = useState("");
   const [error, setError] = useState("");
+
+  const [bookedTimes, setBookedTimes] = useState([]);
 
   // Scroll Lock when modal is open (hindrer scrolling av bakgrunnen)
   useEffect(() => {
@@ -37,6 +40,66 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
       document.body.style.paddingRight = "0";
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    const fetchBookedTimes = async () => {
+      if (!bookingDate) return;
+
+      try {
+        const db = getDatabase();
+        const ordersRef = ref(db, "orders");
+
+        const snapshot = await get(ordersRef);
+
+        if (!snapshot.exists()) {
+          setBookedTimes([]);
+          return;
+        }
+
+        const data = snapshot.val();
+
+        const unavailable = [];
+
+        // orders -> userId -> orderId
+        Object.values(data).forEach((userOrders) => {
+          Object.values(userOrders).forEach((order) => {
+            if (!Array.isArray(order.items)) return;
+
+            order.items.forEach((item) => {
+              const isSpaBooking =
+                item.category === "spa" &&
+                item.checkIn === bookingDate &&
+                item.hotelId === hotelId;
+
+              if (isSpaBooking && item.date) {
+                // Extract time from:
+                // "2026-05-31 @ 13:00"
+
+                const parts = item.date.split("@");
+
+                if (parts.length > 1) {
+                  const bookedTime = parts[1].trim();
+
+                  unavailable.push(bookedTime);
+                }
+              }
+            });
+          });
+        });
+
+        setBookedTimes(unavailable);
+      } catch (error) {
+        console.error("Error fetching booked spa times:", error);
+      }
+    };
+
+    fetchBookedTimes();
+  }, [bookingDate, hotelId]);
+
+  // Removes selected time from state when date changes to prevent double-booking 
+  useEffect(() => {
+    setBookingTime("");
+  }, [bookingDate]);
 
   if (!isOpen || !treatment) return null;
 
@@ -141,12 +204,34 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
               </div>
               <div className="form-group">
                 <label>Preferred Time</label>
-                <input
-                  type="time"
+
+                <select
                   value={bookingTime}
-                  step="1800" // Half or Whole hour increments
-                  onChange={(e) => setBookingTime(e.target.value)} // Saves users choice 
-                />
+                  onChange={(e) => setBookingTime(e.target.value)}
+                  className="time-select"
+                >
+                  <option value="">Select a time</option>
+
+                  {Array.from({ length: 29 }, (_, index) => {
+                    const totalMinutes = 8 * 60 + index * 30;
+
+                    const hours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+                    const minutes = String(totalMinutes % 60).padStart(2, "0");
+
+                    const time = `${hours}:${minutes}`;
+
+                    // Skip already booked times
+                    if (bookedTimes.includes(time)) {
+                      return null;
+                    }
+
+                    return (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
             </div>
           )}
