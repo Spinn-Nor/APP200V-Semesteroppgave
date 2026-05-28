@@ -106,7 +106,7 @@ html {
 }
 
 .login-btn:hover {
-  color: white;
+  background-color: #1d4ed8;
 }
 
 /* Hamburger - kun mobil */
@@ -458,4 +458,291 @@ html {
     padding: 16px;
     border-radius: 0 0 12px 12px;
   }
+}
+/* ══════════════════════════════════════════
+   HOME PAGE — below-hero sections
+══════════════════════════════════════════ */
+
+.home-section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Features strip ── */
+.features-section {
+  background: #f8fafc;
+  padding: 56px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.features-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  border-top: 3px solid #2563eb;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.feature-num {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  font-size: 72px;
+  font-weight: 900;
+  color: #f1f5f9;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+.feature-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  position: relative;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+/* ── Featured hotels ── */
+.featured-section {
+  background: #ffffff;
+  padding: 80px 24px;
+}
+
+.featured-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.featured-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.featured-header p {
+  font-size: 16px;
+  color: #64748b;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+
+.featured-footer {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.view-all-btn {
+  display: inline-block;
+  padding: 14px 36px;
+  background: #2563eb;
+  color: white;
+  text-decoration: none;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.2s ease;
+}
+
+.view-all-btn:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 900px) {
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Experiences split ── */
+.experiences-section {
+  background: #f8fafc;
+  padding: 80px 24px;
+}
+
+.experiences-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.experiences-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.experiences-header p {
+  font-size: 16px;
+  color: #64748b;
+}
+
+.experiences-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.experience-panel {
+  position: relative;
+  height: 380px;
+  border-radius: 20px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-end;
+  transition: transform 0.3s ease;
+}
+
+.experience-panel:hover {
+  transform: scale(1.01);
+}
+
+.experience-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);
+}
+
+.experience-content {
+  position: relative;
+  z-index: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.experience-tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  width: fit-content;
+}
+
+.experience-content h3 {
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.2;
+}
+
+.experience-content p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+}
+
+.experience-link {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  padding-bottom: 2px;
+  width: fit-content;
+}
+
+@media (max-width: 700px) {
+  .experiences-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .experience-panel {
+    height: 280px;
+  }
+}
+
+/* ── CTA banner ── */
+.cta-section {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+  padding: 96px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cta-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: white;
+}
+
+.cta-subtitle {
+  font-size: 18px;
+  color: #bfdbfe;
+}
+
+.cta-btn {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 16px 40px;
+  background: white;
+  color: #1e40af;
+  text-decoration: none;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }

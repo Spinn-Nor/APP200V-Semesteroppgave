@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useHotels } from "../hooks/useHotels";
 import { useAuth } from "../context/AuthContext";
 import { usePageTitle } from "../hooks/usePageTitle";
+import HotelCard from "../components/HotelCard";
 
 function Home() {
   const [checkIn, setCheckIn] = useState("");
@@ -152,6 +153,90 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Features strip ── */}
+      <section className="features-section">
+        <div className="features-grid">
+          {[
+            { num: "01", title: "6 Locations",          desc: "Handpicked hotels across Norway's most beautiful cities." },
+            { num: "02", title: "Spa & Wellness",        desc: "Unwind with world-class treatments and facilities."       },
+            { num: "03", title: "Events & Conferences",  desc: "Flexible spaces for meetings, celebrations and more."     },
+            { num: "04", title: "Free Cancellation",     desc: "Plans change. Book with confidence, cancel any time."     },
+          ].map((f) => (
+            <div key={f.title} className="feature-card">
+              <span className="feature-num">{f.num}</span>
+              <h3 className="feature-title">{f.title}</h3>
+              <p className="feature-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Featured hotels ── */}
+      {hotels && hotels.length > 0 && (
+        <section className="featured-section">
+          <div className="home-section-inner">
+            <div className="featured-header">
+              <h2>Our Hotels</h2>
+              <p>Handpicked stays across Norway's most beautiful cities</p>
+            </div>
+            <div className="featured-grid">
+              {hotels.slice(0, 3).map((hotel) => (
+                <HotelCard key={hotel.id} hotel={hotel} />
+              ))}
+            </div>
+            <div className="featured-footer">
+              <Link to="/hotels" className="view-all-btn">Browse all hotels</Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Experiences split ── */}
+      <section className="experiences-section">
+        <div className="home-section-inner">
+          <div className="experiences-header">
+            <h2>Experiences</h2>
+            <p>More than just a place to sleep</p>
+          </div>
+          <div className="experiences-grid">
+            <Link
+              to="/wellness"
+              className="experience-panel"
+              style={{ backgroundImage: `url("https://images.ctfassets.net/nwbqij9m1jag/3cuyh0NoZmDGiPvIIsjArS/988d7a799f8ac2dce0c18cab53e7876a/Comfort_Hotel_Bergen_-_Common_Area_-_Roof_terrace_original?fm=webp&q=80&w=2560")` }}
+            >
+              <div className="experience-overlay" />
+              <div className="experience-content">
+                <span className="experience-tag">Wellness</span>
+                <h3>Spa & Relaxation</h3>
+                <p>Unwind with world-class treatments and facilities</p>
+                <span className="experience-link">Explore Wellness →</span>
+              </div>
+            </Link>
+            <Link
+              to="/events"
+              className="experience-panel"
+              style={{ backgroundImage: `url("https://images.ctfassets.net/nwbqij9m1jag/1jsqqONTu3rX7UDfPrLamq/23bc3c9801faea0f2d542cd4da95f846/Comfort_Hotel_Union_Brygge_-_Lobby_original?fm=webp&q=80&w=2560")` }}
+            >
+              <div className="experience-overlay" />
+              <div className="experience-content">
+                <span className="experience-tag">Events</span>
+                <h3>Conferences & Celebrations</h3>
+                <p>Host your next meeting or special occasion with us</p>
+                <span className="experience-link">See Events →</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA banner ── */}
+      <section className="cta-section">
+        <h2 className="cta-title">Ready to explore Norway?</h2>
+        <p className="cta-subtitle">Find your perfect hotel in minutes.</p>
+        <Link to="/hotels" className="cta-btn">Search hotels →</Link>
+      </section>
+
     </main>
   );
 }
