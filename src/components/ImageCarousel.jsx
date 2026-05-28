@@ -30,10 +30,24 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     setCurrentIndex(0);
   }, [images]);
 
-  function progressCarousel() {
+  // Go to next image
+  const goToNext = () => {
     setCurrentIndex((prev) =>
       imageArray.length > 0 ? (prev + 1) % imageArray.length : 0,
     );
+  };
+
+  // Go to previous image
+  const goToPrev = () => {
+    setCurrentIndex((prev) =>
+      imageArray.length > 0
+        ? (prev - 1 + imageArray.length) % imageArray.length
+        : 0,
+    );
+  };
+
+  function progressCarousel() {
+    goToNext();
   }
 
   function startTimer() {
@@ -58,20 +72,36 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
 
   return (
     <div className="image-carousel">
-      <div
-        className="carousel-slides"
-        style={{ "--current-index": currentIndex }}
-      >
-        {imageArray.map((imgUrl, index) => (
-          <img
-            key={index}
-            src={imgUrl}
-            alt={`Bilde ${index + 1}`}
-            className="carousel-image"
-          />
-        ))}
+      {/* Wrapper som holder både slides og piler */}
+      <div className="carousel-wrapper">
+        <div
+          className="carousel-slides"
+          style={{ "--current-index": currentIndex }}
+        >
+          {imageArray.map((imgUrl, index) => (
+            <img
+              key={index}
+              src={imgUrl}
+              alt={`Bilde ${index + 1}`}
+              className="carousel-image"
+            />
+          ))}
+        </div>
+
+        {/* Piler - må være utenfor slides */}
+        {imageArray.length > 1 && (
+          <>
+            <button className="carousel-arrow left" onClick={goToPrev}>
+              ❮
+            </button>
+            <button className="carousel-arrow right" onClick={goToNext}>
+              ❯
+            </button>
+          </>
+        )}
       </div>
 
+      {/* Dots */}
       {imageArray.length > 1 && (
         <div className="carousel-dots">
           {imageArray.map((_, index) => (
