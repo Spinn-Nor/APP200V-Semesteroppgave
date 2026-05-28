@@ -5,6 +5,8 @@
  */
 
 import { useState, useEffect } from "react";
+import { ref, get } from "firebase/database";
+import { db } from "../firebase/config.js";
 import { useCart } from "../context/CartContext";
 import AmenitiesSelector from "./AmenitiesSelector";
 import "../styles/RoomBookingModal.css";
@@ -20,7 +22,7 @@ function RoomBookingModal({
   initialCheckIn = "",
   initialCheckOut = "",
 }) {
-  const { addToCart, showToast } = useCart();
+  const { addToCart, cart, showToast } = useCart();
 
   const [step, setStep] = useState(1);
   const [checkIn, setCheckIn] = useState(initialCheckIn);
@@ -88,20 +90,88 @@ function RoomBookingModal({
     }
   };
 
-  const handleAddToCart = () => {
+  // Full tilgjengelighetssjekk
+  const isRoomAvailable = async () => {
+    if (!checkIn || !checkOut) return true;
+
+    const safeRoomId = room.id || room.roomId || `room-${Date.now()}`;
+    const roomName = room.name || "Unknown Room";
+
+    // 1. Sjekk mot egen cart
+    const cartConflict = cart.find(
+      (item) =>
+        item.type === "Room" &&
+        (item.roomId === safeRoomId || item.name === roomName) &&
+        item.checkIn === checkIn &&
+        item.checkOut === checkOut,
+    );
+
+    if (cartConflict) {
+      const msg = `This room is already in your cart for ${checkIn} — ${checkOut}`;
+      setError(msg);
+      showToast(msg, "error");
+      return false;
+    }
+
+    // 2. Sjekk mot bekreftede bookinger i databasen
+    try {
+      const ordersRef = ref(db, "orders");
+      const snapshot = await get(ordersRef);
+
+      if (snapshot.exists()) {
+        const allOrders = snapshot.val();
+
+        for (const userOrders of Object.values(allOrders)) {
+          for (const order of Object.values(userOrders)) {
+            if (!order.items) continue;
+
+            const hasConflict = order.items.some((item) => {
+              if (item.type !== "Room") return false;
+              if (item.hotelId !== hotelId) return false;
+
+              const sameRoom =
+                item.roomId === safeRoomId || item.name === roomName;
+
+              const sameDates =
+                item.checkIn === checkIn && item.checkOut === checkOut;
+
+              return sameRoom && sameDates;
+            });
+
+            if (hasConflict) {
+              const msg = `This room is already booked by someone else for ${checkIn} — ${checkOut}`;
+              setError(msg);
+              showToast(msg, "error");
+              return false;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error checking availability:", error);
+    }
+
+    return true;
+  };
+
+  const handleAddToCart = async () => {
     if (!checkIn || !checkOut || nights <= 0) {
       setError("Please select both check-in and check-out dates.");
+      showToast("Please select both check-in and check-out dates.", "error");
       return;
     }
 
-    // Check if user is logged in
     if (!currentUser) {
       showToast("You must be logged in to book a room", "error");
       return;
     }
 
-    // Sikker roomId - dette er hovedårsaken til feilen
-    const safeRoomId = room.id || Object.keys(room)[0] || `room-${Date.now()}`;
+    const available = await isRoomAvailable();
+    if (!available) {
+      return;
+    }
+
+    const safeRoomId = room.id || room.roomId || `room-${Date.now()}`;
 
     const cartItem = {
       name: room.name || "Unknown Room",
@@ -114,7 +184,7 @@ function RoomBookingModal({
       capacity: room.capacity || 1,
       hotelName: hotelName || "Unknown Hotel",
       hotelId: hotelId,
-      roomId: safeRoomId, // ← Viktig fix
+      roomId: safeRoomId,
       amenities: selectedAmenities || [],
       amenitiesTotal: amenitiesTotal || 0,
       date: `${checkIn} — ${checkOut}`,
