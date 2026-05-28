@@ -283,7 +283,6 @@ html {
   align-items: stretch;
   background: white;
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   flex-wrap: wrap;
 }
@@ -294,6 +293,11 @@ html {
   flex-direction: column;
   padding: 14px 20px;
   min-width: 140px;
+  position: relative;
+}
+
+.booking-field:first-child {
+  border-radius: 12px 0 0 12px;
 }
 
 .booking-field label {
@@ -325,6 +329,8 @@ html {
 .booking-search-btn {
   background-color: #2563eb;
   color: white;
+  border: none;
+  border-radius: 0 12px 12px 0;
   text-decoration: none;
   font-weight: 600;
   font-size: 15px;
@@ -340,9 +346,106 @@ html {
   background-color: #1d4ed8;
 }
 
+/* Destination dropdown */
+.destination-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 280px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+  border: 1px solid #e5e7eb;
+  list-style: none;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.destination-dropdown li {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.destination-dropdown li:not(:last-child) {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.destination-dropdown li:hover {
+  background-color: #eff6ff;
+}
+
+.destination-dropdown li:hover .dropdown-pin {
+  background-color: #2563eb;
+  color: white;
+}
+
+.dropdown-pin {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dropdown-hotel-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.dropdown-hotel-city {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.destination-dropdown li.no-match {
+  color: #9ca3af;
+  font-size: 14px;
+  cursor: default;
+  font-style: italic;
+  justify-content: center;
+  padding: 16px;
+}
+
+.destination-dropdown li.no-match:hover {
+  background-color: transparent;
+}
+
 @media (max-width: 640px) {
   .booking-bar {
     flex-direction: column;
+  }
+
+  .booking-field:first-child {
+    border-radius: 12px 12px 0 0;
   }
 
   .booking-divider {
@@ -353,6 +456,6 @@ html {
 
   .booking-search-btn {
     padding: 16px;
-    border-radius: 0;
+    border-radius: 0 0 12px 12px;
   }
 }

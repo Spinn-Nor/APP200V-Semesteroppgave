@@ -24,11 +24,14 @@ function Home() {
   const { hotels } = useHotels();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const filteredHotels = (hotels || []).filter(
-    (hotel) =>
-      hotel.name &&
-      hotel.name.toLowerCase().includes(destination.toLowerCase()),
-  );
+  const filteredHotels =
+    destination.length >= 2
+      ? (hotels || []).filter(
+          (hotel) =>
+            hotel.city?.toLowerCase().includes(destination.toLowerCase()) ||
+            hotel.name?.toLowerCase().includes(destination.toLowerCase()),
+        )
+      : [];
 
   const handleCheckInChange = (e) => {
     const newCheckIn = e.target.value;
@@ -84,7 +87,7 @@ function Home() {
                 onChange={(e) => setDestination(e.target.value)}
               />
 
-              {showDropdown && destination.length > 0 && (
+              {showDropdown && destination.length >= 2 && (
                 <ul className="destination-dropdown">
                   {filteredHotels.length > 0 ? (
                     filteredHotels.map((hotel) => (
@@ -95,11 +98,15 @@ function Home() {
                           setShowDropdown(false);
                         }}
                       >
-                        {hotel.name}
+                        <span className="dropdown-pin">📍</span>
+                        <span className="dropdown-text">
+                          <span className="dropdown-hotel-name">{hotel.name}</span>
+                          <span className="dropdown-hotel-city">{hotel.city}</span>
+                        </span>
                       </li>
                     ))
                   ) : (
-                    <li className="no-match">No hotels found</li>
+                    <li className="no-match">No destinations found</li>
                   )}
                 </ul>
               )}
