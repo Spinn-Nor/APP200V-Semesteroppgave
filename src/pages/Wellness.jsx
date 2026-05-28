@@ -1,3 +1,14 @@
+
+/**
+ * SpaBookingModal.jsx
+ *
+ * Wizard modal for selecting appointment details and summarizing spa bookings.
+ *
+ * @author Pelle Thoresen
+ * @version 1.8
+ */
+
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Wellness.css';

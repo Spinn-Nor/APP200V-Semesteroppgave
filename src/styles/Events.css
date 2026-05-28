@@ -1,138 +1,234 @@
-/* Vi bruker en renere, mer moderne font-stack */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+/* ==========================================================================
+   EVENTS & CONFERENCES STYLING
+   ========================================================================== */
 
 .events-page {
-  padding: 140px 40px 80px; /* Masse luft på toppen */
-  max-width: 1300px;
+  font-family: inherit;
+  color: #2c3e50;
+  background-color: #fdfdfd;
+  padding-bottom: 0;
+}
+
+.container {
+  max-width: 1200px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
-  background-color: #fcfdfe; /* Nesten hvit, veldig ren */
-  min-height: 100vh;
+  padding: 0 20px;
 }
 
+/* --- HERO SECTION --- */
 .events-hero {
-  text-align: center;
-  margin-bottom: 80px;
-}
-
-.events-hero h1 {
-  color: #0f172a; /* Mørkere, nesten sort blå for autoritet */
-  font-size: 3.5rem; /* Stor, tydelig overskrift */
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-
-.events-hero p {
-  color: #64748b;
-  font-size: 1.4rem; /* Skrudd opp størrelsen på underteksten */
-  margin-top: 15px;
-}
-
-/* Tabell-containeren */
-.events-table {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05); /* Mykere, dypere skygge */
-  border: 1px solid #e2e8f0;
-  overflow: hidden;
-}
-
-/* Overskriftsraden i tabellen */
-.table-header {
-  display: grid;
-  grid-template-columns: 1.8fr 1.8fr 1fr 1.8fr 1fr 0.8fr;
-  background-color: #f8fafc;
-  padding: 25px 30px;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.table-header span {
-  color: #475569;
-  text-transform: uppercase;
-  font-size: 0.95rem; /* Større header-tekst */
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-/* Radene */
-.table-row {
-  display: grid;
-  grid-template-columns: 1.8fr 1.8fr 1fr 1.8fr 1fr 0.8fr;
-  padding: 35px 30px; /* Mye mer luft mellom radene */
-  border-bottom: 1px solid #f1f5f9;
+  position: relative;
+  background-image: url('https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=1600&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  height: 60vh;
+  min-height: 450px;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.events-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.6));
+  z-index: 1;
+}
+
+.events-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.events-tagline {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 15px;
+  color: #dfb76c; /* Elegant gulltone i stil med spa-følelsen */
+  font-weight: 600;
+}
+
+.events-title {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.events-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 35px;
+  font-weight: 300;
+}
+
+.events-cta-btn {
+  display: inline-block;
+  padding: 14px 32px;
+  background-color: #dfb76c;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.events-cta-btn:hover {
+  background-color: #cf9f53;
+  transform: translateY(-2px);
+}
+
+/* --- INTRO SECTION --- */
+.events-intro {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.events-intro-text max-width {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.events-intro h2 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.events-intro p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.events-selection-divider {
+  height: 1px;
+  background-color: #eaeaea;
+  margin-bottom: 40px;
+}
+
+/* --- TRINN 2: TABELL FOR KONFERANSEROM --- */
+.events-rooms-section {
+  padding: 40px 0 80px 0;
+}
+
+.back-location-btn {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 
+.back-location-btn:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+/* DIN OPPRINNELIGE FLOTTE TABELL-STYLING (Justert for flyt) */
+.events-table {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr 4fr 1.5fr 1.5fr;
+  background-color: #f8f9fa;
+  padding: 18px 24px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #eaeaea;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr 4fr 1.5fr 1.5fr;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
 .table-row:hover {
-  background-color: #f1f7ff;
-  transform: scale(1.005); /* En veldig subtil zoom-effekt */
+  background-color: #fafbfc;
 }
 
-/* Cellen for romnavn */
+.table-row:last-child {
+  border-bottom: none;
+}
+
 .room-name-cell strong {
-  color: #1e293b;
-  font-size: 1.4rem; /* Skrudd opp fonten her! */
-  display: block;
+  font-size: 1.1rem;
+  color: #1a1a1a;
 }
 
-/* Hotell-taggen */
-.hotel-tag {
-  background: #dbeafe;
-  color: #1e40af;
-  padding: 6px 12px;
-  border-radius: 99px; /* Pill-shape */
-  font-size: 0.85rem;
-  font-weight: 700;
-  display: inline-block;
-}
-
-/* Kapasitet og Utstyr */
 .capacity-cell {
-  font-size: 1.2rem; /* Skrudd opp */
-  color: #334155;
+  color: #555;
   font-weight: 500;
 }
 
 .equipment-cell small {
-  font-size: 1.05rem; /* Gjort denne lesbar */
-  color: #64748b;
+  color: #666;
+  font-size: 0.9rem;
   line-height: 1.4;
 }
 
-/* Pris */
-.price-cell {
-  font-size: 1.25rem; /* Tydelig pris */
-  font-weight: 700;
-  color: #000000; /* En profesjonell grønnfarge */
+.price-tag {
+  font-size: 1.05rem;
+  color: #2c3e50;
 }
 
-/* Knappen */
+/* EN REIELL OG FIN KNAPP TIL TABELLEN DIN */
 .book-room-btn {
-  background-color: #2563eb;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #2c3e50; /* Klassisk corporate mørkeblå/grå */
   color: white;
   border: none;
-  padding: 14px 24px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 1rem;
+  border-radius: 4px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-  transition: all 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .book-room-btn:hover {
-  background-color: #1d4ed8;
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+  background-color: #1a252f;
 }
 
-/* Mobil-fix */
-@media (max-width: 1000px) {
-  .table-header { display: none; }
+/* --- RESPONSIVITET FOR TABELLEN --- */
+@media (max-width: 900px) {
+  .table-header {
+    display: none; /* Skjul headere på små skjermer */
+  }
+
   .table-row {
-    grid-template-columns: 1fr;
-    gap: 15px;
-    padding: 30px;
-    text-align: center;
+    grid-template-columns: 1fr; /* Stable alt vertikalt */
+    gap: 12px;
+    padding: 24px;
+  }
+
+  .action-cell {
+    margin-top: 10px;
   }
 }

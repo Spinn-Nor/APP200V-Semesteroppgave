@@ -1,3 +1,14 @@
+/**
+ * SpaBookingModal.jsx
+ *
+ * Wizard modal for selecting appointment details and summarizing spa bookings.
+ *
+ * @author Pelle Thoresen
+ * @version 1.5
+ */
+
+
+
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -60,7 +71,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
     // Bygger et cartItem som snakker samme språk som handlekurven deres
     const cartItem = {
       name: treatment.name || "Unknown Treatment",
-      type: "Spa", // <-- Viktig for å skille fra "Room" senere
+      type: "Spa", // Making sure FB understands it is a Spa not a hotel room
       price: numericPrice,
       duration: treatment.Duration || "N/A",
       bookingDate,
@@ -83,7 +94,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
     addToCart(cartItem);
     showToast(`"${treatment.name}" added to cart!`, "success");
     onClose();
-    setStep(1); // Nullstiller modalen til neste gang den åpnes
+    setStep(1); // Clears the modal for next time it opens
   };
 
   return (
