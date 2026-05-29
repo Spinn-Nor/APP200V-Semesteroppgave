@@ -11,8 +11,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Events.css';
 import { getDatabase, ref, onValue } from 'firebase/database';
-import { db } from '../firebase/config'; 
-import { useHotels } from '../hooks/useHotels'; 
+import { db } from '../firebase/config';
+import { useHotels } from '../hooks/useHotels';
 import { useCart } from "../context/CartContext"; // ← 1. HENT UT USECART
 import EventDetailsModal from "../components/EventDetailsModal";
 
@@ -103,10 +103,10 @@ function Events() {
               <div className="hotels-grid">
                 {eventHotels.map((hotel) => (
                   <div key={hotel.id} className="hotel-card">
-                    <img 
-                      src={hotel.images && hotel.images[0]} 
-                      alt={hotel.name} 
-                      className="hotel-image" 
+                    <img
+                      src={hotel.images && hotel.images[0]}
+                      alt={hotel.name}
+                      className="hotel-image"
                     />
                     <div className="hotel-info">
                       <h3>{hotel.name}</h3>
@@ -163,10 +163,10 @@ function Events() {
                       <small>{room.equipment}</small>
                     </div>
                     <div className="price-cell">
-                      <span className="price-tag" style={{ fontWeight: 'bold' }}>{room.price}</span>
+                      <span className="price-tag" style={{ fontWeight: 'bold' }}>{room.price} kr</span>
                     </div>
                     <div className="action-cell">
-                      <button 
+                      <button
                         className="book-room-btn"
                         onClick={() => {
                           setActiveRoom(room);
@@ -196,7 +196,7 @@ function Events() {
       </section>
 
       {/* Modalen */}
-      <EventDetailsModal 
+      <EventDetailsModal
         isOpen={isBookingOpen}
         onClose={() => {
           setIsBookingOpen(false);
@@ -205,7 +205,7 @@ function Events() {
         room={activeRoom}
         hotelId={selectedHotelId}
         hotelName={currentHotel?.name}
-        addToCart={addToCart} 
+        addToCart={addToCart}
       />
     </main>
   );
