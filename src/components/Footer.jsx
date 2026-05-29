@@ -29,10 +29,10 @@ function Footer() {
                 <Link to="/hotels">Our Hotels</Link>
               </li>
               <li>
-                <Link to="/wellness">Wellness & Spa</Link>
+                <Link to="/wellness">Wellness</Link>
               </li>
               <li>
-                <Link to="/restaurants">Restaurants</Link>
+                <Link to="/events">Events</Link>
               </li>
             </ul>
           </div>
