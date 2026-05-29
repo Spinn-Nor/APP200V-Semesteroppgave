@@ -1,0 +1,127 @@
+.main-footer {
+  background: white;
+  color: #333;
+  padding: 70px 0 40px;
+  border-top: 1px solid #e8d9c0;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 50px;
+  margin-bottom: 60px;
+}
+
+/* Headings */
+.footer-column h3 {
+  color: #1e3a8a;
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+}
+
+.footer-column h4 {
+  color: #1e3a8a;
+  margin-bottom: 18px;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* Links */
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column a {
+  color: #444;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+  color: #1e3a8a;
+}
+
+/* ==================== CONTACT COLUMN - MER LUFT ==================== */
+.footer-column:last-child p {
+  margin-bottom: 16px; /* Økt luft mellom linjene */
+  line-height: 1.65;
+}
+
+.footer-column:last-child p:last-of-type {
+  margin-bottom: 24px; /* Ekstra luft før knappen */
+}
+
+/* Tagline */
+.footer-tagline {
+  color: #666;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Blue CTA Button */
+.footer-cta-btn,
+.footer-book-btn {
+  display: inline-block;
+  background: #1e3a8a;
+  color: white !important;
+  padding: 13px 28px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-cta-btn:hover,
+.footer-book-btn:hover {
+  background: #2b4a9e;
+  transform: translateY(-2px);
+}
+
+/* Bottom Bar */
+.footer-bottom {
+  border-top: 1px solid #e0d4b8;
+  padding-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.footer-legal a {
+  margin-left: 22px;
+  color: #555;
+  text-decoration: none;
+}
+
+.footer-legal a:hover {
+  color: #1e3a8a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .footer-legal a {
+    margin: 0 10px;
+  }
+}

@@ -18,8 +18,8 @@ function Home() {
   const today = new Date().toISOString().split("T")[0];
   const minCheckOut = checkIn
     ? new Date(new Date(checkIn).getTime() + 86400000)
-      .toISOString()
-      .split("T")[0]
+        .toISOString()
+        .split("T")[0]
     : today;
 
   const { hotels } = useHotels();
@@ -30,8 +30,10 @@ function Home() {
     const secondWord = hotel.name.split(" ")[1]?.toLowerCase() || "";
 
     return destination.length === 1
-      ? city.startsWith(destination.toLowerCase()) || secondWord.startsWith(destination.toLowerCase())
-      : city.includes(destination.toLowerCase()) || secondWord.includes(destination.toLowerCase());
+      ? city.startsWith(destination.toLowerCase()) ||
+          secondWord.startsWith(destination.toLowerCase())
+      : city.includes(destination.toLowerCase()) ||
+          secondWord.includes(destination.toLowerCase());
   });
 
   const handleCheckInChange = (e) => {
@@ -101,8 +103,12 @@ function Home() {
                       >
                         <span className="dropdown-pin">📍</span>
                         <span className="dropdown-text">
-                          <span className="dropdown-hotel-name">{hotel.name}</span>
-                          <span className="dropdown-hotel-city">{hotel.city}</span>
+                          <span className="dropdown-hotel-name">
+                            {hotel.name}
+                          </span>
+                          <span className="dropdown-hotel-city">
+                            {hotel.city}
+                          </span>
                         </span>
                       </li>
                     ))
@@ -158,10 +164,26 @@ function Home() {
       <section className="features-section">
         <div className="features-grid">
           {[
-            { num: "01", title: "6 Locations", desc: "Handpicked hotels across Norway's most beautiful cities." },
-            { num: "02", title: "Spa & Wellness", desc: "Unwind with world-class treatments and facilities." },
-            { num: "03", title: "Events & Conferences", desc: "Flexible spaces for meetings, celebrations and more." },
-            { num: "04", title: "Free Cancellation", desc: "Plans change. Book with confidence, cancel any time." },
+            {
+              num: "01",
+              title: "6 Locations",
+              desc: "Handpicked hotels across Norway's most beautiful cities.",
+            },
+            {
+              num: "02",
+              title: "Spa & Wellness",
+              desc: "Unwind with world-class treatments and facilities.",
+            },
+            {
+              num: "03",
+              title: "Events & Conferences",
+              desc: "Flexible spaces for meetings, celebrations and more.",
+            },
+            {
+              num: "04",
+              title: "Free Cancellation",
+              desc: "Plans change. Book with confidence, cancel any time.",
+            },
           ].map((f) => (
             <div key={f.title} className="feature-card">
               <span className="feature-num">{f.num}</span>
@@ -186,7 +208,9 @@ function Home() {
               ))}
             </div>
             <div className="featured-footer">
-              <Link to="/hotels" className="view-all-btn">Browse all hotels</Link>
+              <Link to="/hotels" className="view-all-btn">
+                Browse all hotels
+              </Link>
             </div>
           </div>
         </section>
@@ -203,7 +227,9 @@ function Home() {
             <Link
               to="/wellness"
               className="experience-panel"
-              style={{ backgroundImage: `url("https://images.ctfassets.net/nwbqij9m1jag/3cuyh0NoZmDGiPvIIsjArS/988d7a799f8ac2dce0c18cab53e7876a/Comfort_Hotel_Bergen_-_Common_Area_-_Roof_terrace_original?fm=webp&q=80&w=2560")` }}
+              style={{
+                backgroundImage: `url("https://images.ctfassets.net/nwbqij9m1jag/3cuyh0NoZmDGiPvIIsjArS/988d7a799f8ac2dce0c18cab53e7876a/Comfort_Hotel_Bergen_-_Common_Area_-_Roof_terrace_original?fm=webp&q=80&w=2560")`,
+              }}
             >
               <div className="experience-overlay" />
               <div className="experience-content">
@@ -216,7 +242,9 @@ function Home() {
             <Link
               to="/events"
               className="experience-panel"
-              style={{ backgroundImage: `url("https://images.ctfassets.net/nwbqij9m1jag/1jsqqONTu3rX7UDfPrLamq/23bc3c9801faea0f2d542cd4da95f846/Comfort_Hotel_Union_Brygge_-_Lobby_original?fm=webp&q=80&w=2560")` }}
+              style={{
+                backgroundImage: `url("https://images.ctfassets.net/nwbqij9m1jag/1jsqqONTu3rX7UDfPrLamq/23bc3c9801faea0f2d542cd4da95f846/Comfort_Hotel_Union_Brygge_-_Lobby_original?fm=webp&q=80&w=2560")`,
+              }}
             >
               <div className="experience-overlay" />
               <div className="experience-content">
@@ -234,9 +262,10 @@ function Home() {
       <section className="cta-section">
         <h2 className="cta-title">Ready to explore Norway?</h2>
         <p className="cta-subtitle">Find your perfect hotel in minutes.</p>
-        <Link to="/hotels" className="cta-btn">Search hotels →</Link>
+        <Link to="/hotels" className="cta-btn">
+          Search hotels →
+        </Link>
       </section>
-
     </main>
   );
 }

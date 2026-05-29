@@ -15,6 +15,7 @@ import ImageCarousel from "../components/ImageCarousel";
 import ReviewModal from "../components/ReviewModal";
 import ReviewsModal from "../components/ReviewsModal";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/Footer";
 
 function HotelDetail() {
   const { id } = useParams();
@@ -50,7 +51,7 @@ function HotelDetail() {
 
           const total = reviewsArray.reduce(
             (sum, review) => sum + (review.rating || 0),
-            0
+            0,
           );
 
           const average = total / reviewsArray.length;
@@ -97,7 +98,8 @@ function HotelDetail() {
               className="rating-button"
               onClick={() => setIsReviewsModalOpen(true)}
             >
-              ⭐ {hotelRating} ({hotelReviewCount} {hotelReviewCount == 1 ? "review" : "reviews"})
+              ⭐ {hotelRating} ({hotelReviewCount}{" "}
+              {hotelReviewCount == 1 ? "review" : "reviews"})
             </button>
 
             <button
@@ -152,7 +154,7 @@ function HotelDetail() {
         hotelId={hotel.id}
         hotelName={hotel.name}
       />
-    </div >
+    </div>
   );
 }
 

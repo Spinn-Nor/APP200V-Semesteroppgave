@@ -5,6 +5,8 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(135, 135, 182) white;
 }
 
 html {
@@ -406,7 +408,9 @@ html {
   justify-content: center;
   font-size: 15px;
   flex-shrink: 0;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .dropdown-text {
@@ -495,7 +499,9 @@ html {
   overflow: hidden;
   border-top: 3px solid #2563eb;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .feature-card:hover {
@@ -564,7 +570,6 @@ html {
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
 }
-
 
 .featured-footer {
   text-align: center;
@@ -648,7 +653,12 @@ html {
 .experience-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.15) 60%,
+    transparent 100%
+  );
 }
 
 .experience-content {
@@ -662,9 +672,9 @@ html {
 
 .experience-tag {
   display: inline-block;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -684,7 +694,7 @@ html {
 
 .experience-content p {
   font-size: 14px;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .experience-link {
@@ -692,7 +702,7 @@ html {
   font-size: 14px;
   font-weight: 600;
   color: white;
-  border-bottom: 1px solid rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   padding-bottom: 2px;
   width: fit-content;
 }
@@ -739,7 +749,9 @@ html {
   border-radius: 9999px;
   font-weight: 700;
   font-size: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .cta-btn:hover {

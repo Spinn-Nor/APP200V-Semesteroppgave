@@ -26,6 +26,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import MyBookings from "./pages/MyBookings";
 import Account from "./pages/Account";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -52,6 +53,8 @@ function App() {
               }
             />
           </Routes>
+
+          <Footer />
         </Router>
       </CartProvider>
     </AuthProvider>
