@@ -127,6 +127,182 @@ function AdminPanel() {
     }
   };
 
+  const fetchAllBookings = async () => {
+    setLoadingBookings(true);
+    try {
+      const ordersRef = ref(db, "orders");
+      const snapshot = await get(ordersRef);
+
+      if (!snapshot.exists()) {
+        setBookings([]);
+        return;
+      }
+
+      const allOrders = snapshot.val();
+      const bookingList = [];
+
+      Object.entries(allOrders).forEach(([userId, userOrders]) => {
+        Object.entries(userOrders || {}).forEach(([orderId, order]) => {
+          if (!order.items) return;
+
+          order.items.forEach((item, index) => {
+            bookingList.push({
+              id: `${orderId}-${index}`,
+              orderId: orderId,
+              userId: userId, // Viktig for CRUD
+              customerName: order.customerName || order.userName || "Unknown",
+              customerEmail: order.customerEmail || order.email || "—",
+              type: item.type || item.category || "Room",
+              hotelName: item.hotelName,
+              roomName: item.name || item.treatmentName,
+              checkIn: item.checkIn,
+              checkOut: item.checkOut,
+              nights: item.nights,
+              totalPrice: Number(item.price) || Number(item.totalPrice) || 0,
+              status: order.status || "confirmed",
+              createdAt: order.createdAt || order.date,
+              ...item,
+            });
+          });
+        });
+      });
+
+      bookingList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setBookings(bookingList);
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
+      showToast("Kunne ikke hente bookinger", "error");
+    } finally {
+      setLoadingBookings(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "bookings") {
+      fetchAllBookings();
+    }
+  }, [activeTab]);
+
+  // Update booking status
+  const updateBookingStatus = async (booking, newStatus) => {
+    if (!booking.userId || !booking.orderId) {
+      showToast("Cannot update: missing order information", "error");
+      return;
+    }
+
+    try {
+      await set(
+        ref(db, `orders/${booking.userId}/${booking.orderId}/status`),
+        newStatus,
+      );
+
+      showToast(`Booking status updated to ${newStatus}`, "success");
+      fetchAllBookings(); // refresh list
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to update status", "error");
+    }
+  };
+
+  const saveBookingChanges = async (updatedBooking) => {
+    if (!updatedBooking?.userId || !updatedBooking?.orderId) {
+      showToast("Cannot save: missing booking information", "error");
+      return;
+    }
+
+    try {
+      const orderRef = ref(
+        db,
+        `orders/${updatedBooking.userId}/${updatedBooking.orderId}`,
+      );
+      const snapshot = await get(orderRef);
+
+      if (!snapshot.exists()) {
+        showToast("Order not found", "error");
+        return;
+      }
+
+      const originalOrder = snapshot.val();
+
+      // Beregn nye netter
+      let nights = 0;
+      if (updatedBooking.checkIn && updatedBooking.checkOut) {
+        const start = new Date(updatedBooking.checkIn);
+        const end = new Date(updatedBooking.checkOut);
+        nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      }
+
+      const pricePerNight =
+        Number(updatedBooking.pricePerNight) ||
+        Number(updatedBooking.totalPrice) / (updatedBooking.nights || 1) ||
+        0;
+
+      const newTotalPrice =
+        nights > 0
+          ? Math.round(pricePerNight * nights)
+          : Number(updatedBooking.totalPrice);
+
+      // Oppdater det riktige itemet
+      const updatedItems = originalOrder.items.map((item, index) => {
+        // Bedre matching - bruk id eller navn + dato
+        if (
+          item.name === updatedBooking.name ||
+          item.roomName === updatedBooking.roomName ||
+          `${originalOrder.id || "order"}-${index}` === updatedBooking.id
+        ) {
+          return {
+            ...item,
+            checkIn: updatedBooking.checkIn,
+            checkOut: updatedBooking.checkOut,
+            nights: nights,
+            price: newTotalPrice,
+            totalPrice: newTotalPrice,
+          };
+        }
+        return item;
+      });
+
+      const updatedOrder = {
+        ...originalOrder,
+        items: updatedItems,
+        status: updatedBooking.status || originalOrder.status,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await set(orderRef, updatedOrder);
+
+      showToast("Booking updated successfully!", "success");
+      setShowBookingDetail(false);
+      fetchAllBookings();
+    } catch (error) {
+      console.error("Save error:", error);
+      showToast("Failed to save booking changes", "error");
+    }
+  };
+
+  // Delete entire booking
+  const handleDeleteBooking = async (booking) => {
+    if (
+      !window.confirm(
+        `Delete booking for ${booking.customerName}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await remove(ref(db, `orders/${booking.userId}/${booking.orderId}`));
+
+      showToast("Booking deleted successfully", "success");
+      console.log("🔥 handleDeleteBooking ble kalt med:", booking.orderId);
+      setShowBookingDetail(false);
+      fetchAllBookings();
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to delete booking", "error");
+    }
+  };
+
   // ==================== USER EDIT FUNCTIONS ====================
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -200,6 +376,14 @@ function AdminPanel() {
   const [totalBookings, setTotalBookings] = useState(0);
   const [monthlyRevenue, setMonthlyRevenue] = useState(0);
   const [recentBookings, setRecentBookings] = useState([]);
+
+  // ==================== BOOKINGS MANAGEMENT ====================
+  const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showBookingDetail, setShowBookingDetail] = useState(false);
+  const [bookingFilter, setBookingFilter] = useState("all"); // all, room, spa, cancelled
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -526,6 +710,13 @@ function AdminPanel() {
             👥 Users
           </button>
 
+          <button
+            className={`menu-item ${activeTab === "bookings" ? "active" : ""}`}
+            onClick={() => setActiveTab("bookings")}
+          >
+            📅 Bookings
+          </button>
+
           <div className="admin-user">
             <p>{currentUser?.displayName || currentUser?.email}</p>
             <button onClick={logout} className="logout-btn">
@@ -576,7 +767,7 @@ function AdminPanel() {
                       <br />
                       <small>
                         {booking.checkIn} → {booking.checkOut}
-                        {booking.nights && ` • ${booking.nights} netter`}•{" "}
+                        {booking.nights && ` • ${booking.nights} nights`}•{" "}
                         {booking.totalPrice.toLocaleString("no-NO")} kr
                       </small>
                     </div>
@@ -1031,6 +1222,124 @@ function AdminPanel() {
             )}
           </div>
         )}
+
+        {/* ==================== BOOKINGS TAB ==================== */}
+        {activeTab === "bookings" && (
+          <div>
+            <div className="admin-header">
+              <h1>All Bookings ({bookings.length})</h1>
+
+              <div className="booking-filters">
+                <input
+                  type="text"
+                  placeholder="Search customer or hotel..."
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="search-input"
+                />
+                <select
+                  value={bookingFilter}
+                  onChange={(e) => setBookingFilter(e.target.value)}
+                >
+                  <option value="all">All Bookings</option>
+                  <option value="room">Rooms Only</option>
+                  <option value="spa">Spa Only</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+
+            {loadingBookings ? (
+              <p className="loading-text">Loading bookings...</p>
+            ) : bookings.length === 0 ? (
+              <p>No bookings found.</p>
+            ) : (
+              <div className="admin-table-container">
+                <table className="admin-table bookings-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Customer</th>
+                      <th>Email</th>
+                      <th>Type</th>
+                      <th>Hotel / Treatment</th>
+                      <th>Dates</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookings
+                      .filter((b) => {
+                        const search = searchTerm.toLowerCase();
+                        const matchesSearch =
+                          b.customerName?.toLowerCase().includes(search) ||
+                          b.hotelName?.toLowerCase().includes(search) ||
+                          b.customerEmail?.toLowerCase().includes(search);
+
+                        if (bookingFilter === "room")
+                          return b.type === "Room" && matchesSearch;
+                        if (bookingFilter === "spa")
+                          return (
+                            (b.type === "Spa" || b.category === "spa") &&
+                            matchesSearch
+                          );
+                        if (bookingFilter === "confirmed")
+                          return b.status === "confirmed" && matchesSearch;
+                        if (bookingFilter === "cancelled")
+                          return b.status === "cancelled" && matchesSearch;
+                        return matchesSearch;
+                      })
+                      .map((booking) => (
+                        <tr key={booking.id}>
+                          <td>
+                            {new Date(booking.createdAt).toLocaleDateString(
+                              "no-NO",
+                            )}
+                          </td>
+                          <td>{booking.customerName}</td>
+                          <td>{booking.customerEmail}</td>
+                          <td>
+                            <span
+                              className={`type-badge ${booking.type?.toLowerCase()}`}
+                            >
+                              {booking.type}
+                            </span>
+                          </td>
+                          <td>{booking.hotelName || booking.roomName}</td>
+                          <td>
+                            {booking.checkIn} — {booking.checkOut}
+                          </td>
+                          <td>
+                            <strong>
+                              {booking.totalPrice.toLocaleString("no-NO")} kr
+                            </strong>
+                          </td>
+                          <td>
+                            <span className={`status-badge ${booking.status}`}>
+                              {booking.status || "confirmed"}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              className="action-btn view-btn"
+                              onClick={() => {
+                                setSelectedBooking(booking);
+                                setShowBookingDetail(true);
+                              }}
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Hotel Modal */}
@@ -1475,6 +1784,131 @@ function AdminPanel() {
                 <button type="submit">Create User</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== BOOKING DETAIL MODAL ==================== */}
+      {showBookingDetail && selectedBooking && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowBookingDetail(false)}
+        >
+          <div
+            className="modal-content large-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Booking Details - #{selectedBooking.orderId}</h2>
+
+            <div className="booking-detail-grid">
+              <div>
+                <strong>Customer:</strong> {selectedBooking.customerName}
+              </div>
+              <div>
+                <strong>Email:</strong> {selectedBooking.customerEmail}
+              </div>
+              <div>
+                <strong>Type:</strong> {selectedBooking.type || "Room"}
+              </div>
+              <div>
+                <strong>Hotel:</strong> {selectedBooking.hotelName}
+              </div>
+              <div>
+                <strong>Item:</strong>{" "}
+                {selectedBooking.roomName || selectedBooking.name}
+              </div>
+            </div>
+
+            <div className="booking-edit-section">
+              <h3>Edit Booking</h3>
+
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Check-in Date</label>
+                  <input
+                    type="date"
+                    value={selectedBooking.checkIn || ""}
+                    onChange={(e) =>
+                      setSelectedBooking((prev) => ({
+                        ...prev,
+                        checkIn: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Check-out Date</label>
+                  <input
+                    type="date"
+                    value={selectedBooking.checkOut || ""}
+                    onChange={(e) =>
+                      setSelectedBooking((prev) => ({
+                        ...prev,
+                        checkOut: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Dynamisk prisvisning */}
+              <div className="price-display">
+                <strong>Total Price:</strong>{" "}
+                {(() => {
+                  if (!selectedBooking.checkIn || !selectedBooking.checkOut)
+                    return "— kr";
+                  const start = new Date(selectedBooking.checkIn);
+                  const end = new Date(selectedBooking.checkOut);
+                  const nights = Math.max(
+                    0,
+                    Math.ceil((end - start) / (1000 * 60 * 60 * 24)),
+                  );
+                  const pricePerNight =
+                    Number(selectedBooking.pricePerNight) || 0;
+                  const total = nights * pricePerNight;
+                  return `${total.toLocaleString("no-NO")} kr (${nights} nights × ${pricePerNight} kr)`;
+                })()}
+              </div>
+
+              <div className="form-group">
+                <label>Status</label>
+                <select
+                  value={selectedBooking.status || "confirmed"}
+                  onChange={(e) =>
+                    setSelectedBooking((prev) => ({
+                      ...prev,
+                      status: e.target.value,
+                    }))
+                  }
+                  className="status-select"
+                >
+                  <option value="confirmed">Confirmed</option>
+                  <option value="pending">Pending</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button onClick={() => setShowBookingDetail(false)}>
+                Cancel
+              </button>
+
+              <button
+                className="save-btn"
+                onClick={() => saveBookingChanges(selectedBooking)}
+              >
+                Save Changes
+              </button>
+
+              <button
+                className="delete-btn"
+                onClick={() => handleDeleteBooking(selectedBooking)}
+              >
+                Delete Booking
+              </button>
+            </div>
           </div>
         </div>
       )}

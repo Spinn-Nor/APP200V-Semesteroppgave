@@ -1,5 +1,11 @@
 /**
  * App.jsx
+ *
+ * Main application component.
+ * AuthProvider must wrap CartProvider because CartContext depends on useAuth.
+ *
+ * @author Fredrik Fordelsen - Fixed provider order
+ * @version 1.2
  */
 
 import {
@@ -31,6 +37,7 @@ import Footer from "./components/Footer";
 function AppContent() {
   const location = useLocation();
 
+  // Scroll til toppen ved navigasjon
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -38,6 +45,10 @@ function AppContent() {
       behavior: "smooth",
     });
   }, [location.pathname]);
+
+  // Skjul footer på disse sidene
+  const hideFooterPages = ["/account", "/my-bookings", "/admin"];
+  const showFooter = !hideFooterPages.includes(location.pathname);
 
   return (
     <>
@@ -61,7 +72,8 @@ function AppContent() {
           }
         />
       </Routes>
-      <Footer />
+
+      {showFooter && <Footer />}
     </>
   );
 }
