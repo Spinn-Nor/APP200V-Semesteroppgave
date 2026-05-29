@@ -74,17 +74,18 @@ export function CartProvider({ children }) {
         price: Number(item.price) || 0,
         pricePerNight: Number(item.pricePerNight) || 0,
         nights: Number(item.nights) || 1,
-        checkIn: item.checkIn,
-        checkOut: item.checkOut,
+        checkIn: item.checkIn || null,
+        checkOut: item.checkOut || null,
         hotelName: item.hotelName || "Unknown Hotel",
         hotelId: item.hotelId || "unknown",
-        roomId: item.roomId || "unknown-room",
+        roomId: item.id || item.roomId || "unknown-room",
         amenities: item.amenities || [],
         amenitiesTotal: Number(item.amenitiesTotal) || 0,
         date: item.date || "",
         category: item.category || "accommodation",
       }));
 
+     
       const orderData = {
         userId: user.uid,
         items: cleanItems,

@@ -62,7 +62,7 @@ function CartDrawer({ isOpen, onClose }) {
                     {item.hotelName && (
                       <p className="item-hotel">at {item.hotelName}</p>
                     )}
-                    {item.type === "Spa" ? (
+                    {item.type === "Spa" || item.type === "Event" ? (
                       <p>{item.date}</p>
                     ) : (
                       <p>{item.date} • {item.nights} nights</p>

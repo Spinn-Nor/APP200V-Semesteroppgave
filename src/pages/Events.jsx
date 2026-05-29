@@ -4,7 +4,7 @@
  * Page for displaying conference and meeting room options.
  *
  * @author Pelle Thoresen
- * @version 1.0
+ * @version 1.2
  */
 
 import { useState, useEffect } from 'react';
@@ -13,20 +13,20 @@ import '../styles/Events.css';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { db } from '../firebase/config'; 
 import { useHotels } from '../hooks/useHotels'; 
-
+import { useCart } from "../context/CartContext"; // ← 1. HENT UT USECART
+import EventDetailsModal from "../components/EventDetailsModal";
 
 function Events() {
   const { hotels, loading: hotelsLoading, error: hotelsError } = useHotels();
+  const { addToCart } = useCart(); // ← 2. HENT UT ADDTOCART-FUNKSJONEN
   const [selectedHotelId, setSelectedHotelId] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // States for booking/modal 
   const [activeRoom, setActiveRoom] = useState(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
-  // Live gathering of conference rooms for the selected hotel from Firebase
   useEffect(() => {
     if (!selectedHotelId) {
       setRooms([]);
@@ -40,7 +40,6 @@ function Events() {
     const unsubscribe = onValue(roomsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        // Maps object from Firebase into array for better rendering. 
         const roomsList = Object.keys(data).map((key) => ({
           id: key,
           ...data[key]
@@ -59,13 +58,12 @@ function Events() {
     return () => unsubscribe();
   }, [selectedHotelId]);
 
-  // Filtrerer ut hotellene som har events basert på den nye booleanen din
   const eventHotels = hotels ? hotels.filter(hotel => hotel.hasEvents === true) : [];
   const currentHotel = hotels ? hotels.find(h => h.id === selectedHotelId) : null;
 
   return (
     <main className="events-page">
-      {/* Hero*/}
+      {/* Hero */}
       <section className="events-hero">
         <div className="events-hero-overlay" />
         <div className="events-hero-content">
@@ -90,7 +88,7 @@ function Events() {
 
       <div id="events-selection" className="events-selection-divider"></div>
 
-      {/* TRINN 1: Velg destinasjon (Gjenbruker logikken og korthonteringen din fra Wellness) */}
+      {/* Destination Selection */}
       {!selectedHotelId && (
         <section className="events-destinations">
           <div className="container">
@@ -126,7 +124,7 @@ function Events() {
         </section>
       )}
 
-      {/* TRINN 2: Vis konferansetabellen når et hotell er valgt */}
+      {/* Rooms Table */}
       {selectedHotelId && (
         <section className="events-rooms-section">
           <div className="container">
@@ -146,7 +144,6 @@ function Events() {
             ) : rooms.length === 0 ? (
               <p className="wellness-error format-error-spacing">No conference rooms registered for this location.</p>
             ) : (
-              /* Din opprinnelige og fine tabellstruktur */
               <div className="events-table">
                 <div className="table-header">
                   <span>Room Class</span>
@@ -187,7 +184,7 @@ function Events() {
         </section>
       )}
 
-      {/* Footer-seksjon for kontakt */}
+      {/* Contact Footer */}
       <section className="wellness-booking">
         <div className="wellness-booking-content container">
           <h2>Planning a Larger Event?</h2>
@@ -197,6 +194,19 @@ function Events() {
           </div>
         </div>
       </section>
+
+      {/* Modalen */}
+      <EventDetailsModal 
+        isOpen={isBookingOpen}
+        onClose={() => {
+          setIsBookingOpen(false);
+          setActiveRoom(null);
+        }}
+        room={activeRoom}
+        hotelId={selectedHotelId}
+        hotelName={currentHotel?.name}
+        addToCart={addToCart} 
+      />
     </main>
   );
 }
