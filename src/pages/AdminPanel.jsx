@@ -224,7 +224,7 @@ function AdminPanel() {
 
       const originalOrder = snapshot.val();
 
-      // Beregn nye netter
+      // Calculate new nights
       let nights = 0;
       if (updatedBooking.checkIn && updatedBooking.checkOut) {
         const start = new Date(updatedBooking.checkIn);
