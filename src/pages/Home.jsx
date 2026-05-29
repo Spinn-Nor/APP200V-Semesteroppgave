@@ -18,21 +18,21 @@ function Home() {
   const today = new Date().toISOString().split("T")[0];
   const minCheckOut = checkIn
     ? new Date(new Date(checkIn).getTime() + 86400000)
-        .toISOString()
-        .split("T")[0]
+      .toISOString()
+      .split("T")[0]
     : today;
 
   const { hotels } = useHotels();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const filteredHotels =
-    destination.length >= 2
-      ? (hotels || []).filter(
-          (hotel) =>
-            hotel.city?.toLowerCase().includes(destination.toLowerCase()) ||
-            hotel.name?.toLowerCase().includes(destination.toLowerCase()),
-        )
-      : [];
+  const filteredHotels = (hotels || []).filter((hotel) => {
+    const city = hotel.city?.toLowerCase() || "";
+    const secondWord = hotel.name.split(" ")[1]?.toLowerCase() || "";
+
+    return destination.length === 1
+      ? city.startsWith(destination.toLowerCase()) || secondWord.startsWith(destination.toLowerCase())
+      : city.includes(destination.toLowerCase()) || secondWord.includes(destination.toLowerCase());
+  });
 
   const handleCheckInChange = (e) => {
     const newCheckIn = e.target.value;
@@ -88,7 +88,7 @@ function Home() {
                 onChange={(e) => setDestination(e.target.value)}
               />
 
-              {showDropdown && destination.length >= 2 && (
+              {showDropdown && destination.length >= 1 && (
                 <ul className="destination-dropdown">
                   {filteredHotels.length > 0 ? (
                     filteredHotels.map((hotel) => (
@@ -158,10 +158,10 @@ function Home() {
       <section className="features-section">
         <div className="features-grid">
           {[
-            { num: "01", title: "6 Locations",          desc: "Handpicked hotels across Norway's most beautiful cities." },
-            { num: "02", title: "Spa & Wellness",        desc: "Unwind with world-class treatments and facilities."       },
-            { num: "03", title: "Events & Conferences",  desc: "Flexible spaces for meetings, celebrations and more."     },
-            { num: "04", title: "Free Cancellation",     desc: "Plans change. Book with confidence, cancel any time."     },
+            { num: "01", title: "6 Locations", desc: "Handpicked hotels across Norway's most beautiful cities." },
+            { num: "02", title: "Spa & Wellness", desc: "Unwind with world-class treatments and facilities." },
+            { num: "03", title: "Events & Conferences", desc: "Flexible spaces for meetings, celebrations and more." },
+            { num: "04", title: "Free Cancellation", desc: "Plans change. Book with confidence, cancel any time." },
           ].map((f) => (
             <div key={f.title} className="feature-card">
               <span className="feature-num">{f.num}</span>
