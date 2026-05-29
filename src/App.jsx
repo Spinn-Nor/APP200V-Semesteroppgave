@@ -1,14 +1,14 @@
 /**
  * App.jsx
- *
- * Main application component.
- * AuthProvider must wrap CartProvider because CartContext depends on useAuth.
- *
- * @author Fredrik Fordelsen - Fixed provider order
- * @version 1.0
  */
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import { useEffect } from "react";
 import "./App.css";
 
 import Nav from "./components/Nav";
@@ -28,33 +28,50 @@ import MyBookings from "./pages/MyBookings";
 import Account from "./pages/Account";
 import Footer from "./components/Footer";
 
+function AppContent() {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, [location.pathname]);
+
+  return (
+    <>
+      <Nav />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/hotels" element={<Hotels />} />
+        <Route path="/hotels/:id" element={<HotelDetail />} />
+        <Route path="/wellness" element={<Wellness />} />
+        <Route path="/locations" element={<Locations />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/account" element={<Account />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminPanel />
+            </AdminRoute>
+          }
+        />
+      </Routes>
+      <Footer />
+    </>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
-          <Nav />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/hotels" element={<Hotels />} />
-            <Route path="/hotels/:id" element={<HotelDetail />} />
-            <Route path="/wellness" element={<Wellness />} />
-            <Route path="/locations" element={<Locations />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/my-bookings" element={<MyBookings />} />
-            <Route path="/account" element={<Account />} />
-            <Route
-              path="/admin"
-              element={
-                <AdminRoute>
-                  <AdminPanel />
-                </AdminRoute>
-              }
-            />
-          </Routes>
-
-          <Footer />
+          <AppContent />
         </Router>
       </CartProvider>
     </AuthProvider>
