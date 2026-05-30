@@ -143,35 +143,57 @@ function AdminPanel() {
 
       Object.entries(allOrders).forEach(([userId, userOrders]) => {
         Object.entries(userOrders || {}).forEach(([orderId, order]) => {
-          if (!order.items) return;
+          if (!order?.items?.length) return;
 
           order.items.forEach((item, index) => {
             bookingList.push({
               id: `${orderId}-${index}`,
-              orderId: orderId,
-              userId: userId, // Viktig for CRUD
-              customerName: order.customerName || order.userName || "Unknown",
+              orderId: order.orderId || orderId,
+              userId: userId,
+
+              // Robust customer info
+              customerName:
+                order.customerName ||
+                order.userName ||
+                order.displayName ||
+                "Unknown Customer",
               customerEmail: order.customerEmail || order.email || "—",
+
+              // Item details
               type: item.type || item.category || "Room",
-              hotelName: item.hotelName,
-              roomName: item.name || item.treatmentName,
-              checkIn: item.checkIn,
+              hotelName: item.hotelName || "Unknown Hotel",
+              roomName: item.name || item.treatmentName || "Unknown Room",
+
+              // Date handling - important for past bookings
+              checkIn: item.checkIn || item.date,
               checkOut: item.checkOut,
+              date: item.date || item.checkIn,
+
               nights: item.nights,
-              totalPrice: Number(item.price) || Number(item.totalPrice) || 0,
+              totalPrice:
+                Number(item.price) ||
+                Number(item.totalPrice) ||
+                Number(order.totalPrice) ||
+                0,
+              pricePerNight: item.pricePerNight || item.price,
+
               status: order.status || "confirmed",
-              createdAt: order.createdAt || order.date,
-              ...item,
+              createdAt:
+                order.createdAt || order.date || new Date().toISOString(),
+
+              ...item, // spread remaining data
             });
           });
         });
       });
 
+      // Sort by newest first
       bookingList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
       setBookings(bookingList);
     } catch (error) {
       console.error("Failed to fetch bookings:", error);
-      showToast("Kunne ikke hente bookinger", "error");
+      showToast("Could not load bookings", "error");
     } finally {
       setLoadingBookings(false);
     }
@@ -679,6 +701,92 @@ function AdminPanel() {
     }
   };
 
+  // ==================== MESSAGES ====================
+  const [messages, setMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [messageFilter, setMessageFilter] = useState("all"); // all, unread, read
+
+  // Messages Modal
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+
+  /**
+   * Toggle message between read and unread
+   */
+  const toggleMessageStatus = async (messageId, currentStatus) => {
+    try {
+      const newStatus = currentStatus === "unread" ? "read" : "unread";
+
+      await set(ref(db, `contacts/${messageId}/status`), newStatus);
+
+      showToast(`Message marked as ${newStatus}`, "success");
+
+      // Refresh messages
+      fetchMessages();
+    } catch (error) {
+      console.error("Error updating message status:", error);
+      showToast("Failed to update status", "error");
+    }
+  };
+
+  /**
+   * Open message in modal
+   */
+  const openMessage = (message) => {
+    setSelectedMessage(message);
+    setShowMessageModal(true);
+
+    // Automatically mark as read when opened
+    if (message.status === "unread") {
+      set(ref(db, `contacts/${message.id}/status`), "read");
+      // Update local state immediately for better UX
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === message.id ? { ...msg, status: "read" } : msg,
+        ),
+      );
+    }
+  };
+
+  /**
+   * Fetch all contact messages from Firebase
+   */
+  const fetchMessages = async () => {
+    setLoadingMessages(true);
+    try {
+      const messagesRef = ref(db, "contacts");
+      const snapshot = await get(messagesRef);
+
+      if (snapshot.exists()) {
+        const messagesData = snapshot.val();
+        const messagesArray = Object.keys(messagesData).map((key) => ({
+          id: key,
+          ...messagesData[key],
+        }));
+
+        // Sort by newest first
+        messagesArray.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+        );
+
+        setMessages(messagesArray);
+      } else {
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch messages:", error);
+      showToast("Could not load messages", "error");
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "messages") {
+      fetchMessages();
+    }
+  }, [activeTab]);
+
   return (
     <div className="admin-container">
       {/* Sidebar */}
@@ -715,6 +823,13 @@ function AdminPanel() {
             onClick={() => setActiveTab("bookings")}
           >
             📅 Bookings
+          </button>
+
+          <button
+            className={`menu-item ${activeTab === "messages" ? "active" : ""}`}
+            onClick={() => setActiveTab("messages")}
+          >
+            ✉️ Messages
           </button>
 
           <div className="admin-user">
@@ -1237,13 +1352,16 @@ function AdminPanel() {
                   className="search-input"
                 />
                 <select
+                  className="booking-filter"
                   value={bookingFilter}
                   onChange={(e) => setBookingFilter(e.target.value)}
                 >
                   <option value="all">All Bookings</option>
                   <option value="room">Rooms Only</option>
                   <option value="spa">Spa Only</option>
+                  <option value="event">Event Only</option>
                   <option value="confirmed">Confirmed</option>
+                  <option value="completed">Completed</option>
                   <option value="cancelled">Cancelled</option>
                 </select>
               </div>
@@ -1276,19 +1394,40 @@ function AdminPanel() {
                         const matchesSearch =
                           b.customerName?.toLowerCase().includes(search) ||
                           b.hotelName?.toLowerCase().includes(search) ||
-                          b.customerEmail?.toLowerCase().includes(search);
+                          b.customerEmail?.toLowerCase().includes(search) ||
+                          b.roomName?.toLowerCase().includes(search);
 
+                        // Type filters
                         if (bookingFilter === "room")
-                          return b.type === "Room" && matchesSearch;
+                          return (
+                            (b.type === "Room" ||
+                              b.category === "accommodation") &&
+                            matchesSearch
+                          );
+
                         if (bookingFilter === "spa")
                           return (
                             (b.type === "Spa" || b.category === "spa") &&
                             matchesSearch
                           );
+
+                        if (bookingFilter === "event")
+                          return (
+                            (b.type === "Event" || b.category === "event") &&
+                            matchesSearch
+                          );
+
+                        // Status filters
                         if (bookingFilter === "confirmed")
                           return b.status === "confirmed" && matchesSearch;
+
+                        if (bookingFilter === "completed")
+                          return b.status === "completed" && matchesSearch;
+
                         if (bookingFilter === "cancelled")
                           return b.status === "cancelled" && matchesSearch;
+
+                        // Default: show all that match search
                         return matchesSearch;
                       })
                       .map((booking) => (
@@ -1302,9 +1441,9 @@ function AdminPanel() {
                           <td>{booking.customerEmail}</td>
                           <td>
                             <span
-                              className={`type-badge ${booking.type?.toLowerCase()}`}
+                              className={`type-badge ${booking.type?.toLowerCase() || "room"}`}
                             >
-                              {booking.type}
+                              {booking.type || "Room"}
                             </span>
                           </td>
                           <td>{booking.hotelName || booking.roomName}</td>
@@ -1317,7 +1456,9 @@ function AdminPanel() {
                             </strong>
                           </td>
                           <td>
-                            <span className={`status-badge ${booking.status}`}>
+                            <span
+                              className={`status-badge ${booking.status || "confirmed"}`}
+                            >
                               {booking.status || "confirmed"}
                             </span>
                           </td>
@@ -1330,6 +1471,94 @@ function AdminPanel() {
                               }}
                             >
                               View
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ==================== MESSAGES TAB ==================== */}
+        {/* ==================== MESSAGES TAB ==================== */}
+        {activeTab === "messages" && (
+          <div>
+            <div className="admin-header">
+              <h1>Messages ({messages.length})</h1>
+
+              <div className="booking-filters">
+                <select
+                  className="booking-filter"
+                  value={messageFilter}
+                  onChange={(e) => setMessageFilter(e.target.value)}
+                >
+                  <option value="all">All Messages</option>
+                  <option value="unread">Unread</option>
+                  <option value="read">Read</option>
+                </select>
+              </div>
+            </div>
+
+            {loadingMessages ? (
+              <p className="loading-text">Loading messages...</p>
+            ) : messages.length === 0 ? (
+              <p>No messages received yet.</p>
+            ) : (
+              <div className="admin-table-container">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Subject</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {messages
+                      .filter((msg) => {
+                        if (messageFilter === "unread")
+                          return msg.status === "unread";
+                        if (messageFilter === "read")
+                          return msg.status === "read";
+                        return true;
+                      })
+                      .map((msg) => (
+                        <tr key={msg.id}>
+                          <td>
+                            {new Date(msg.createdAt).toLocaleDateString(
+                              "no-NO",
+                            )}
+                          </td>
+                          <td>{msg.name}</td>
+                          <td>{msg.email}</td>
+                          <td>{msg.subject}</td>
+                          <td>
+                            <span className={`status-badge ${msg.status}`}>
+                              {msg.status === "unread" ? "Unread" : "Read"}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              className="action-btn view-btn"
+                              onClick={() => openMessage(msg)}
+                            >
+                              View Message
+                            </button>
+                            <button
+                              className="action-btn edit-btn"
+                              onClick={() =>
+                                toggleMessageStatus(msg.id, msg.status)
+                              }
+                            >
+                              {msg.status === "unread"
+                                ? "Mark Read"
+                                : "Mark Unread"}
                             </button>
                           </td>
                         </tr>
@@ -1907,6 +2136,66 @@ function AdminPanel() {
                 onClick={() => handleDeleteBooking(selectedBooking)}
               >
                 Delete Booking
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== MESSAGE DETAIL MODAL ==================== */}
+      {showMessageModal && selectedMessage && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowMessageModal(false)}
+        >
+          <div
+            className="modal-content message-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2>{selectedMessage.subject}</h2>
+              <button
+                className="close-modal-btn"
+                onClick={() => setShowMessageModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="message-info">
+                <p>
+                  <strong>From:</strong> {selectedMessage.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedMessage.email}
+                </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {new Date(selectedMessage.createdAt).toLocaleString("no-NO")}
+                </p>
+              </div>
+
+              <div className="message-content">
+                <p>{selectedMessage.message}</p>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button onClick={() => setShowMessageModal(false)}>Close</button>
+              <button
+                className="edit-btn"
+                onClick={() => {
+                  toggleMessageStatus(
+                    selectedMessage.id,
+                    selectedMessage.status,
+                  );
+                  setShowMessageModal(false);
+                }}
+              >
+                {selectedMessage.status === "unread"
+                  ? "Mark as Read"
+                  : "Mark as Unread"}
               </button>
             </div>
           </div>

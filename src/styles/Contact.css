@@ -1,0 +1,126 @@
+.contact-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.contact-header h1 {
+  font-size: 2.8rem;
+  color: #1e3a8a;
+  margin-bottom: 12px;
+}
+
+.contact-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Form Styling */
+.contact-form {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 160px;
+}
+
+.submit-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 16px;
+  background-color: #1e40af;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #1e3a8a;
+  transform: translateY(-2px);
+}
+
+.submit-btn:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-container {
+    margin: 20px 15px;
+    padding: 15px;
+  }
+
+  .contact-form {
+    padding: 25px 20px;
+  }
+}
+
+/* Success / Error message styling (if you want to add later) */
+.success-message {
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 14px;
+  border-radius: 8px;
+  text-align: center;
+  margin: 15px 0;
+}

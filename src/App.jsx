@@ -33,6 +33,7 @@ import { CartProvider } from "./context/CartContext";
 import MyBookings from "./pages/MyBookings";
 import Account from "./pages/Account";
 import Footer from "./components/Footer";
+import Contact from "./pages/Contact";
 
 function AppContent() {
   const location = useLocation();
@@ -63,6 +64,7 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/contact" element={<Contact />} />
         <Route
           path="/admin"
           element={
