@@ -1252,33 +1252,6 @@ function AdminPanel() {
                         + Add Amenity
                       </button>
                     </div>
-
-                    <div className="form-group toggle-group">
-                      <label>Has Spa</label>
-                      <input
-                        type="checkbox"
-                        checked={generalForm.hasSpa || false}
-                        onChange={(e) =>
-                          setGeneralForm({
-                            ...generalForm,
-                            hasSpa: e.target.checked,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="form-group toggle-group">
-                      <label>Has Events</label>
-                      <input
-                        type="checkbox"
-                        checked={generalForm.hasEvents || false}
-                        onChange={(e) =>
-                          setGeneralForm({
-                            ...generalForm,
-                            hasEvents: e.target.checked,
-                          })
-                        }
-                      />
-                    </div>
                   </div>
 
                   <div className="modal-actions">

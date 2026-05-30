@@ -22,7 +22,7 @@
 
 /* ---- Base Styles ---- */
 .wellness-page {
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   color: var(--text-main);
   background-color: var(--white);
   line-height: 1.6;
@@ -50,7 +50,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1920&auto=format&fit=crop');
+  background-image: url("https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1920&auto=format&fit=crop");
   background-size: cover;
   background-position: center;
   text-align: center;
@@ -60,7 +60,11 @@
 .wellness-hero-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle, rgba(10, 17, 40, 0.4) 0%, rgba(10, 17, 40, 0.8) 100%);
+  background: radial-gradient(
+    circle,
+    rgba(10, 17, 40, 0.4) 0%,
+    rgba(10, 17, 40, 0.8) 100%
+  );
   z-index: 1;
 }
 
@@ -81,7 +85,7 @@
 }
 
 .wellness-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 300;
   line-height: 1.1;
@@ -135,7 +139,7 @@
 }
 
 .wellness-intro-text h2 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 3rem;
   color: var(--blue-ink);
   margin-bottom: 25px;
@@ -162,7 +166,7 @@
 
 .wellness-treatments h2 {
   text-align: center;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 3.2rem;
   margin-bottom: 20px;
   color: var(--blue-ink);
@@ -213,7 +217,7 @@
 }
 
 .treatment-details h3 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1.7rem;
   margin-bottom: 12px;
   color: var(--blue-brand);
@@ -254,7 +258,7 @@
 }
 
 .wellness-booking h2 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 3.4rem;
   margin-bottom: 25px;
   font-weight: 300;
@@ -274,7 +278,8 @@
   gap: 25px;
 }
 
-.contact-btn, .book-now-btn {
+.contact-btn,
+.book-now-btn {
   display: inline-block;
   padding: 16px 35px;
   text-decoration: none;
@@ -324,7 +329,8 @@
     gap: 15px;
   }
 
-  .contact-btn, .book-now-btn {
+  .contact-btn,
+  .book-now-btn {
     width: 100%;
     max-width: 300px;
     text-align: center;
@@ -517,7 +523,7 @@
 }
 
 .modal-info-container h2 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 2.4rem;
   color: var(--blue-ink);
   margin-bottom: 15px;

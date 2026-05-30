@@ -7,12 +7,12 @@
  * @version 1.2
  */
 
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/Events.css';
-import { getDatabase, ref, onValue } from 'firebase/database';
-import { db } from '../firebase/config';
-import { useHotels } from '../hooks/useHotels';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../styles/Events.css";
+import { getDatabase, ref, onValue } from "firebase/database";
+import { db } from "../firebase/config";
+import { useHotels } from "../hooks/useHotels";
 import { useCart } from "../context/CartContext"; // ← 1. HENT UT USECART
 import EventDetailsModal from "../components/EventDetailsModal";
 
@@ -37,29 +37,39 @@ function Events() {
     const database = db || getDatabase();
     const roomsRef = ref(database, `conferenceRooms/${selectedHotelId}/rooms`);
 
-    const unsubscribe = onValue(roomsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const roomsList = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key]
-        }));
-        setRooms(roomsList);
-      } else {
-        setRooms([]);
-      }
-      setLoading(false);
-    }, (firebaseError) => {
-      console.error("Firebase error:", firebaseError);
-      setError("Failed to retrieve conference rooms. Please try again later.");
-      setLoading(false);
-    });
+    const unsubscribe = onValue(
+      roomsRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const roomsList = Object.keys(data).map((key) => ({
+            id: key,
+            ...data[key],
+          }));
+          setRooms(roomsList);
+        } else {
+          setRooms([]);
+        }
+        setLoading(false);
+      },
+      (firebaseError) => {
+        console.error("Firebase error:", firebaseError);
+        setError(
+          "Failed to retrieve conference rooms. Please try again later.",
+        );
+        setLoading(false);
+      },
+    );
 
     return () => unsubscribe();
   }, [selectedHotelId]);
 
-  const eventHotels = hotels ? hotels.filter(hotel => hotel.hasEvents === true) : [];
-  const currentHotel = hotels ? hotels.find(h => h.id === selectedHotelId) : null;
+  const eventHotels = hotels
+    ? hotels.filter((hotel) => hotel.hasEvents === true)
+    : [];
+  const currentHotel = hotels
+    ? hotels.find((h) => h.id === selectedHotelId)
+    : null;
 
   return (
     <main className="events-page">
@@ -68,11 +78,17 @@ function Events() {
         <div className="events-hero-overlay" />
         <div className="events-hero-content">
           <p className="events-tagline">Professional Conference Solutions</p>
-          <h1 className="events-title">Conferences & <br />Successful Meetings</h1>
+          <h1 className="events-title">
+            Conferences & <br />
+            Successful Meetings
+          </h1>
           <p className="events-subtitle">
-            Host your next event, workshop or conference in state-of-the-art facilities across Blueberry Hotels.
+            Host your next event, workshop or conference in state-of-the-art
+            facilities across Blueberry Hotels.
           </p>
-          <a href="#events-selection" className="events-cta-btn">Explore Meeting Rooms</a>
+          <a href="#events-selection" className="events-cta-btn">
+            Explore Meeting Rooms
+          </a>
         </div>
       </section>
 
@@ -81,7 +97,9 @@ function Events() {
         <div className="events-intro-text">
           <h2>Spaces Built for Collaboration</h2>
           <p>
-            From intimate boardrooms to expansive event halls—all our rooms fulfill the strict Blueberry standard for technical equipment and comfort.
+            From intimate boardrooms to expansive event halls—all our rooms
+            fulfill the strict Blueberry standard for technical equipment and
+            comfort.
           </p>
         </div>
       </section>
@@ -92,8 +110,12 @@ function Events() {
       {!selectedHotelId && (
         <section className="events-destinations">
           <div className="container">
-            <h2 className="spa-destination-title">Select an Event Destination</h2>
-            <p className="spa-destination-subtitle">Find the perfect venue tailored to your next corporate gathering.</p>
+            <h2 className="spa-destination-title">
+              Select an Event Destination
+            </h2>
+            <p className="spa-destination-subtitle">
+              Find the perfect venue tailored to your next corporate gathering.
+            </p>
 
             {hotelsLoading ? (
               <p className="wellness-loading">Loading destinations...</p>
@@ -112,7 +134,10 @@ function Events() {
                       <h3>{hotel.name}</h3>
                       <p className="hotel-location">📍 {hotel.city}</p>
                       <p className="hotel-description">{hotel.description}</p>
-                      <button className="see-rooms-btn" onClick={() => setSelectedHotelId(hotel.id)}>
+                      <button
+                        className="see-rooms-btn"
+                        onClick={() => setSelectedHotelId(hotel.id)}
+                      >
                         View Conference Rooms
                       </button>
                     </div>
@@ -130,19 +155,27 @@ function Events() {
           <div className="container">
             <h2 className="spa-menu-title">Available Meeting Spaces</h2>
             <p className="spa-menu-subtitle">
-              Currently viewing conference rooms available at <strong>{currentHotel?.name || 'Chosen Location'}</strong>
+              Currently viewing conference rooms available at{" "}
+              <strong>{currentHotel?.name || "Chosen Location"}</strong>
             </p>
 
-            <button className="filter-btn back-location-btn" onClick={() => setSelectedHotelId(null)}>
+            <button
+              className="filter-btn back-location-btn"
+              onClick={() => setSelectedHotelId(null)}
+            >
               ← Change Location
             </button>
 
-            {error && <p className="wellness-error format-error-spacing">{error}</p>}
+            {error && (
+              <p className="wellness-error format-error-spacing">{error}</p>
+            )}
 
             {loading ? (
               <p className="wellness-loading">Loading meeting rooms...</p>
             ) : rooms.length === 0 ? (
-              <p className="wellness-error format-error-spacing">No conference rooms registered for this location.</p>
+              <p className="wellness-error format-error-spacing">
+                No conference rooms registered for this location.
+              </p>
             ) : (
               <div className="events-table">
                 <div className="table-header">
@@ -163,7 +196,12 @@ function Events() {
                       <small>{room.equipment}</small>
                     </div>
                     <div className="price-cell">
-                      <span className="price-tag" style={{ fontWeight: 'bold' }}>{room.price} kr</span>
+                      <span
+                        className="price-tag"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        {room.price} kr
+                      </span>
                     </div>
                     <div className="action-cell">
                       <button
@@ -173,7 +211,7 @@ function Events() {
                           setIsBookingOpen(true);
                         }}
                       >
-                        Book
+                        Inquiry
                       </button>
                     </div>
                   </div>
@@ -188,9 +226,14 @@ function Events() {
       <section className="wellness-booking">
         <div className="wellness-booking-content container">
           <h2>Planning a Larger Event?</h2>
-          <p>Our event coordinators are ready to assist you with catering, tailor-made layouts and multi-day packages.</p>
+          <p>
+            Our event coordinators are ready to assist you with catering,
+            tailor-made layouts and multi-day packages.
+          </p>
           <div className="booking-actions">
-            <Link to="/contact" className="contact-btn">Contact Event Team</Link>
+            <Link to="/contact" className="contact-btn">
+              Contact Event Team
+            </Link>
           </div>
         </div>
       </section>
