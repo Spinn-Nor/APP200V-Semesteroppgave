@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Wellness.css";
 import { ref, get } from "firebase/database";
+import { useSearchParams } from "react-router-dom";
 import { db } from "../firebase/config";
 import { useHotels } from "../hooks/useHotels";
 import SpaBookingModal from "../components/SpaBookingModal";
@@ -21,6 +22,8 @@ function Wellness() {
   const [treatments, setTreatments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const urlHotelId = searchParams.get("hotel");
 
   //  POPUP STATE: Stores the treatment that is currently clicked on
   const [activeTreatment, setActiveTreatment] = useState(null);
@@ -30,9 +33,11 @@ function Wellness() {
   const [selectedTreatmentForBooking, setSelectedTreatmentForBooking] =
     useState(null);
 
-  // Fetch treatments for the selected hotel (only enabled ones)
+  // Fetch treatments when hotel changes (from URL or state)
   useEffect(() => {
-    if (!selectedHotelId) {
+    const activeHotelId = urlHotelId || selectedHotelId;
+
+    if (!activeHotelId) {
       setTreatments([]);
       setLoading(false);
       return;
@@ -43,7 +48,6 @@ function Wellness() {
       setError(null);
 
       try {
-        // 1. Hent alle treatments
         const allTreatmentsRef = ref(db, "Spa/treatments");
         const allSnapshot = await get(allTreatmentsRef);
 
@@ -58,23 +62,21 @@ function Wellness() {
           }));
         }
 
-        // 2. Hent hvilke treatments som er aktivert for dette hotellet i Admin
         const hotelTreatmentsRef = ref(
           db,
-          `hotels/${selectedHotelId}/spaTreatments`,
+          `hotels/${activeHotelId}/spaTreatments`,
         );
         const hotelSnapshot = await get(hotelTreatmentsRef);
 
         const enabledIds = hotelSnapshot.exists() ? hotelSnapshot.val() : [];
 
-        // 3. Filtrer til kun de som er aktivert
         const filteredTreatments = allTreatmentsList.filter((treatment) =>
           enabledIds.includes(treatment.id),
         );
 
         setTreatments(filteredTreatments);
       } catch (err) {
-        console.error("Error fetching treatments:", err);
+        console.error(err);
         setError("Failed to retrieve treatments. Please try again later.");
       } finally {
         setLoading(false);
@@ -82,7 +84,29 @@ function Wellness() {
     };
 
     fetchHotelTreatments();
-  }, [selectedHotelId]);
+  }, [urlHotelId, selectedHotelId]);
+
+  // Sync URL parameter with selectedHotelId
+  useEffect(() => {
+    if (urlHotelId && urlHotelId !== selectedHotelId) {
+      setSelectedHotelId(urlHotelId);
+    }
+  }, [urlHotelId]);
+
+  // Scroll to treatments when coming from hotel detail page
+  useEffect(() => {
+    if (urlHotelId) {
+      setTimeout(() => {
+        const section = document.getElementById("treatments");
+        if (section) {
+          section.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 400);
+    }
+  }, [urlHotelId]);
 
   const spaHotels = hotels
     ? hotels.filter((hotel) => hotel.hasSpa === true)

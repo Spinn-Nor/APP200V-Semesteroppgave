@@ -5,7 +5,7 @@
  * @version 1.2
  */
 
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 import { ref, get } from "firebase/database";
@@ -116,8 +116,23 @@ function HotelDetail() {
           <p className="hotel-description">{hotel.description}</p>
 
           <div className="hotel-amenities">
-            {hotel.hasSpa && <span>♨️ Spa available</span>}
-            {hotel.hasEvents && <span>🎉 Events available</span>}
+            {hotel.hasSpa && (
+              <Link
+                to={`/wellness?hotel=${hotel.id}`}
+                className="amenity-tag spa-tag"
+              >
+                ♨️ Spa available
+              </Link>
+            )}
+
+            {hotel.hasEvents && (
+              <Link
+                to={`/events?hotel=${hotel.id}`}
+                className="amenity-tag events-tag"
+              >
+                🎉 Events available
+              </Link>
+            )}
           </div>
 
           <h2>Available rooms</h2>
