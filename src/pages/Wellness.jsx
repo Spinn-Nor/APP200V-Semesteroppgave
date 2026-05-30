@@ -1,4 +1,3 @@
-
 /**
  * SpaBookingModal.jsx
  *
@@ -8,13 +7,12 @@
  * @version 1.8
  */
 
-
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/Wellness.css';
-import { getDatabase, ref, onValue } from 'firebase/database';
-import { db } from '../firebase/config';
-import { useHotels } from '../hooks/useHotels';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../styles/Wellness.css";
+import { ref, get } from "firebase/database";
+import { db } from "../firebase/config";
+import { useHotels } from "../hooks/useHotels";
 import SpaBookingModal from "../components/SpaBookingModal";
 
 function Wellness() {
@@ -29,38 +27,69 @@ function Wellness() {
   // booking modal state
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   // for remembering treatment after closing popup
-  const [selectedTreatmentForBooking, setSelectedTreatmentForBooking] = useState(null);
+  const [selectedTreatmentForBooking, setSelectedTreatmentForBooking] =
+    useState(null);
 
+  // Fetch treatments for the selected hotel (only enabled ones)
   useEffect(() => {
-    const database = db || getDatabase();
-    const treatmentsRef = ref(database, 'Spa/treatments');
+    if (!selectedHotelId) {
+      setTreatments([]);
+      setLoading(false);
+      return;
+    }
 
-    const unsubscribe = onValue(treatmentsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const treatmentsList = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key],
-          image: data[key].image || 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=600&auto=format&fit=crop'
-        }));
-        setTreatments(treatmentsList);
-      } else {
-        setTreatments([]);
+    const fetchHotelTreatments = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // 1. Hent alle treatments
+        const allTreatmentsRef = ref(db, "Spa/treatments");
+        const allSnapshot = await get(allTreatmentsRef);
+
+        let allTreatmentsList = [];
+        if (allSnapshot.exists()) {
+          allTreatmentsList = Object.keys(allSnapshot.val()).map((key) => ({
+            id: key,
+            ...allSnapshot.val()[key],
+            image:
+              allSnapshot.val()[key].image ||
+              "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=600&auto=format&fit=crop",
+          }));
+        }
+
+        // 2. Hent hvilke treatments som er aktivert for dette hotellet i Admin
+        const hotelTreatmentsRef = ref(
+          db,
+          `hotels/${selectedHotelId}/spaTreatments`,
+        );
+        const hotelSnapshot = await get(hotelTreatmentsRef);
+
+        const enabledIds = hotelSnapshot.exists() ? hotelSnapshot.val() : [];
+
+        // 3. Filtrer til kun de som er aktivert
+        const filteredTreatments = allTreatmentsList.filter((treatment) =>
+          enabledIds.includes(treatment.id),
+        );
+
+        setTreatments(filteredTreatments);
+      } catch (err) {
+        console.error("Error fetching treatments:", err);
+        setError("Failed to retrieve treatments. Please try again later.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    }, (firebaseError) => {
-      console.error("Firebase error:", firebaseError);
-      setError("Failed to retrieve treatments. Please try again later.");
-      setLoading(false);
-    });
+    };
 
+    fetchHotelTreatments();
+  }, [selectedHotelId]);
 
-
-    return () => unsubscribe();
-  }, []);
-
-  const spaHotels = hotels ? hotels.filter(hotel => hotel.hasSpa === true) : [];
-  const currentHotel = hotels ? hotels.find(h => h.id === selectedHotelId) : null;
+  const spaHotels = hotels
+    ? hotels.filter((hotel) => hotel.hasSpa === true)
+    : [];
+  const currentHotel = hotels
+    ? hotels.find((h) => h.id === selectedHotelId)
+    : null;
 
   return (
     <main className="wellness-page">
@@ -69,20 +98,27 @@ function Wellness() {
         <div className="wellness-hero-overlay" />
         <div className="wellness-hero-content">
           <p className="wellness-tagline">Serenity & Balance</p>
-          <h1 className="wellness-title">Your Sanctuary <br />of Wellness</h1>
+          <h1 className="wellness-title">
+            Your Sanctuary <br />
+            of Wellness
+          </h1>
           <p className="wellness-subtitle">
-            Escape the everyday and discover a world of pure relaxation at Blueberry Spa.
+            Escape the everyday and discover a world of pure relaxation at
+            Blueberry Spa.
           </p>
-          <a href="#spa-selection" className="wellness-cta-btn">Explore Treatments</a>
+          <a href="#spa-selection" className="wellness-cta-btn">
+            Explore Treatments
+          </a>
         </div>
       </section>
 
       {/* Intro */}
-      <section className="wellness-intro container" id='wellnessIntro'>
+      <section className="wellness-intro container" id="wellnessIntro">
         <div className="wellness-intro-text">
           <h2>Rejuvenate Your Mind & Body</h2>
           <p>
-            Our expert therapists are dedicated to providing personalized care in a tranquil environment.
+            Our expert therapists are dedicated to providing personalized care
+            in a tranquil environment.
           </p>
         </div>
       </section>
@@ -94,7 +130,9 @@ function Wellness() {
         <section className="wellness-treatments">
           <div className="container">
             <h2 className="spa-destination-title">Select a Spa Destination</h2>
-            <p className="spa-destination-subtitle">Our luxury treatments are tailored to each unique location.</p>
+            <p className="spa-destination-subtitle">
+              Our luxury treatments are tailored to each unique location.
+            </p>
 
             {hotelsLoading ? (
               <p className="wellness-loading">Loading destinations...</p>
@@ -106,7 +144,7 @@ function Wellness() {
                   <div key={hotel.id} className="hotel-card">
                     {/* Gathers pictures stored in DB as an array */}
                     <img
-                      src={(hotel.images && hotel.images[0])}
+                      src={hotel.images && hotel.images[0]}
                       alt={hotel.name}
                       className="hotel-image"
                     />
@@ -114,7 +152,10 @@ function Wellness() {
                       <h3>{hotel.name}</h3>
                       <p className="hotel-location">📍 {hotel.city}</p>
                       <p className="hotel-description">{hotel.description}</p>
-                      <button className="see-rooms-btn" onClick={() => setSelectedHotelId(hotel.id)}>
+                      <button
+                        className="see-rooms-btn"
+                        onClick={() => setSelectedHotelId(hotel.id)}
+                      >
                         View Spa Menu
                       </button>
                     </div>
@@ -126,25 +167,31 @@ function Wellness() {
         </section>
       )}
 
-
       {/* STEP 2: Show Spa Menu */}
       {selectedHotelId && (
         <section id="treatments" className="wellness-treatments">
           <div className="container">
-
             <h2 className="spa-menu-title">Spa Menu</h2>
             <p className="spa-menu-subtitle">
-              Currently viewing treatments available at <strong>{currentHotel?.name || 'Chosen Location'}</strong>
+              Currently viewing treatments available at{" "}
+              <strong>{currentHotel?.name || "Chosen Location"}</strong>
             </p>
 
-            <button className="filter-btn back-location-btn" onClick={() => setSelectedHotelId(null)}>
+            <button
+              className="filter-btn back-location-btn"
+              onClick={() => setSelectedHotelId(null)}
+            >
               ← Change Location
             </button>
 
-            {error && <p className="wellness-error format-error-spacing">{error}</p>}
+            {error && (
+              <p className="wellness-error format-error-spacing">{error}</p>
+            )}
 
             {loading ? (
               <p className="wellness-loading">Loading treatments...</p>
+            ) : treatments.length === 0 ? (
+              <p>No treatments are currently enabled for this hotel.</p>
             ) : (
               <div className="treatment-grid">
                 {treatments.map((treatment) => (
@@ -159,7 +206,9 @@ function Wellness() {
                     </div>
                     <div className="treatment-details">
                       <h3>{treatment.name}</h3>
-                      <p className="treatment-description">{treatment.Description}</p>
+                      <p className="treatment-description">
+                        {treatment.Description}
+                      </p>
                       <div className="treatment-meta">
                         <span className="duration">{treatment.Duration}</span>
                         <span className="price">{treatment.Price}kr</span>
@@ -175,9 +224,20 @@ function Wellness() {
 
       {/* Popup Modal for booking button */}
       {activeTreatment && (
-        <div className="treatment-modal-overlay" onClick={() => setActiveTreatment(null)}>
-          <div className="treatment-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setActiveTreatment(null)}>×</button>
+        <div
+          className="treatment-modal-overlay"
+          onClick={() => setActiveTreatment(null)}
+        >
+          <div
+            className="treatment-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close-btn"
+              onClick={() => setActiveTreatment(null)}
+            >
+              ×
+            </button>
 
             <div className="wellness-modal-body">
               <div className="modal-image-container">
@@ -187,11 +247,18 @@ function Wellness() {
               <div className="modal-info-container">
                 <h2>{activeTreatment.name}</h2>
                 <div className="modal-meta-tags">
-                  <span className="modal-tag-duration">⏱ {activeTreatment.Duration}</span>
-                  <span className="modal-tag-price"> Price: {activeTreatment.Price}</span>
+                  <span className="modal-tag-duration">
+                    ⏱ {activeTreatment.Duration}
+                  </span>
+                  <span className="modal-tag-price">
+                    {" "}
+                    Price: {activeTreatment.Price}
+                  </span>
                 </div>
                 <hr className="modal-divider" />
-                <p className="modal-description-text">{activeTreatment.Description}</p>
+                <p className="modal-description-text">
+                  {activeTreatment.Description}
+                </p>
 
                 <div className="modal-action-row">
                   {/* OPPDATERT: Gjør alt i ett klikk her nå */}

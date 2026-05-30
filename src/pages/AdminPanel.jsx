@@ -788,6 +788,76 @@ function AdminPanel() {
     }
   }, [activeTab]);
 
+  // ==================== SPA TREATMENTS ====================
+  const [allTreatments, setAllTreatments] = useState([]);
+  const [selectedTreatments, setSelectedTreatments] = useState([]);
+  const [loadingTreatments, setLoadingTreatments] = useState(false);
+
+  // ==================== SPA TREATMENTS FUNCTIONS ====================
+  const fetchTreatments = async (hotelId) => {
+    if (!hotelId) return;
+
+    setLoadingTreatments(true);
+    try {
+      // Hent alle treatments fra databasen
+      const treatmentsRef = ref(db, "Spa/treatments");
+      const snapshot = await get(treatmentsRef);
+
+      let treatmentsList = [];
+      if (snapshot.exists()) {
+        treatmentsList = Object.entries(snapshot.val()).map(([key, data]) => ({
+          key, // fallback
+          id: data.id || key, // bruk id-feltet hvis det finnes
+          ...data,
+        }));
+      }
+      setAllTreatments(treatmentsList);
+
+      // Hent hvilke treatments som er aktivert for dette hotellet
+      const hotelTreatmentsRef = ref(db, `hotels/${hotelId}/spaTreatments`);
+      const hotelSnapshot = await get(hotelTreatmentsRef);
+
+      setSelectedTreatments(hotelSnapshot.exists() ? hotelSnapshot.val() : []);
+    } catch (error) {
+      console.error("Error fetching treatments:", error);
+      showToast("Failed to load treatments", "error");
+    } finally {
+      setLoadingTreatments(false);
+    }
+  };
+
+  const toggleTreatment = async (treatmentId) => {
+    if (!selectedHotel) return;
+
+    let newSelected = [...selectedTreatments];
+
+    if (newSelected.includes(treatmentId)) {
+      newSelected = newSelected.filter((id) => id !== treatmentId);
+    } else {
+      newSelected.push(treatmentId);
+    }
+
+    setSelectedTreatments(newSelected);
+
+    try {
+      await set(
+        ref(db, `hotels/${selectedHotel.id}/spaTreatments`),
+        newSelected,
+      );
+      showToast("Spa treatments updated successfully", "success");
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to update treatments", "error");
+    }
+  };
+
+  // Fetch treatments when spa tab is opened
+  useEffect(() => {
+    if (selectedHotel && detailTab === "spa") {
+      fetchTreatments(selectedHotel.id);
+    }
+  }, [selectedHotel, detailTab]);
+
   // ==================== SCROLL LOCK FOR MODALS ====================
   const isAnyModalOpen =
     showHotelModal ||
@@ -977,14 +1047,9 @@ function AdminPanel() {
               <button
                 className={`detail-tab ${detailTab === "spa" ? "active" : ""}`}
                 onClick={() => setDetailTab("spa")}
+                style={{ display: selectedHotel.hasSpa ? "block" : "none" }}
               >
                 Spa
-              </button>
-              <button
-                className={`detail-tab ${detailTab === "events" ? "active" : ""}`}
-                onClick={() => setDetailTab("events")}
-              >
-                Events
               </button>
             </div>
 
@@ -1270,9 +1335,56 @@ function AdminPanel() {
                 </div>
               )}
 
-              {detailTab === "spa" && <p>Spa management coming soon...</p>}
-              {detailTab === "events" && (
-                <p>Events management coming soon...</p>
+              {detailTab === "spa" && selectedHotel && (
+                <div>
+                  <div className="tab-header">
+                    <h2>Spa Treatments at {selectedHotel.name}</h2>
+                    <p className="tab-description">
+                      Toggle which treatments are available at this hotel
+                    </p>
+                  </div>
+
+                  <div className="spa-treatments-grid">
+                    {loadingTreatments ? (
+                      <p>Loading treatments...</p>
+                    ) : allTreatments.length === 0 ? (
+                      <p>No treatments found in the database.</p>
+                    ) : (
+                      allTreatments.map((treatment) => {
+                        const treatmentId = treatment.id || treatment.key;
+                        const isSelected =
+                          selectedTreatments.includes(treatmentId);
+
+                        return (
+                          <div
+                            key={treatmentId}
+                            className={`treatment-option ${isSelected ? "selected" : ""}`}
+                            onClick={() => toggleTreatment(treatmentId)}
+                          >
+                            <div className="treatment-info">
+                              <h4>{treatment.name}</h4>
+                              <p>
+                                {treatment.Duration} • {treatment.Price} kr
+                              </p>
+                              {treatment.Description && (
+                                <p className="treatment-description">
+                                  {treatment.Description}
+                                </p>
+                              )}
+                            </div>
+                            <div className="treatment-toggle">
+                              <span
+                                className={`toggle-status ${isSelected ? "active" : ""}`}
+                              >
+                                {isSelected ? "✓ Enabled" : "Disabled"}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>
