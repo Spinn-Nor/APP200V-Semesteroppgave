@@ -25,12 +25,16 @@ function Home() {
   const { hotels } = useHotels();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const filteredHotels =
-    destination.length >= 1
-      ? (hotels || []).filter((hotel) =>
-          hotel.city?.toLowerCase().includes(destination.toLowerCase()),
-        )
-      : [];
+  const filteredHotels = (hotels || []).filter((hotel) => {
+    const city = hotel.city?.toLowerCase() || "";
+    const secondWord = hotel.name.split(" ")[1]?.toLowerCase() || "";
+
+    return destination.length === 1
+      ? city.startsWith(destination.toLowerCase()) ||
+          secondWord.startsWith(destination.toLowerCase())
+      : city.includes(destination.toLowerCase()) ||
+          secondWord.includes(destination.toLowerCase());
+  });
 
   const handleCheckInChange = (e) => {
     const newCheckIn = e.target.value;
@@ -44,9 +48,7 @@ function Home() {
     if (checkOut) params.set("checkOut", checkOut);
 
     const matchedHotel = hotels?.find(
-      (h) =>
-        h.name.toLowerCase() === destination.toLowerCase() ||
-        h.city?.toLowerCase() === destination.toLowerCase(),
+      (h) => h.name.toLowerCase() === destination.toLowerCase(),
     );
 
     if (matchedHotel) {
