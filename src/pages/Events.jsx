@@ -173,7 +173,7 @@ function Events() {
                           setIsBookingOpen(true);
                         }}
                       >
-                        Inquiry
+                        Book
                       </button>
                     </div>
                   </div>
