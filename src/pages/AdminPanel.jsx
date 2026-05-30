@@ -14,6 +14,7 @@ import { db } from "../firebase/config";
 import { ref, set, remove, push, get } from "firebase/database";
 import { useCart } from "../context/CartContext";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { useScrollLock } from "../hooks/useScrollLock";
 import "../styles/AdminPanel.css";
 
 function AdminPanel() {
@@ -786,6 +787,18 @@ function AdminPanel() {
       fetchMessages();
     }
   }, [activeTab]);
+
+  // ==================== SCROLL LOCK FOR MODALS ====================
+  const isAnyModalOpen =
+    showHotelModal ||
+    showDeleteModal ||
+    showRoomModal ||
+    showAddUserModal ||
+    showEditUserModal ||
+    showBookingDetail ||
+    showMessageModal;
+
+  useScrollLock(isAnyModalOpen);
 
   return (
     <div className="admin-container">
