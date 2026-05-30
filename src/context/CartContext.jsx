@@ -56,8 +56,7 @@ export function CartProvider({ children }) {
   const confirmBooking = async () => {
     if (cart.length === 0) return false;
 
-    // Hent currentUser fra useAuth hook
-    const user = currentUser; // ← Bruk currentUser fra context
+    const user = currentUser;
 
     if (!user) {
       showToast("You must be logged in to confirm booking", "error");
@@ -67,34 +66,58 @@ export function CartProvider({ children }) {
     try {
       const orderId = `order-${Date.now()}`;
 
-      // Rens data før lagring
+      // Fetch customer name from the users node in the database
+      const userRef = ref(db, `users/${user.uid}`);
+      const userSnapshot = await get(userRef);
+
+      let customerName = "Unknown Customer";
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.val();
+        customerName =
+          userData.displayName ||
+          userData.fullName ||
+          userData.name ||
+          (user.email ? user.email.split("@")[0] : "Unknown Customer");
+      }
+
+      // Clean and prepare items - preserve original fields for MyBookings compatibility
       const cleanItems = cart.map((item) => ({
+        // Spread original item to preserve all data (including date, checkIn, etc.)
+        ...item,
+
+        // Ensure important fields are always present and properly formatted
         name: item.name || "Unknown Room",
         type: item.type || "Room",
         price: Number(item.price) || 0,
         pricePerNight: Number(item.pricePerNight) || 0,
         nights: Number(item.nights) || 1,
-        checkIn: item.checkIn || null,
+
+        // Date fields - critical for MyBookings to display dates correctly
+        date: item.date || item.checkIn || null,
+        checkIn: item.checkIn || item.date || null,
         checkOut: item.checkOut || null,
+
         hotelName: item.hotelName || "Unknown Hotel",
         hotelId: item.hotelId || "unknown",
-        roomId: item.id || item.roomId || "unknown-room",
+        roomId: item.roomId || item.id || "unknown-room",
         amenities: item.amenities || [],
         amenitiesTotal: Number(item.amenitiesTotal) || 0,
-        date: item.date || "",
         category: item.category || "accommodation",
       }));
 
-     
+      // Create the complete order object
       const orderData = {
         userId: user.uid,
-        items: cleanItems,
+        customerName: customerName,
+        customerEmail: user.email || "—",
         totalPrice: Number(totalPrice) || 0,
         status: "confirmed",
         createdAt: new Date().toISOString(),
         orderId: orderId,
+        items: cleanItems,
       };
 
+      // Save to Firebase
       await set(ref(db, `orders/${user.uid}/${orderId}`), orderData);
 
       clearCart();
