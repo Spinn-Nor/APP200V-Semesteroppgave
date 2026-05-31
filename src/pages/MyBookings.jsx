@@ -41,6 +41,8 @@ function MyBookings() {
       return;
     }
 
+    // Arrow function for fetching all bookings for the currently logged-in user from the database 
+    // Separates past and upcoming bookings 
     const fetchBookings = async () => {
       try {
         const bookingsRef = ref(db, `orders/${userId}`);
@@ -60,6 +62,8 @@ function MyBookings() {
           const upcoming = [];
           const past = [];
 
+          // Loop through the array of bookings from the DB
+          // Check the checkIn date of each booking, compare to todays date and push to either past or upcoming 
           bookingsArray.forEach((booking) => {
             const hasUpcomingItem = booking.items?.some((item) => {
               if (!item.checkIn) return false;

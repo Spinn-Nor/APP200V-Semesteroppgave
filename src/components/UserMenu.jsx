@@ -20,6 +20,8 @@ function UserMenu() {
   // Reference to the menu container
   const menuRef = useRef(null);
 
+  // Arrow function for handling logout 
+  // Calls the logout function from the auth context, then redirects the user to the homepage 
   const handleLogout = async () => {
     try {
       await logout();

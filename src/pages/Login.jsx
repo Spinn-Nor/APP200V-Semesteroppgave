@@ -35,6 +35,8 @@ function Login() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
+  // Arrow function for handling login 
+  // Calls the login function from the auth context, then tries to login using the user-provided email and password 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -50,6 +52,8 @@ function Login() {
     }
   };
 
+  // Arrow function for handling account registration 
+  // Checks whether the required fields are filled out, then tries to register a new user account with the user-provided information 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
@@ -111,6 +115,7 @@ function Login() {
         {error && <p className="error-message">{error}</p>}
 
         {activeTab === "login" && (
+          // Form for collecting login information 
           <form onSubmit={handleLogin} className="login-body">
             <div className="form-group">
               <label htmlFor="login-email">Email</label>
@@ -151,6 +156,7 @@ function Login() {
         )}
 
         {activeTab === "register" && (
+          // Form for collecting information for account registration 
           <form onSubmit={handleRegister} className="login-body">
             <div className="form-row">
               <div className="form-group">

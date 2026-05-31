@@ -18,22 +18,25 @@ function Home() {
   const today = new Date().toISOString().split("T")[0];
   const minCheckOut = checkIn
     ? new Date(new Date(checkIn).getTime() + 86400000)
-        .toISOString()
-        .split("T")[0]
+      .toISOString()
+      .split("T")[0]
     : today;
 
   const { hotels } = useHotels();
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // Filter hotels for the search result dropdown list based on user-input in the destination field 
   const filteredHotels = (hotels || []).filter((hotel) => {
     const city = hotel.city?.toLowerCase() || "";
     const secondWord = hotel.name.split(" ")[1]?.toLowerCase() || "";
 
+    // Search for hotels based the first letter of the city/hotel name when searching for a single letter 
+    // Search for cities/hotels containing the search string when input-length is not 1 
     return destination.length === 1
       ? city.startsWith(destination.toLowerCase()) ||
-          secondWord.startsWith(destination.toLowerCase())
+      secondWord.startsWith(destination.toLowerCase())
       : city.includes(destination.toLowerCase()) ||
-          secondWord.includes(destination.toLowerCase());
+      secondWord.includes(destination.toLowerCase());
   });
 
   const handleCheckInChange = (e) => {

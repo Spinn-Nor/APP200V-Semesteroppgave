@@ -25,6 +25,8 @@ function ReviewModal({
   const [reviewText, setReviewText] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Checks if the user has an existing review for the current hotel when the modal opens 
+  // Pre-fills the modal if a review exists 
   useEffect(() => {
     if (!isOpen || !currentUser || !hotelName) return;
 
@@ -54,6 +56,7 @@ function ReviewModal({
     fetchExistingReview();
   }, [isOpen, currentUser, hotelName]);
 
+  // Arrow function for adding or updating a review for the current hotel in the DB 
   const handleSubmit = async () => {
     if (!rating || !currentUser) return;
 
@@ -70,6 +73,7 @@ function ReviewModal({
         createdAt: Date.now(),
       });
 
+      // Calls the provided function on review submission, which is usually used for refreshing the page 
       await onReviewSubmitted();
 
       onClose();
@@ -98,9 +102,8 @@ function ReviewModal({
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
-                className={`star-btn ${
-                  star <= (hoveredStar || rating) ? "filled" : ""
-                }`}
+                className={`star-btn ${star <= (hoveredStar || rating) ? "filled" : ""
+                  }`}
                 onClick={() => setRating(star)}
                 onMouseEnter={() => setHoveredStar(star)}
                 onMouseLeave={() => setHoveredStar(0)}

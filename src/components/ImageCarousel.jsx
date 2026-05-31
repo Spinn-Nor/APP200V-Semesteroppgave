@@ -50,6 +50,7 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     goToNext();
   }
 
+  // Start the auto-scroll timer if imageArray contains items 
   function startTimer() {
     if (!autoScroll || imageArray.length <= 1) return;
 
@@ -60,6 +61,8 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     }, interval);
   }
 
+  // Start the auto-scroll timer on component load, and clear the timer on component cleanup 
+  // Restarts the timer whenever the image carousel is progressed manually 
   useEffect(() => {
     startTimer();
 

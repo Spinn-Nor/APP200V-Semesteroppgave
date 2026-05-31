@@ -3,7 +3,7 @@
  *
  * Wizard modal for selecting appointment details and summarizing spa bookings.
  *
- * @author Pelle Thoresen
+ * @author Pelle Thoresen & Bendik Viken Wangen
  * @version 1.5
  */
 
@@ -42,6 +42,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
   }, [isOpen]);
 
   useEffect(() => {
+    // Fetch all bookings from the DB to prevent double-booking
     const fetchBookedTimes = async () => {
       if (!bookingDate) return;
 
@@ -65,6 +66,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
           Object.values(userOrders).forEach((order) => {
             if (!Array.isArray(order.items)) return;
 
+            // For each booking, check if the booking is a spa-booking and has a valid date/time
             order.items.forEach((item) => {
               const isSpaBooking =
                 item.category === "spa" &&
@@ -75,6 +77,8 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
                 // Extract time from:
                 // "2026-05-31 @ 13:00"
 
+                // Split the date/time value from each booking to extract the time part
+                // Push the time to the unavailable times array
                 const parts = item.date.split("@");
 
                 if (parts.length > 1) {
@@ -212,12 +216,17 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
                 >
                   <option value="">Select a time</option>
 
+                  {/* Generate option elements for each available time on the selected date */}
                   {Array.from({ length: 29 }, (_, index) => {
+                    // Generate time in minutes since midnight for each half hour from 8am 
                     const totalMinutes = 8 * 60 + index * 30;
 
+                    // Divide minutes since midnight by 60 to get hours, then pad the result with leading zeros to ensure double digits 
+                    // Then find the remainder of dividing by 60 to check whether it's a full or half hour, then pad with leading zeros if not double digits 
                     const hours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
                     const minutes = String(totalMinutes % 60).padStart(2, "0");
 
+                    // Create a formatted string of HH:MM 
                     const time = `${hours}:${minutes}`;
 
                     // Skip already booked times
@@ -225,6 +234,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
                       return null;
                     }
 
+                    // Return an option element for each available time on the selected date 
                     return (
                       <option key={time} value={time}>
                         {time}

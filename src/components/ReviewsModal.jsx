@@ -18,6 +18,7 @@ function ReviewsModal({ isOpen, onClose, hotelId, hotelName }) {
   useEffect(() => {
     if (!isOpen || !hotelId) return;
 
+    // Fetch all review for the current hotel from the DB 
     const fetchReviews = async () => {
       setLoading(true);
 
@@ -30,6 +31,7 @@ function ReviewsModal({ isOpen, onClose, hotelId, hotelName }) {
 
           const reviewsArray = Object.values(reviewsData);
 
+          // Sort the reviewsArray to show newest first 
           reviewsArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
           setReviews(reviewsArray);
