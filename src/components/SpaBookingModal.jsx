@@ -1,7 +1,8 @@
 /**
  * SpaBookingModal.jsx
  *
- * Wizard modal for selecting appointment details and summarizing spa bookings.
+ * Multistep modal for bookingspa treatments. 
+ * Handles date/time selection, availability checks, summary view and adding bookings to cart. 
  *
  * @author Pelle Thoresen
  * @version 1.5
@@ -26,7 +27,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
 
   const [bookedTimes, setBookedTimes] = useState([]);
 
-  // Scroll Lock when modal is open (hindrer scrolling av bakgrunnen)
+  // Scroll Lock when modal is open (prohibits background scrolling.) // 15px is a fixed scrollbar compensation to prevent layout shift (bug fix)
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -41,6 +42,8 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
     };
   }, [isOpen]);
 
+// Fetches booked spa times from Firebase when booking date changes
+// Returns early if no date is selected or if no data exists in database
   useEffect(() => {
     const fetchBookedTimes = async () => {
       if (!bookingDate) return;
@@ -60,7 +63,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
 
         const unavailable = [];
 
-        // orders -> userId -> orderId
+        // Iterates through orders -> userId -> orderId
         Object.values(data).forEach((userOrders) => {
           Object.values(userOrders).forEach((order) => {
             if (!Array.isArray(order.items)) return;
@@ -103,11 +106,13 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
 
   if (!isOpen || !treatment) return null;
 
-  // Henter ut kun tallene fra prisen (hvis den f.eks. er lagret som "1290kr" eller "1290,-")
+  // Retrieves price as number and not string, to ensure it can be added to cart and displayed correctly in summary. This was changed in FB but it is a bug fix. 
   const rawPrice = treatment.Price ? treatment.Price.toString().replace(/\D/g, "") : "0";
   const numericPrice = parseInt(rawPrice, 10) || 0;
 
+  // handles modal navigation and booking validation before adding item to cart. 
   const nextStep = () => {
+     // Prevents moving forward if required fields are missing on step 1
     if (step === 1 && (!bookingDate || !bookingTime)) {
       setError("Please select both a date and a time slot.");
       return;
@@ -131,7 +136,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
 
     const safeTreatmentId = treatment.id || `spa-${Date.now()}`;
 
-    // Bygger et cartItem som snakker samme språk som handlekurven deres
+    // Constructs cart item object for spa booking with normalized structure for cart system.
     const cartItem = {
       name: treatment.name || "Unknown Treatment",
       type: "Spa", // Making sure FB understands it is a Spa not a hotel room
@@ -142,9 +147,9 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
       hotelName: hotelName || "Unknown Hotel",
       hotelId: hotelId,
       treatmentId: safeTreatmentId,
-      date: `${bookingDate} @ ${bookingTime}`, // Vises automatisk i CartDrawer
+      date: `${bookingDate} @ ${bookingTime}`, 
       cartId: `spa-${safeTreatmentId}-${Date.now()}`,
-      itemId: `spa-${safeTreatmentId}-${Date.now()}`, // Unik ID i kurven
+      itemId: `spa-${safeTreatmentId}-${Date.now()}`, // Unique ID for booking in Cart. 
       category: "spa",
       addedAt: new Date().toISOString(),
       nights: 1,
@@ -168,7 +173,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
           <button className="close-modal-btn" onClick={onClose}>✕</button>
         </div>
 
-        {/* Progress Bar (2 steg: Dato/tid -> Oppsummering) */}
+        {/* Progress Bar, Date/time -> Summary */}
         <div className="step-indicator">
           <div className="progress-bar">
             <div
@@ -189,7 +194,7 @@ function SpaBookingModal({ isOpen, onClose, treatment, hotelName, hotelId }) {
         <div className="modal-body">
           {error && <p className="error-message">{error}</p>}
 
-          {/* Steg 1: Velg Dato og Tid */}
+          {/*  Select Date and Time */}
           {step === 1 && (
             <div className="step-content">
               <h3>Select Appointment Details</h3>

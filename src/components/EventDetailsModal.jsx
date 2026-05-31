@@ -1,12 +1,16 @@
 /**
  * EventDetailsModal.jsx
+ * Modal component for viewing conference room details, selecting a booking date, availability status.
+ * Booking to Cart for later checkout. 
+ *  @author Pelle Thoresen
+ * @version 1.4
  */
 
 import { useState, useEffect } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { db } from "../firebase/config";
 import "../styles/EventDetailsModal.css";
-import { useCart } from "../context/CartContext"; // ← Legg til denne
+import { useCart } from "../context/CartContext"; // add to cart
 
 // Maps database IDs to your custom Firebase image keys
 const imageMapping = {
@@ -14,7 +18,7 @@ const imageMapping = {
   "conf-medium": "Medium",
   "conf-large": "Large",
 };
-
+// Sets up modal state and context for handling room booking, including selected date, availability status, and Firebase image data.
 function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
   const { addToCart, showToast } = useCart(); // ← Hent showToast
 
@@ -53,7 +57,7 @@ function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
 
       const data = snapshot.val();
       let alreadyBooked = false;
-
+ // Loops through all users and their orders to check for conflicts
       Object.values(data).forEach((userOrders) => {
         Object.values(userOrders).forEach((order) => {
           if (!Array.isArray(order.items)) return;
@@ -77,13 +81,16 @@ function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
     return () => unsubscribe();
   }, [selectedDate, room, hotelId]);
 
+   // Prevents rendering modal if not open or no room is selected
   if (!isOpen || !room) return null;
 
+  // if room id does not exitst in imageMapping, use large as standartd, or straight url if that also fails. Bug fix. 
   const imageKey = imageMapping[room.id] || "Large";
   const roomImage =
     dbImages[imageKey] ||
     "https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?q=80&w=600&auto=format&fit=crop";
 
+    // Adds selected booking to cart if valid. 
   const handleAddToCart = () => {
     if (!selectedDate || isBooked) return;
 
@@ -104,21 +111,23 @@ function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
 
     addToCart(cartItem);
 
-    // Vis toast melding
+    // Sucsess message when adding to cart
     showToast(
       `${room.name} for ${selectedDate} er lagt til i handlekurven!`,
       "success",
     );
 
-    // Lukk modalen etter kort tid
+    // Modal close after adding to cart. 800ms or 0,8 seconds. 
     setTimeout(() => {
       onClose();
     }, 800);
   };
-
+// Render booking modal UI for selected conference room, with details. 
   return (
     <div className="event-modal-overlay" onClick={onClose}>
+        {/* Stops click propagation so modal doesn't close when clicking inside */}
       <div className="event-modal-content" onClick={(e) => e.stopPropagation()}>
+           {/* Close button that exits the modal */}
         <button className="event-modal-close" onClick={onClose}>
           ×
         </button>
@@ -131,7 +140,7 @@ function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
           <div className="event-modal-info-side">
             <span className="hotel-badge">{hotelName}</span>
             <h2>{room.name}</h2>
-
+            {/* Room specifications */}
             <div className="room-specs">
               <p>
                 <strong>👥 Capacity:</strong> {room.capacity}
@@ -146,11 +155,12 @@ function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
             </div>
 
             <hr />
-
+             {/* Date selection and availability check section */}
             <div className="booking-date-section">
               <label htmlFor="booking-date">
                 <strong>Choose Date for your Event:</strong>
               </label>
+               {/* Date input restricted to today or future dates */}
               <input
                 type="date"
                 id="booking-date"
@@ -163,7 +173,7 @@ function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
               {checkingStatus && (
                 <p className="status-msg checking">Checking availability...</p>
               )}
-
+                 {/*  Feedback based on booking status */}
               {selectedDate &&
                 !checkingStatus &&
                 (isBooked ? (
@@ -176,7 +186,7 @@ function EventDetailsModal({ isOpen, onClose, room, hotelId, hotelName }) {
                   </p>
                 ))}
             </div>
-
+             {/* Add to cart button (disabled if invalid state) */}
             <button
               className={`event-modal-btn ${!selectedDate || isBooked || checkingStatus ? "disabled" : ""}`}
               disabled={!selectedDate || isBooked || checkingStatus}
