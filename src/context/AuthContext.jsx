@@ -13,6 +13,7 @@ import { auth } from "../firebase/config";
 
 import {
   onAuthStateChanged,
+  onIdTokenChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -29,7 +30,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onIdTokenChanged(auth, async (user) => {
       if (user) {
         const userRef = ref(db, `users/${user.uid}`);
         const snapshot = await get(userRef);
@@ -60,6 +61,8 @@ export function AuthProvider({ children }) {
       const user = userCredential.user;
 
       await updateProfile(user, { displayName: firstName });
+
+      await user.getIdToken(true);
 
       await set(ref(db, `users/${user.uid}`), {
         uid: user.uid,

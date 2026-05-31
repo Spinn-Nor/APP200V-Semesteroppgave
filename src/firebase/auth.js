@@ -5,7 +5,7 @@ import { auth } from "./config";
 export async function loginEmailPassword(loginEmail, loginPassword) {
     try {
         const userCredentials = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-        console.log(userCredentials.user);
+        // console.log(userCredentials.user);
     } catch (error) {
         console.log("code:", error.code);
         console.log("message:", error.message);
@@ -19,15 +19,15 @@ export async function registerUser(firstName, lastName, signupEmail, signupPassw
 
         const user = userCredentials.user;
 
-        const displayName = `${firstName} ${lastName}`;
+        // const displayName = `${firstName} ${lastName}`;
 
         await updateProfile(user, {
-            displayName
+            firstName
         });
 
         await user.getIdToken(true);
 
-        console.log("registered user: ", user);
+        // console.log("registered user: ", user);
     } catch (error) {
         console.log(error);
     }

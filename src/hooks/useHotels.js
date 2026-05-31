@@ -1,6 +1,6 @@
-import {useState, useEffect} from 'react';
-import {db} from '../firebase/config';
-import {ref, onValue} from 'firebase/database';
+import { useState, useEffect } from 'react';
+import { db } from '../firebase/config';
+import { ref, onValue } from 'firebase/database';
 
 export function useHotels() {
     const [hotels, setHotels] = useState([]);
@@ -21,7 +21,6 @@ export function useHotels() {
                         ...data[key]
                     }));
                     setHotels(hotelsArray);
-                    console.log(hotelsArray);
                 } else {
                     setHotels([]);
                 }
@@ -37,5 +36,5 @@ export function useHotels() {
         return () => unsubscribe();
     }, []);
 
-    return {hotels, loading, error};
+    return { hotels, loading, error };
 }
