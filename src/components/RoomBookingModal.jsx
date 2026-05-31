@@ -1,6 +1,13 @@
 /**
  * RoomBookingModal.jsx
- * Multi-step booking wizard with amenities selection
+ *
+ * Multi-step booking wizard for reserving a hotel room.
+ * Step 1: Select check-in and check-out dates.
+ * Step 2: Select optional amenities.
+ * Step 3: Review summary and add to cart.
+ *
+ * @author Victor Orby - date handling, URL param pre-fill, double booking check
+ * @author Fredrik Fordelsen - amenities step, cart integration, booking summary
  * @version 2.1
  */
 
