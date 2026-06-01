@@ -1,20 +1,4 @@
 /**
-<<<<<<< HEAD
- * Home Page Component
- *
- * The main landing page of Blueberry Hotels. Features a prominent hero section
- * with a smart booking search bar, destination autocomplete dropdown, featured
- * hotels, wellness & events highlights, and a call-to-action section.
- *
- * Key functionalities:
- * - Real-time hotel search with destination autocomplete
- * - Date validation for check-in / check-out
- * - Navigation to HotelDetail or Hotels page based on search
- * - Display of featured hotels using HotelCard component
- *
- * @author Victor Orby
- * @version 1.2
-=======
  * Home.jsx
  *
  * Landing page for Blueberry Hotels.
@@ -23,7 +7,6 @@
  *
  * @author Victor Orby
  * @version 1.0
->>>>>>> 4e2ef164b21581cf5b08b1008621f287087159ef
  */
 
 import React, { useState } from "react";
@@ -56,22 +39,13 @@ function Home() {
   const { hotels } = useHotels();
   const [showDropdown, setShowDropdown] = useState(false);
 
-<<<<<<< HEAD
-  // Filter hotels for the search result dropdown list based on user-input in the destination field
-=======
   // Filters hotels for the destination dropdown based on city name or hotel name.
   // Single-character input uses startsWith to avoid showing too many results,
   // longer input uses includes for broader matching.
->>>>>>> 4e2ef164b21581cf5b08b1008621f287087159ef
   const filteredHotels = (hotels || []).filter((hotel) => {
     const city = hotel.city?.toLowerCase() || "";
     const secondWord = hotel.name.split(" ")[1]?.toLowerCase() || "";
 
-<<<<<<< HEAD
-    // Search for hotels based the first letter of the city/hotel name when searching for a single letter
-    // Search for cities/hotels containing the search string when input-length is not 1
-=======
->>>>>>> 4e2ef164b21581cf5b08b1008621f287087159ef
     return destination.length === 1
       ? city.startsWith(destination.toLowerCase()) ||
           secondWord.startsWith(destination.toLowerCase())
