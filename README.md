@@ -1,5 +1,6 @@
-For å installere: npm install
-For å kjøre: npm run dev
+# How to run the application
+# To install: npm install
+# To run: npm run dev
 
 
 
