@@ -58,10 +58,6 @@ function Footer() {
             &copy; {new Date().getFullYear()} Blueberry Hotels. All rights
             reserved.
           </p>
-          <div className="footer-legal">
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/terms">Terms & Conditions</Link>
-          </div>
         </div>
       </div>
     </footer>
