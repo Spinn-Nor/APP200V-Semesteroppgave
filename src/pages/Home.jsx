@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * Home Page Component
  *
  * The main landing page of Blueberry Hotels. Features a prominent hero section
@@ -13,6 +14,16 @@
  *
  * @author Victor Orby
  * @version 1.2
+=======
+ * Home.jsx
+ *
+ * Landing page for Blueberry Hotels.
+ * Contains the hero section with the booking search bar, featured hotels,
+ * experiences panels, and a call-to-action banner.
+ *
+ * @author Victor Orby
+ * @version 1.0
+>>>>>>> 4e2ef164b21581cf5b08b1008621f287087159ef
  */
 
 import React, { useState } from "react";
@@ -32,7 +43,10 @@ function Home() {
 
   usePageTitle("Home");
 
+  // Today's date used as the minimum selectable check-in date
   const today = new Date().toISOString().split("T")[0];
+
+  // Minimum check-out date is always the day after check-in
   const minCheckOut = checkIn
     ? new Date(new Date(checkIn).getTime() + 86400000)
         .toISOString()
@@ -42,13 +56,22 @@ function Home() {
   const { hotels } = useHotels();
   const [showDropdown, setShowDropdown] = useState(false);
 
+<<<<<<< HEAD
   // Filter hotels for the search result dropdown list based on user-input in the destination field
+=======
+  // Filters hotels for the destination dropdown based on city name or hotel name.
+  // Single-character input uses startsWith to avoid showing too many results,
+  // longer input uses includes for broader matching.
+>>>>>>> 4e2ef164b21581cf5b08b1008621f287087159ef
   const filteredHotels = (hotels || []).filter((hotel) => {
     const city = hotel.city?.toLowerCase() || "";
     const secondWord = hotel.name.split(" ")[1]?.toLowerCase() || "";
 
+<<<<<<< HEAD
     // Search for hotels based the first letter of the city/hotel name when searching for a single letter
     // Search for cities/hotels containing the search string when input-length is not 1
+=======
+>>>>>>> 4e2ef164b21581cf5b08b1008621f287087159ef
     return destination.length === 1
       ? city.startsWith(destination.toLowerCase()) ||
           secondWord.startsWith(destination.toLowerCase())
@@ -56,12 +79,16 @@ function Home() {
           secondWord.includes(destination.toLowerCase());
   });
 
+  // Clears the check-out date if it is no longer valid after check-in changes
   const handleCheckInChange = (e) => {
     const newCheckIn = e.target.value;
     setCheckIn(newCheckIn);
     if (checkOut && checkOut <= newCheckIn) setCheckOut("");
   };
 
+  // Navigates directly to a matched hotel if the destination matches a hotel name,
+  // otherwise navigates to the hotels listing page. Passes dates as URL parameters
+  // so the booking modal can pre-fill them on the hotel detail page.
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (checkIn) params.set("checkIn", checkIn);
@@ -110,6 +137,7 @@ function Home() {
                 onChange={(e) => setDestination(e.target.value)}
               />
 
+              {/* Dropdown shows filtered hotel suggestions while the user is typing */}
               {showDropdown && destination.length >= 1 && (
                 <ul className="destination-dropdown">
                   {filteredHotels.length > 0 ? (
@@ -214,7 +242,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ── Featured hotels ── */}
+      {/* ── Featured hotels — shows first 3 hotels from Firebase ── */}
       {hotels && hotels.length > 0 && (
         <section className="featured-section">
           <div className="home-section-inner">
