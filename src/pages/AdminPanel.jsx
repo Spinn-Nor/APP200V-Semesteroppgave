@@ -1413,12 +1413,6 @@ function AdminPanel() {
                             >
                               Edit
                             </button>
-                            <button
-                              className="action-btn delete-btn"
-                              onClick={() => handleDeleteUser(user.id)}
-                            >
-                              Delete
-                            </button>
                           </td>
                         </tr>
                       ))
@@ -2031,6 +2025,12 @@ function AdminPanel() {
                   onClick={() => setShowEditUserModal(false)}
                 >
                   Cancel
+                </button>
+                <button
+                  className="action-btn delete-btn"
+                  onClick={() => handleDeleteUser(user.id)}
+                >
+                  Delete
                 </button>
                 <button type="submit">Save Changes</button>
               </div>
