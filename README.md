@@ -1,8 +1,8 @@
 # How to run the application
-To install: npm install
-<br>
-To run: npm run dev
+To install: `npm install` <br>
+To run: `npm run dev`
 
+Test accounts with customer and admin privileges are included. See the submitted report for login credentials. 
 
 
 # React + Vite
