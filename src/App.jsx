@@ -38,7 +38,7 @@ import Contact from "./pages/Contact";
 function AppContent() {
   const location = useLocation();
 
-  // Scroll til toppen ved navigasjon
+  // Scroll to top when navigating
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -47,7 +47,7 @@ function AppContent() {
     });
   }, [location.pathname]);
 
-  // Skjul footer på disse sidene
+  // Hide footer on these pages
   const hideFooterPages = ["/account", "/my-bookings", "/admin"];
   const showFooter = !hideFooterPages.includes(location.pathname);
 

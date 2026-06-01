@@ -122,7 +122,7 @@ function AdminPanel() {
       }
     } catch (error) {
       console.error("Failed to fetch users:", error);
-      showToast("Kunne ikke hente brukere", "error");
+      showToast("Could not fetch users", "error");
     } finally {
       setLoadingUsers(false);
     }
@@ -1581,7 +1581,6 @@ function AdminPanel() {
         )}
 
         {/* ==================== MESSAGES TAB ==================== */}
-        {/* ==================== MESSAGES TAB ==================== */}
         {activeTab === "messages" && (
           <div>
             <div className="admin-header">
@@ -1809,7 +1808,7 @@ function AdminPanel() {
                     })
                   }
                 >
-                  + Legg til nytt bilde
+                  + Add new image
                 </button>
               </div>
 
@@ -1887,9 +1886,9 @@ function AdminPanel() {
 
               <div className="modal-actions">
                 <button type="button" onClick={() => setShowHotelModal(false)}>
-                  Avbryt
+                  Cancel
                 </button>
-                <button type="submit">Save hotel</button>
+                <button type="submit">Save Hotel</button>
               </div>
             </form>
           </div>

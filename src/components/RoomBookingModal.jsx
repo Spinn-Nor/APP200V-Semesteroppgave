@@ -1,6 +1,7 @@
 /**
  * RoomBookingModal.jsx
  * Multi-step booking wizard with amenities selection
+ * @author Fredrik Fordelsen
  * @version 2.1
  */
 

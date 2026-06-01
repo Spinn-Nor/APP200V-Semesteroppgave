@@ -1,3 +1,20 @@
+/**
+ * Home Page Component
+ *
+ * The main landing page of Blueberry Hotels. Features a prominent hero section
+ * with a smart booking search bar, destination autocomplete dropdown, featured
+ * hotels, wellness & events highlights, and a call-to-action section.
+ *
+ * Key functionalities:
+ * - Real-time hotel search with destination autocomplete
+ * - Date validation for check-in / check-out
+ * - Navigation to HotelDetail or Hotels page based on search
+ * - Display of featured hotels using HotelCard component
+ *
+ * @author Victor Orby
+ * @version 1.2
+ */
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useHotels } from "../hooks/useHotels";
@@ -18,25 +35,25 @@ function Home() {
   const today = new Date().toISOString().split("T")[0];
   const minCheckOut = checkIn
     ? new Date(new Date(checkIn).getTime() + 86400000)
-      .toISOString()
-      .split("T")[0]
+        .toISOString()
+        .split("T")[0]
     : today;
 
   const { hotels } = useHotels();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Filter hotels for the search result dropdown list based on user-input in the destination field 
+  // Filter hotels for the search result dropdown list based on user-input in the destination field
   const filteredHotels = (hotels || []).filter((hotel) => {
     const city = hotel.city?.toLowerCase() || "";
     const secondWord = hotel.name.split(" ")[1]?.toLowerCase() || "";
 
-    // Search for hotels based the first letter of the city/hotel name when searching for a single letter 
-    // Search for cities/hotels containing the search string when input-length is not 1 
+    // Search for hotels based the first letter of the city/hotel name when searching for a single letter
+    // Search for cities/hotels containing the search string when input-length is not 1
     return destination.length === 1
       ? city.startsWith(destination.toLowerCase()) ||
-      secondWord.startsWith(destination.toLowerCase())
+          secondWord.startsWith(destination.toLowerCase())
       : city.includes(destination.toLowerCase()) ||
-      secondWord.includes(destination.toLowerCase());
+          secondWord.includes(destination.toLowerCase());
   });
 
   const handleCheckInChange = (e) => {

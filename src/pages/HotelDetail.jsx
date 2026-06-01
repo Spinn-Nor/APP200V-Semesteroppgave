@@ -1,6 +1,17 @@
 /**
  * HotelDetail.jsx
  *
+ * The main detail view for a single hotel. Displays comprehensive information
+ * about the hotel including images, description, amenities, rating/reviews,
+ * and all available room types.
+ *
+ * Key Features:
+ * - Dynamic image carousel
+ * - Real-time average rating calculation from user reviews
+ * - Pre-fills check-in/check-out dates from URL parameters (from homepage search)
+ * - Displays spa and events availability with direct links
+ * - Integration with RoomCard for booking flow
+ * - Review submission and review list modals
  * @author Fredrik Fordelsen & Bendik Viken Wangen
  * @version 1.2
  */

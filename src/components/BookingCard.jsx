@@ -15,7 +15,7 @@ function BookingCard({ booking, onCancel, onViewDetails }) {
     const checkInDate = new Date(item.checkIn);
     const today = new Date();
 
-    // Nullstill tid på begge datoer slik at vi kun sammenligner dato
+    // Reset time so we're only comparing date
     checkInDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
 

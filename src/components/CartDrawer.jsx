@@ -15,7 +15,7 @@ function CartDrawer({ isOpen, onClose }) {
   const { cart, removeFromCart, totalPrice, confirmBooking, showToast } =
     useCart();
 
-  // Scroll Lock når carten er åpen
+  // Scroll Lock when cart is open
   useScrollLock(isOpen);
 
   const handleConfirm = async () => {
@@ -65,7 +65,9 @@ function CartDrawer({ isOpen, onClose }) {
                     {item.type === "Spa" || item.type === "Event" ? (
                       <p>{item.date}</p>
                     ) : (
-                      <p>{item.date} • {item.nights} nights</p>
+                      <p>
+                        {item.date} • {item.nights} nights
+                      </p>
                     )}
 
                     {/* Vis amenities */}

@@ -1,3 +1,19 @@
+/**
+ * AmenitiesSelector Component
+ *
+ * A reusable component that allows users to select and deselect additional
+ * amenities (e.g. breakfast, spa access, WiFi) during the booking process.
+ *
+ * Features:
+ * - Toggle amenities by clicking on cards
+ * - Visual feedback for selected items
+ * - Displays icon, label and price for each amenity
+ *
+ * @author Fredrik Fordelsen
+ * @version 1.0
+ *
+ */
+
 import { useState } from "react";
 import "../styles/AmenitiesSelector.css";
 

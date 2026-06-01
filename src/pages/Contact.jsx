@@ -1,3 +1,20 @@
+/**
+ * Contact Page Component
+ *
+ * A contact form that allows users (both logged in and guests) to send messages
+ * to the Blueberry Hotels team. The form data is stored in Firebase Realtime
+ * Database under the "contacts" node.
+ *
+ * Features:
+ * - Pre-fills name and email for logged-in users
+ * - Form validation
+ * - Toast notifications for success/error feedback
+ * - Loading state during submission
+ *
+ * @author Fredrik Fordelsen
+ * @version 1.0
+ */
+
 import { useState } from "react";
 import { db } from "../firebase/config";
 import { ref, push, set } from "firebase/database";

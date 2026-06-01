@@ -1,3 +1,19 @@
+/**
+ * HotelCard Component
+ *
+ * A reusable card component that displays hotel information on the
+ * Hotels page and homepage. Includes dynamic average rating calculation
+ * based on user reviews from Firebase.
+ *
+ * Features:
+ * - Displays hotel image, name, location and description
+ * - Fetches and calculates average rating and review count in real-time
+ * - Links to the detailed hotel page with preserved search parameters
+ *
+ * @author Fredrik Fordelsen
+ * @version 1.0
+ */
+
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { db } from "../firebase/config";
@@ -24,7 +40,7 @@ function HotelCard({ hotel }) {
 
             const total = reviewsArray.reduce(
               (sum, review) => sum + (review.rating || 0),
-              0
+              0,
             );
 
             const average = total / reviewsArray.length;
@@ -46,11 +62,7 @@ function HotelCard({ hotel }) {
 
   return (
     <div className="hotel-card">
-      <img
-        src={hotel.images[0]}
-        alt={hotel.name}
-        className="hotel-image"
-      />
+      <img src={hotel.images[0]} alt={hotel.name} className="hotel-image" />
 
       <div className="hotel-info">
         <h3>{hotel.name}</h3>
@@ -58,17 +70,14 @@ function HotelCard({ hotel }) {
         <p className="hotel-location">{hotel.city}</p>
 
         <div className="hotel-details">
-          <span>{rating} ★ ({reviewCount} {reviewCount == 1 ? "review" : "reviews"})</span>
+          <span>
+            {rating} ★ ({reviewCount} {reviewCount == 1 ? "review" : "reviews"})
+          </span>
         </div>
 
-        <p className="hotel-description">
-          {hotel.description}
-        </p>
+        <p className="hotel-description">{hotel.description}</p>
 
-        <Link
-          to={`/hotels/${hotel.id}${search}`}
-          className="see-rooms-btn"
-        >
+        <Link to={`/hotels/${hotel.id}${search}`} className="see-rooms-btn">
           View available rooms
         </Link>
       </div>

@@ -1,3 +1,19 @@
+/**
+ * Hotels Page Component
+ *
+ * Displays all available hotels with filtering functionality by city.
+ * Uses the custom useHotels hook to fetch real-time data from Firebase.
+ *
+ * Features:
+ * - City filter buttons (dynamically generated)
+ * - Responsive hotel grid using HotelCard component
+ * - Loading and error state handling
+ * - Page title management
+ *
+ * @author Fredrik Fordelsen
+ * @version 1.0
+ */
+
 import { useState } from "react";
 import HotelCard from "../components/HotelCard";
 import { useHotels } from "../hooks/useHotels";

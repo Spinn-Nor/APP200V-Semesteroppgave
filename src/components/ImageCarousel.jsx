@@ -1,3 +1,21 @@
+/**
+ * ImageCarousel Component
+ *
+ * A responsive and accessible image carousel with auto-scroll functionality.
+ * Supports manual navigation via arrows and dots, and automatically restarts
+ * the timer after manual interaction.
+ *
+ * Features:
+ * - Auto-scroll with customizable interval
+ * - Smooth slide transitions
+ * - Navigation arrows and dot indicators
+ * - Robust image URL filtering and fallback handling
+ * - Restarts auto-scroll after manual navigation
+ *
+ * @author Fredrik Fordelsen & Bendik Viken Wangen
+ * @version 1.1
+ */
+
 import { useState, useEffect, useMemo, useRef } from "react";
 import "../styles/ImageCarousel.css";
 
@@ -11,8 +29,8 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     const arr = Array.isArray(images)
       ? images
       : Object.keys(images)
-        .sort((a, b) => Number(a) - Number(b))
-        .map((key) => images[key]);
+          .sort((a, b) => Number(a) - Number(b))
+          .map((key) => images[key]);
 
     // Veldig åpen filter - aksepterer alle http-lenker
     const validImages = arr.filter(
@@ -50,7 +68,7 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     goToNext();
   }
 
-  // Start the auto-scroll timer if imageArray contains items 
+  // Start the auto-scroll timer if imageArray contains items
   function startTimer() {
     if (!autoScroll || imageArray.length <= 1) return;
 
@@ -61,8 +79,8 @@ function ImageCarousel({ images, autoScroll = true, interval = 5000 }) {
     }, interval);
   }
 
-  // Start the auto-scroll timer on component load, and clear the timer on component cleanup 
-  // Restarts the timer whenever the image carousel is progressed manually 
+  // Start the auto-scroll timer on component load, and clear the timer on component cleanup
+  // Restarts the timer whenever the image carousel is progressed manually
   useEffect(() => {
     startTimer();
 
