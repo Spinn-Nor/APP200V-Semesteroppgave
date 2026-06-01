@@ -1,6 +1,7 @@
 # How to run the application
-# To install: npm install
-# To run: npm run dev
+To install: npm install
+<br>
+To run: npm run dev
 
 
 
